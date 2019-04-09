@@ -1,0 +1,15 @@
+﻿生成启动时间为 2019/4/3 14:52:58。
+     1>项目“E:\projects\GoogleTest\googletest-release-1.6.0\msvc\gtest.vcxproj”在节点 2 上(Rebuild 个目标)。
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I.. /I..\include /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _LIB /D _VARIADIC_MAX=10 /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"gtest/Debug\gtest\\" /Fd"gtest/Debug\gtest\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt "..\src\gtest-all.cc"
+         gtest-all.cc
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\projects\GoogleTest\googletest-release-1.6.0\msvc\gtest/Debug\gtest.lib) does not match the Library's OutputFile property value (E:\projects\GoogleTest\googletest-release-1.6.0\msvc\gtest\Debug\gtestd.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1301,5): warning MSB8012: TargetName(gtest) does not match the Library's OutputFile property value (gtestd). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\Lib.exe /OUT:"gtest/Debug\gtestd.lib" /NOLOGO "gtest/Debug\gtest\gtest-all.obj"
+         gtest.vcxproj -> E:\projects\GoogleTest\googletest-release-1.6.0\msvc\gtest/Debug\gtest.lib
+     1>已完成生成项目“E:\projects\GoogleTest\googletest-release-1.6.0\msvc\gtest.vcxproj”(Rebuild 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:02.42

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="GB2312" standalone="yes"?>
+<!--星点课堂-->
+<doc>
+    <courses count="4" institution="星点课堂" teacher="女儿叫老白">
+        <lesson url="https://study.163.com/instructor/1143174933.htm" id="1" fee="免费">C++老鸟日记</lesson>
+        <lesson url="https://study.163.com/instructor/1143174933.htm" id="2" fee="免费">C++跨平台开发中的编译错误</lesson>
+        <lesson url="https://study.163.com/instructor/1143174933.htm" id="3">Qt入门与提高-GUI产品开发</lesson>
+        <lesson url="sorry, not ready" id="4">C++跨平台服务模块开发</lesson>
+    </courses>
+</doc>

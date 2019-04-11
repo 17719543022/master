@@ -38,11 +38,12 @@ public:
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
         label = new QLabel(Dialog);
         label->setObjectName(QStringLiteral("label"));
-        label->setGeometry(QRect(110, 160, 171, 71));
+        label->setGeometry(QRect(50, 30, 171, 261));
         QFont font;
         font.setFamily(QStringLiteral("Agency FB"));
         font.setPointSize(14);
         label->setFont(font);
+        label->setPixmap(QPixmap(QString::fromUtf8("images/logo_text.png")));
 
         retranslateUi(Dialog);
         QObject::connect(buttonBox, SIGNAL(accepted()), Dialog, SLOT(accept()));
@@ -54,7 +55,7 @@ public:
     void retranslateUi(QDialog *Dialog)
     {
         Dialog->setWindowTitle(QApplication::translate("Dialog", "Dialog", 0));
-        label->setText(QApplication::translate("Dialog", "\346\210\221\347\232\204\347\254\254\344\270\200\344\270\252ui\347\274\226\347\250\213", 0));
+        label->setText(QString());
     } // retranslateUi
 
 };

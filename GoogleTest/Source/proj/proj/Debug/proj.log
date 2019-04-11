@@ -1,9 +1,9 @@
-﻿生成启动时间为 2019/4/9 8:31:37。
+﻿生成启动时间为 2019/4/11 14:31:50。
      1>项目“E:\projects\Private\GoogleTest\Source\proj\proj\proj.vcxproj”在节点 2 上(Rebuild 个目标)。
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IE:\projects\Private\GoogleTest\Export\opencv\build\include\opencv2 /IE:\projects\Private\GoogleTest\Export\opencv\build\include /IE:\projects\Private\GoogleTest\Export\face\include /IE:\projects\Private\GoogleTest\Source\include /I"E:\projects\Private\GoogleTest\Export\googletest-release-1.6.0\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _VARIADIC_MAX=10 /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\proj.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IE:\projects\Private\GoogleTest\Export\opencv\build\include\opencv2 /IE:\projects\Private\GoogleTest\Export\opencv\build\include /IE:\projects\Private\GoogleTest\Export\face\include /IE:\projects\Private\GoogleTest\Source\include /I"E:\projects\Private\GoogleTest\Export\googletest-release-1.6.0\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _VARIADIC_MAX=10 /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\proj.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
          stdafx.cpp
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IE:\projects\Private\GoogleTest\Export\opencv\build\include\opencv2 /IE:\projects\Private\GoogleTest\Export\opencv\build\include /IE:\projects\Private\GoogleTest\Export\face\include /IE:\projects\Private\GoogleTest\Source\include /I"E:\projects\Private\GoogleTest\Export\googletest-release-1.6.0\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _VARIADIC_MAX=10 /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\proj.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\src\common.cpp ..\..\src\sdk_error_code.cpp proj.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IE:\projects\Private\GoogleTest\Export\opencv\build\include\opencv2 /IE:\projects\Private\GoogleTest\Export\opencv\build\include /IE:\projects\Private\GoogleTest\Export\face\include /IE:\projects\Private\GoogleTest\Source\include /I"E:\projects\Private\GoogleTest\Export\googletest-release-1.6.0\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _VARIADIC_MAX=10 /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\proj.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\src\common.cpp ..\..\src\sdk_error_code.cpp proj.cpp
          proj.cpp
          sdk_error_code.cpp
          common.cpp
@@ -19,4 +19,4 @@
 
 生成成功。
 
-已用时间 00:00:04.75
+已用时间 00:00:04.86

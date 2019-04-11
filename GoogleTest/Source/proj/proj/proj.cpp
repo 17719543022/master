@@ -8,6 +8,8 @@
 #include "sdk_error_code.h"
 #include "log_format.h"
 #include "opencv.hpp"
+#include "io.h"
+#include <cstring>
 using namespace std;
 using namespace cv;
 
@@ -20,6 +22,7 @@ TEST(face,shouldGivenPictureHasMoreThan15FacesBeDetected)
 	int channel = ISCreateDetTrackChannel(20, 5000, 0);
 	int det = ISFaceDetectPath(channel,imgPath,outResult,&len);
 
+	ISDestroyDetTrackChannel(channel);
 	EXPECT_TRUE(len >= 15);
 }
 
@@ -33,9 +36,147 @@ TEST(face,shouldSelfieAndIdCardBeComparedWithMustSimilarity)
 	int similarityChannelId = ISCreateCompareChannel();
 	ISCompare(similarityChannelId,feature1,feature2,&score);
 
+	ISDestroyCompareChannel(similarityChannelId);
 	cout<<"ISCompare Score:"<<score<<endl;
 	EXPECT_TRUE(score >= 0.9);
 }
+
+TEST(face,shouldIdCardAndLiveBatchCompareSuccess)
+{
+	const char dirRoot[200]="E:\\liuyong\\人证1比1\\人证1比1\\";
+	char dirToUse[200]="\0";
+
+	//遍历dir目录变量下的所有目录
+	_finddata_t dataDir;
+	strcpy(dirToUse,dirRoot);
+	intptr_t hDir = _findfirst(strcat(dirToUse,"*.*"), &dataDir);
+	EXPECT_TRUE(hDir != -1);
+
+	do{
+		if (strcmp(dataDir.name, ".") == 0 || strcmp(dataDir.name, "..") == 0)
+		{
+			continue;
+		}
+		else
+		{
+			{
+				//遍历dir目录下每个子目录下的所有文件
+				_finddata_t dataFile;
+				cout<<dirRoot;
+				strcpy(dirToUse,dirRoot);
+				intptr_t hFile = _findfirst(strcat(strcat(dirToUse,dataDir.name),"\\*.*"),&dataFile);
+				EXPECT_TRUE(hFile != -1);
+				cout<<dataDir.name<<"\\"<<endl;
+
+				char feature1[8196],feature2[8196];
+				strcpy(dirToUse,dirRoot);
+				strcat(strcat(dirToUse,dataDir.name),"\\idcard.jpg");
+				getFeature(dirToUse,feature1);
+
+				do{
+					if(strcmp(dataFile.name, ".") == 0 || strcmp(dataFile.name, "..") == 0 || strcmp(dataFile.name,"idcard.jpg")==0)
+					{
+						continue;
+					}
+					else
+					{
+						strcpy(dirToUse,dirRoot);
+						strcat(strcat(strcat(dirToUse,dataDir.name),"\\"),dataFile.name);
+						getFeature(dirToUse,feature2);
+
+						float score = 0;
+						int similarityChannelId = ISCreateCompareChannel();
+						ISCompare(similarityChannelId,feature1,feature2,&score);
+						ISDestroyCompareChannel(similarityChannelId);
+
+						cout<<"\tidcard.jpg + "<<dataFile.name<<" = Compare Score: "<<score<<endl;
+					}
+				}while(_findnext(hFile,&dataFile)==0);
+
+				_findclose(hFile);
+			}
+		}
+	} while (_findnext(hDir, &dataDir) == 0);
+
+	_findclose(hDir);
+
+	cout<<"ISGetDetTrackVersionInfo(): "<<ISGetDetTrackVersionInfo()<<endl;
+	cout<<"ISGetFeatureVersionInfo(): "<<ISGetFeatureVersionInfo()<<endl;
+	cout<<"ISGetCompareVersionInfo(): "<<ISGetCompareVersionInfo()<<endl;
+}
+
+TEST(face,shouldMatrixBeCaculatedSuccessWhenReview)
+{
+	const char dirA[200]="E:\\liuyong\\复核\\复核\\A";
+	const char dirB[200]="E:\\liuyong\\复核\\复核\\B";
+	char dirAUse[200];
+	char dirBUse[200];
+	char feature1[8196];
+	char feature2[8196];
+
+	//遍历A目录下的所有图片
+	_finddata_t dataA;
+	strcpy(dirAUse,dirA);
+	intptr_t hA = _findfirst(strcat(dirAUse,"\\*.*"), &dataA);
+	EXPECT_TRUE(hA != -1);
+
+	do{
+		if (strcmp(dataA.name, ".") == 0 || strcmp(dataA.name, "..") == 0)
+		{
+			continue;
+		}
+		else
+		{
+			{
+				//对A目录的每张图片同B目录的所有图片做compare运算
+				strcpy(dirAUse,dirA);
+				strcat(strcat(dirAUse,"\\"),dataA.name);
+				memset(feature1,0,8192);
+				getFeature(dirAUse,feature1);
+				cout<<dirAUse<<"\t";
+
+				_finddata_t dataB;
+				strcpy(dirBUse,dirB);
+				intptr_t hB = _findfirst(strcat(dirBUse,"\\*.*"),&dataB);
+				EXPECT_TRUE(hB != -1);
+
+				do{
+					if(strcmp(dataB.name, ".") == 0 || strcmp(dataB.name, "..") == 0)
+					{
+						continue;
+					}
+					else
+					{
+						strcpy(dirBUse,dirB);
+						strcat(strcat(dirBUse,"\\"),dataB.name);
+						memset(feature2,0,8192);
+						getFeature(dirBUse,feature2);
+
+						float score = 0;
+						int similarityChannelId = ISCreateCompareChannel();
+						ISCompare(similarityChannelId,feature1,feature2,&score);
+						ISDestroyCompareChannel(similarityChannelId);
+
+						if(feature2[0]==0&&feature2[100]==0&&feature2[1000]==0)
+						{
+							cout<<"NoFace"<<"\t";
+						}
+						else
+						{
+							cout<<score<<"\t";
+						}
+					}
+				}while(_findnext(hB,&dataB)==0);
+
+				_findclose(hB);
+				cout<<endl;
+			}
+		}
+	} while (_findnext(hA, &dataA) == 0);
+
+	_findclose(hA);
+}
+
 /*
 TEST(face,shouldTwoPicturesOfASamePersonBeDetectedWithMustSimilarity)
 {

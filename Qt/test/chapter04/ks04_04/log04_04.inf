@@ -1,0 +1,7 @@
+Qt dbg:msg-[My id is  10000 , My Name is  "«ÿ ºª " ], file-[e:\xingdianketang\project\gui\src\chapter04\ks04_04\main.cpp], func-[void __cdecl example03(void)], category-[default]
+Qt dbg:msg-[My id is  10000 , My Name is  "«ÿ ºª " ], file-[e:\xingdianketang\project\gui\src\chapter04\ks04_04\main.cpp], func-[void __cdecl example03(void)], category-[default]
+Qt dbg:msg-[I live in China. Today is 2018-11-02, PI = 3.141592653589793], file-[e:\xingdianketang\project\gui\src\chapter04\ks04_04\main.cpp], func-[void __cdecl example02(void)], category-[default]
+Qt warn:msg-[I live in China. Today is 2018-11-02], file-[e:\xingdianketang\project\gui\src\chapter04\ks04_04\main.cpp], func-[void __cdecl example02(void)], category-[default]
+Qt critical:msg-[I live in China. Today is 2018-11-02], file-[e:\xingdianketang\project\gui\src\chapter04\ks04_04\main.cpp], func-[void __cdecl example02(void)], category-[default]
+Qt dbg:msg-[tanxianqiang], file-[e:\xingdianketang\project\gui\src\chapter04\ks04_04\main.cpp], func-[int __cdecl main(int,char *[])], category-[default]
+Qt dbg:msg-[tanxianqiang], file-[e:\xingdianketang\project\gui\src\chapter04\ks04_04\main.cpp], func-[int __cdecl main(int,char *[])], category-[default]

@@ -1,0 +1,21 @@
+﻿生成启动时间为 2019/4/11 14:58:16。
+     1>项目“E:\projects\Private\gui\src\chapter02\ks02_02_ex1\ks02_02_ex1.vcxproj”在节点 2 上(Rebuild 个目标)。
+     1>CustomBuild:
+         MOC dialog.h
+         UIC dialog.ui
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IC:\Qt\Qt5.2.1\5.2.1\msvc2012\include /IC:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtWidgets /IC:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtGui /IC:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtANGLE /IC:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtCore /I..\..\..\obj\moc /I..\..\..\obj\ui /I"C:\Qt\Qt5.2.1\5.2.1\msvc2012\mkspecs\win32-msvc2012" /Zi /nologo /W3 /WX- /Od /Oy- /D _CONSOLE /D UNICODE /D WIN32 /D QT_WIDGETS_LIB /D QT_GUI_LIB /D QT_CORE_LIB /D QT_OPENGL_ES_2 /D QT_OPENGL_ES_2_ANGLE /Gm- /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"..\..\..\obj\chapter02\ks02_02_ex1\\" /Fd"..\..\..\obj\chapter02\ks02_02_ex1\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt -Zm200 -w34100 -w34189 dialog.cpp main.cpp ..\..\..\obj\moc\moc_dialog.cpp
+         dialog.cpp
+         main.cpp
+         moc_dialog.cpp
+         正在生成代码...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\..\..\bin\\ks02_02_ex1.exe" /NOLOGO /LIBPATH:C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Widgetsd.lib C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Guid.lib C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Cored.lib libEGLd.lib libGLESv2d.lib gdi32.lib user32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"..\..\..\bin\ks02_02_ex1.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X86 /SAFESEH "/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" ..\..\..\obj\chapter02\ks02_02_ex1\dialog.obj
+         ..\..\..\obj\chapter02\ks02_02_ex1\main.obj
+         ..\..\..\obj\chapter02\ks02_02_ex1\moc_dialog.obj
+         ks02_02_ex1.vcxproj -> E:\projects\Private\gui\src\chapter02\ks02_02_ex1\..\..\..\bin\ks02_02_ex1.exe
+     1>已完成生成项目“E:\projects\Private\gui\src\chapter02\ks02_02_ex1\ks02_02_ex1.vcxproj”(Rebuild 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:03.12

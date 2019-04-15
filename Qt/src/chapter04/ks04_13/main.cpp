@@ -42,8 +42,6 @@ int main(int argc, char * argv[])
 		example02();
 	}
 	
-	system("pause");
-
 	return 0;
 }
 

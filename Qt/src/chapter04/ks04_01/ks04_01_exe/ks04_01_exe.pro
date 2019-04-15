@@ -3,7 +3,7 @@ include ($$(TRAINDEVHOME)/src/gui_base.pri)
 TEMPLATE	= app
 LANGUAGE	= C++
 
-
+CONFIG		+= console
 
 TEMPDIR		= $$TRAIN_OBJ_PATH/chapter04/ks04_01/exe
 

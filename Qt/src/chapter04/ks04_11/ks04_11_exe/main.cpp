@@ -65,6 +65,7 @@ void example02(void) {
 
     QString strPath = "$TRAINDEVHOME/src/";
     strPath = ns_train::getPath(strPath);
+	cout << "ns_train::getPath(strPath): " << strPath.toLocal8Bit().data() << endl;
 	strPath = ns_train::getDirectory(strPath);
     QDir dir(strPath);
     QString absPath = dir.absolutePath();	// 返回路径的绝对路径字符串

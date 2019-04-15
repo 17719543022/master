@@ -19,6 +19,7 @@
 #include <QCryptographicHash>
 #include <QDir>
 #include <QFileInfoList>
+#include <QProcessEnvironment>
 
 namespace ns_train {
 
@@ -51,28 +52,16 @@ QString getColorRgbValue(const QColor& clr) {
 
 QString getPath(const QString& strInputPath) {
     QString strPath = strInputPath;
-    strPath.replace("\\", "/");
-    int idx = strPath.indexOf("$");
-    if (idx < 0) {
-        return strPath.toLower();
-    }
-    QString strRight = strPath.right(strPath.length() - idx);
-    idx = strRight.indexOf("/");
-    QString strEnvironmentVariable = strRight.left(idx);
+    strPath.replace("/", "\\");
+	strPath.remove("$");
+    int idx = strPath.indexOf("\\");
+    QString strEnvironmentVariable = strPath.left(idx);
+	QString str = QProcessEnvironment::systemEnvironment().value(strEnvironmentVariable.toLocal8Bit().data());
     strPath.remove(strEnvironmentVariable);
-    strEnvironmentVariable.remove("$");
-    QString str = qEnvironmentVariable(strEnvironmentVariable.toLocal8Bit().data());
-    if (str.length() > 0) {
-        str.replace("\\", "/");
-        if (str.right(1) == "/") { // 删除环境变量中最后的"/"
-            str = str.left(str.length() - 1);
-        }
-        strPath.insert(0, str);
-    }
+	strPath.insert(0, str);
 	strPath = strPath.toLower();
     return strPath;
 }
-
 
 QString getFileName(const QString& strFilePath) {
     QString strFileName = getPath(strFilePath);

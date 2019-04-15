@@ -18,8 +18,6 @@
 #include "qglobal.h"
 #include <QString>
 #include <QTextStream>
-
-
 #include "myclass.h"
 
 void example01();
@@ -34,11 +32,11 @@ int main(int argc, char * argv[])
 	QCoreApplication app(argc, argv);
    
 
-	if (1) {
+	if (false) {
 		example01();
 	}
 
-	if (1) {
+	if (true) {
 		example02();
 	}
 	
@@ -189,7 +187,11 @@ void example01() {
 * @brief 读取xml格式文件示例代码
 */
 void example02() {
-
+	/*
+	理解二者的区别：
+	QDomElement QDomNode::firstChildElement(const QString & tagName = QString()) const
+	QDomNode QDomNode::firstChild() const
+	*/
 	QString strPath = QCoreApplication::applicationDirPath();
 	strPath = ns_train::getPath(strPath);
 	if (!strPath.endsWith("/")) {
@@ -216,11 +218,10 @@ void example02() {
 	}
 	QString strName;
 	QString strValue;
-	int nCount =0;
-    Q_UNUSED(nCount);
-	QDomCharacterData dtText;
 	QDomElement eleCourses = rootDoc.firstChildElement();
-	while (eleCourses.isElement()) {
+	while (eleCourses.isElement()) { //拥有属性的节点才是元素，
+									 //因为我们写XML时就知道“courses”节点是有属性的，
+									 //所以这里我们可以对它进行这样的判断。
 		strName = eleCourses.tagName();
 		if (strName != "courses") {
             eleCourses = eleCourses.nextSiblingElement();
@@ -253,7 +254,10 @@ void example02() {
 					}
 				}
 				if (!eleLesson.firstChild().isNull()) {
-					dtText = eleLesson.firstChild().toCharacterData();
+					//eleLesson.firstChild()可以获取到第一个子节点，
+					//因为我们保存XML文件时，“lesson”元素的第一个子节点就是文本，
+					//所以我们对应这样编码是可以的。
+					QDomCharacterData dtText = eleLesson.firstChild().toCharacterData();
 					if (!dtText.isNull()) {
 						strValue = dtText.data();
 					}

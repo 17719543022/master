@@ -3,7 +3,7 @@ include ($$(TRAINDEVHOME)/src/gui_base.pri)
 TEMPLATE	= app
 LANGUAGE	= C++
 
-#CONFIG		+= console
+CONFIG		+= console
 QT			+= xml
 
 

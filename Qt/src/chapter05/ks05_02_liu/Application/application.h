@@ -14,6 +14,7 @@ public:
 
 private slots:
 	void onFontFamilyChanged(const QFont & font);
+	void onFontSizeChanged(const QString & str);
 
 private:
 	Ui::ApplicationClass ui;

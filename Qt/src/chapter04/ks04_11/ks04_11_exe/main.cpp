@@ -31,11 +31,11 @@ int main(int argc, char * argv[])
 	Q_UNUSED(argc);
 	Q_UNUSED(argv);
 
-    if (0) {
+    if (true) {
         example01();
     }
 
-    if (1) {
+    if (true) {
         example02();
     }
 	return 0;

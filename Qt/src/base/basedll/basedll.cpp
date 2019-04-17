@@ -16,6 +16,7 @@
 #include <QCryptographicHash>
 #include <QDir>
 #include <QFileInfoList>
+#include <QProcessEnvironment>
 
 namespace ns_train {
 
@@ -58,7 +59,7 @@ QString getPath(const QString& strInputPath) {
     QString strEnvironmentVariable = strRight.left(idx);
     strPath.remove(strEnvironmentVariable);
     strEnvironmentVariable.remove("$");
-    QString str = qEnvironmentVariable(strEnvironmentVariable.toLocal8Bit().data());
+    QString str = QProcessEnvironment::systemEnvironment().value(strEnvironmentVariable.toLocal8Bit().data());
     if (str.length() > 0) {
         str.replace("\\", "/");
         if (str.right(1) == "/") { // 删除环境变量中最后的"/"

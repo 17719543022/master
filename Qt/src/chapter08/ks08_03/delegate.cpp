@@ -99,7 +99,6 @@ void CDelegate::setEditorData(QWidget *editor,
 		// 动画速度设置单元格
 		QComboBox* pEditor = static_cast<QComboBox*>(editor);
 		int nValue = index.model()->data(index, Qt::EditRole).toInt();
-		CTableModel::EAnimateSpeed animateSpeed = static_cast<CTableModel::EAnimateSpeed>(nValue);
 		pEditor->setCurrentIndex( index.model()->data(index, Qt::EditRole).toInt());
 	}
 	else {

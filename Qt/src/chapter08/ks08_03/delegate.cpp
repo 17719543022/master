@@ -126,10 +126,10 @@ void CDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 		model->setData(index, var.toBool());// 为模型设置数据
 	}
  	else if (index.row() == CTableModel::EAttr_LastOneFlag) {
-		CEditor *pEditor = qobject_cast<CEditor *>(editor);
-		QVariant var;
-		var.setValue((pEditor->text() == "Y") ? Qt::Checked : Qt::Unchecked);
-		model->setData(index, var);// 为模型设置数据
+		//CEditor *pEditor = qobject_cast<CEditor *>(editor);
+		//QVariant var;
+		//var.setValue((pEditor->text() == "Y") ? Qt::Checked : Qt::Unchecked);
+		//model->setData(index, var);// 为模型设置数据
 	}
 	else if (index.row() == CTableModel::Eattr_AnimateSpeed) {
 		// 动画速度设置单元格

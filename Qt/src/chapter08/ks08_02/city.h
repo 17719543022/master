@@ -17,6 +17,7 @@
 #include<QString>
 
 #include "serialize.h"
+#include "qdatastream.h"
 
 class CProvince;
 

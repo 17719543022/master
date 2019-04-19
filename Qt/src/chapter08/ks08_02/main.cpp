@@ -54,7 +54,8 @@ int main(int argc, char * argv[])
 	QTreeView treeView;
 	treeView.setModel(&model);
 	treeView.setRootIsDecorated(true);
-	treeView.header()->setFirstSectionMovable(false);
+	//treeView.header()->setFirstSectionMovable(false);
+	treeView.header()->setSectionsMovable(false);
 	treeView.header()->setStretchLastSection(true);
 	treeView.setWindowTitle(QObject::tr("Flat Tree View"));
 	treeView.show();

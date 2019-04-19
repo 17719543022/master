@@ -38,16 +38,3 @@ int CProvince::addCity(CCity* pCity) {
 	m_lstCities.push_back(pCity);
 	return m_lstCities.size();
 }
-
-ESerializeCode  CProvince::serializeBinary(QDataStream& ds, QString* pError) const {
-	ds << m_strName;
-	quint16 nCount = m_lstCities.size(); // 需要明确指定数据类型，否则跨平台时可能出问题。比如int在各个平台上可能长度不一样。
-	ds << nCount;
-	QList<CCity*>::ConstIterator iteLst = m_lstCities.constBegin(); // 因为本函数为const，所以需要调用const类型的接口
-	while (iteLst != m_lstCities.end()) {
-		(*iteLst)->serializeBinary(ds, pError);
-		iteLst++;
-	}
-
-	return ESERIALIZECODE_OK;
-}

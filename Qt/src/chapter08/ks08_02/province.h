@@ -70,21 +70,11 @@ public:
     * @return 已有城市个数
     */
 	int getCities(QList<CCity*>& lstCities) const { lstCities = m_lstCities; return lstCities.size(); }
-	
-	/**
-	* @brief 用来把类对象进行二进制方式序列化的函数。本接口内部已经调用QDataStream::setByteOrder(QDataStream::LittleEndian)。
-	* @param[in] ds 文件流对象。
-	* @param[in|out] pError 错误信息。
-	* @return ESerializeCode枚举值。
-	*/
-	ESerializeCode serializeBinary(QDataStream& ds, QString* pError) const;
 
 private:	
     QString	m_strName;
 	CCountry* m_pCountry;
 	QList<CCity*> m_lstCities;
 };
-
-
 
 #endif  // for _PROVINCE_H_

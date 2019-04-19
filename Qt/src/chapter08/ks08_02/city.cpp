@@ -13,25 +13,22 @@
 
 #include "city.h"
 
-CCity::CCity():m_pCard(NULL){
-	;
+void  CCity::setName(const QString& str)
+{
+	m_strName = str;
 }
 
-CCity::~CCity() {
-	if (NULL != m_pCard) {
-		delete m_pCard;
-	}
+QString  CCity::getName(void)const 
+{
+	return m_strName;
 }
 
-ESerializeCode  CCity::serializeBinary(QDataStream& ds, QString* pError) const {
-	Q_UNUSED(pError);
+void  CCity::setProvince(CProvince* pProvince) 
+{
+	m_pProvince = pProvince;
+}
 
-	ds << m_strName;
-	quint8 byValue = ((NULL != m_pCard) ? true : false);
-	ds << byValue;
-	if (NULL != m_pCard) {
-		m_pCard->serializeBinary(ds, pError);
-	}
-	
-	return ESERIALIZECODE_OK;
+CProvince*  CCity::getProvince(void) const 
+{
+	return m_pProvince;
 }

@@ -21,98 +21,44 @@
 
 class CProvince;
 
-// 名片类
-class CCard {
-public:
-	CCard(){}
-	~CCard(){}
-	
-	/**
-	* @brief 设置名片字符串.
-	* @param[in] str 名片字符串.
-	* @return void
-	*/
-	void  setName(const QString& str) { m_str = str; }
-
-	/**
-	* @brief 获取城市名称.
-	* @return 城市名称
-	*/
-	QString  getName(void)const { return m_str; }
-	/**
-	* @brief 用来把类对象进行二进制方式序列化的函数。
-	* @param[in] ds 文件流对象。
-	* @param[in|out] pError 错误信息。
-	* @return ESerializeCode枚举值。
-	*/
-	ESerializeCode serializeBinary(QDataStream& ds, QString* /*pError*/) const {
-		ds << m_str;
-		return ESERIALIZECODE_OK;
-	}
-
-private:
-	QString m_str;
-};
 // 城市类
 //-----------------------------------------
 class CCity
 {
 public:
-	CCity();
-	~CCity();
-
     /**
     * @brief 设置城市名称.
     * @param[in] str 城市名称
     * @return void
     */
-	void  setName(const QString& str) {m_strName = str;}
+	//void  setName(const QString& str) {m_strName = str;}
+	void  setName(const QString& str);
 
     /**
     * @brief 获取城市名称.
     * @return 城市名称
     */
-	QString  getName(void)const {return m_strName;}
+	//QString  getName(void)const {return m_strName;}
+	QString  getName(void)const;
  
     /**
     * @brief 设置城市所在省(州)
     * @param[in] pProvince 城市所在省(州)
     * @return void
     */
-	void  setProvince(CProvince* pProvince) { m_pProvince = pProvince;}
+	//void  setProvince(CProvince* pProvince) { m_pProvince = pProvince;}
+	void  setProvince(CProvince* pProvince);
 
     /**
     * @brief 获取城市所在省(州)
     * @return 城市所在省(州)
     */
-	CProvince*  getProvince(void) const {return m_pProvince;}
-	/**
-	* @brief 用来把类对象进行二进制方式序列化的函数。本接口内部已经调用QDataStream::setByteOrder(QDataStream::LittleEndian)。
-	* @param[in] ds 文件流对象。
-	* @param[in|out] pError 错误信息。
-	* @return ESerializeCode枚举值。
-	*/
-	ESerializeCode serializeBinary(QDataStream& ds, QString* pError) const;
- 
-    /**
-    * @brief 设置城市名片
-    * @param[in] pCard 城市市名片
-    * @return void
-    */
-	void  setCard(CCard* pCard) { m_pCard = pCard;}
-
-    /**
-    * @brief 获取城市名片
-    * @return 城市名片
-    */
-	CCard*  getCard(void) const {return m_pCard;}
+	//CProvince*  getProvince(void) const {return m_pProvince;}
+	CProvince*  getProvince(void) const;
 
 private:	
     QString	m_strName;
 	CProvince*	m_pProvince;
-	CCard* m_pCard;
 };
-
-
 
 #endif  // for _CITY_H_

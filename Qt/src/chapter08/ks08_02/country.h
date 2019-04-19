@@ -72,23 +72,6 @@ public:
 	*/
 	int getProvinces(QList<CProvince*>& lstProvinces) const { lstProvinces = m_lstProvinces; return lstProvinces.size(); }
 
-
-	/**
-	* @brief 用来把类对象进行二进制方式序列化的函数。本接口内部已经调用QDataStream::setByteOrder(QDataStream::LittleEndian)。
-	*		 注意：本接口支持环境变量。
-	* @param[in] fileName 文件名。
-	* @param[in|out] pError 错误信息。
-	* @return ESerializeCode枚举值。
-	*/
-	ESerializeCode serializeBinary(const QString& strFileName, QString* pError) const;
-	/**
-	* @brief 用来把类对象进行二进制方式序列化的函数。本接口内部已经调用QDataStream::setByteOrder(QDataStream::LittleEndian)。
-	* @param[in] ds 文件流对象。要求调用者以（QFile::ReadWrite | QFile::Truncate）模式打开。
-	* @param[in|out] pError 错误信息。
-	* @return ESerializeCode枚举值。
-	*/
-	ESerializeCode serializeBinary(QDataStream& ds, QString* pError) const;
-
 private:
     QString	m_strName;
     QString	m_strContinent;	

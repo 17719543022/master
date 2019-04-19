@@ -16,10 +16,8 @@
 #include <QList>
 #include <QStandardItemModel>
 #include <QTreeView>
-
 #include <iostream>
 #include "base/basedll/baseapi.h"
-
 #include "qglobal.h"
 #include "country.h"
 #include "province.h"
@@ -28,88 +26,6 @@
 using std::cout;
 using std::endl;
 using std::cin;
-
-CCountry* createCountry(void);
-
-int main(int argc, char * argv[])
-{
-	Q_UNUSED(argc);
-	Q_UNUSED(argv);
-
-	QApplication app(argc, argv);
-
-	CCountry* pCountry = createCountry();
-	if (NULL == pCountry)
-		return 1;
-
-	QList<CProvince*> lstProvinces;
-	QList<CProvince*>::iterator iteProvince;
-	QList<CCity*> lstCities;
-	QList<CCity*>::iterator iteCity;
-
-	pCountry->getProvinces(lstProvinces);
-
-	const int COLUMNCOUNT = 2;  // 列的个数
-	QStandardItemModel model;
-	QTreeView treeView;
-	treeView.setModel(&model);
-	treeView.setRootIsDecorated(true);
-	//treeView.header()->setFirstSectionMovable(false);
-	treeView.header()->setSectionsMovable(false);
-	treeView.header()->setStretchLastSection(true);
-	treeView.setWindowTitle(QObject::tr("Flat Tree View"));
-	treeView.show();
-
-	//model.setData(indexRoot, pCountry->getName());
-	QStandardItem *pItemRoot = model.invisibleRootItem();
-	QModelIndex indexRoot = pItemRoot->index();
-	
-	// 将 Country节点 添加到invisible根节点作为其子节点
-	QStandardItem *pItemCountry = new QStandardItem(pCountry->getName());
-	pItemRoot->appendRow(pItemCountry);
-	QFont ft("宋体", 16);
-	ft.setBold(true);
-	pItemCountry->setData(ft, Qt::FontRole);
-	pItemCountry->setData(QColor(Qt::red), Qt::TextColorRole);
-	QImage img(":/images/china.png");	;
-	pItemCountry->setData(img.scaled(QSize(24, 24)), Qt::DecorationRole);
-
-	// 设置pItemRoot的列数以便显示省的个数
-	pItemRoot->setColumnCount(COLUMNCOUNT);
-	// 在Country节点所在的行的第1列显示省的个数
-	model.setData(model.index(0, 1, indexRoot), lstProvinces.size());
-
-	QStandardItem *pItemProvince = NULL;
-	QStandardItem *pItemCity = NULL;
-	int idProvince = 0;
-	iteProvince = lstProvinces.begin();
-	while (iteProvince != lstProvinces.end()) {
-		pItemProvince = new QStandardItem((*iteProvince)->getName()); // 构建数据项:province
-		pItemCountry->appendRow(pItemProvince); // 添加数据项: province
-		
-		// 设置pItemCountry的列数以便显示城市的个数
-		pItemCountry->setColumnCount(COLUMNCOUNT);
-		(*iteProvince)->getCities(lstCities);
-		// 设置Province节点的第0列的文本颜色为蓝色
-		model.setData(model.index(idProvince, 0, pItemCountry->index()), QColor(Qt::blue), Qt::TextColorRole);
-		// 设置Country节点第1列数据为城市个数
-		model.setData(model.index(idProvince++, 1, pItemCountry->index()), lstCities.size());
-		
-		// 遍历所有城市
-		iteCity = lstCities.begin();
-		while (iteCity != lstCities.end()) {
-			// 构建数据项:city
-			pItemCity = new QStandardItem((*iteCity)->getName());
-			// 添加数据项: city
-			pItemProvince->appendRow(pItemCity);
-			iteCity++;
-		}
-		iteProvince++;
-	}
-
-	return app.exec();
-}
-
 
 /**
 * @brief构建CCountry对象.
@@ -167,5 +83,59 @@ CCountry* createCountry(void) {
 
 	// 返回构建的CCountry对象
 	return pCountry;
-	
 }
+
+int main(int argc, char * argv[])
+{
+	Q_UNUSED(argc);
+	Q_UNUSED(argv);
+
+	QApplication app(argc, argv);
+
+	CCountry* pCountry = createCountry();
+	if (NULL == pCountry)
+		return 1;
+
+	QList<CProvince*> lstProvinces;
+	QList<CProvince*>::iterator iteProvince;
+	QList<CCity*> lstCities;
+	QList<CCity*>::iterator iteCity;
+
+	pCountry->getProvinces(lstProvinces);
+
+	QStandardItemModel model;
+	QTreeView treeView;
+	treeView.setModel(&model);
+	treeView.setRootIsDecorated(true);
+	treeView.header()->setSectionsMovable(false);
+	treeView.header()->setStretchLastSection(true);
+	treeView.setWindowTitle(QObject::tr("Flat Tree View"));
+	treeView.show();
+	
+	// 将 Country节点 添加到invisible根节点作为其子节点
+	QStandardItem *pItemCountry = new QStandardItem(pCountry->getName());
+	QStandardItem *pItemRoot = model.invisibleRootItem();
+	pItemRoot->appendRow(pItemCountry);
+	
+	QStandardItem *pItemProvince = NULL;
+	QStandardItem *pItemCity = NULL;
+	iteProvince = lstProvinces.begin();
+	while (iteProvince != lstProvinces.end()) {
+		pItemProvince = new QStandardItem((*iteProvince)->getName()); // 构建数据项:province
+		pItemCountry->appendRow(pItemProvince); // 添加数据项: province
+		
+		(*iteProvince)->getCities(lstCities);
+		iteCity = lstCities.begin();
+		while (iteCity != lstCities.end()) {
+			// 构建数据项:city
+			pItemCity = new QStandardItem((*iteCity)->getName());
+			// 添加数据项: city
+			pItemProvince->appendRow(pItemCity);
+			iteCity++;
+		}
+		iteProvince++;
+	}
+	
+	return app.exec();
+}
+

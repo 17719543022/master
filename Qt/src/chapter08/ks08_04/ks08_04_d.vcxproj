@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E003EA87-57FB-3E01-8388-C8FF74DC632F}</ProjectGuid>
+    <RootNamespace>ks08_04_d</RootNamespace>
+    <Keyword>Qt4VSv1.0</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;" Label="Configuration">
+    <PlatformToolSet>v110</PlatformToolSet>
+    <OutputDirectory>..\..\..\bin\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>Application</ConfigurationType>
+    <IntermediateDirectory>..\..\..\obj\debug\chapter04\ks08_04\</IntermediateDirectory>
+    <PrimaryOutput>ks08_04_d</PrimaryOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;" Label="Configuration">
+    <PlatformToolSet>v110</PlatformToolSet>
+    <OutputDirectory>..\..\..\bin\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>Application</ConfigurationType>
+    <IntermediateDirectory>..\..\..\obj\release\chapter04\ks08_04\</IntermediateDirectory>
+    <PrimaryOutput>ks08_04_d</PrimaryOutput>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists(&apos;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&apos;)" />
+  </ImportGroup>
+  <ImportGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists(&apos;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&apos;)" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">..\..\..\bin\</OutDir>
+    <IntDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">..\..\..\obj\debug\chapter04\ks08_04\</IntDir>
+    <TargetName Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">ks08_04_d</TargetName>
+    <IgnoreImportLibrary Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">true</IgnoreImportLibrary>
+    <OutDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">..\..\..\bin\</OutDir>
+    <IntDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">..\..\..\obj\release\chapter04\ks08_04\</IntDir>
+    <TargetName Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">ks08_04_d</TargetName>
+    <IgnoreImportLibrary Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">
+    <ClCompile>
+      <AdditionalIncludeDirectories>&quot;.&quot;;&quot;..\..\..\include&quot;;&quot;E:\projects\Private\Qt\include\ks08_04&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtWidgets&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtGui&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtANGLE&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtCore&quot;;&quot;..\..\..\obj\debug\chapter04\ks08_04\moc&quot;;C:\Qt\Qt5.2.1\5.2.1\msvc2012\mkspecs\win32-msvc2012;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>..\..\..\obj\debug\chapter04\ks08_04\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4819;4996;4251;4275;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>..\..\..\obj\debug\chapter04\ks08_04\</ObjectFileName>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;TRAIN_DEBUG;TRAIN_64;_WIN32_WINNT=0x0501;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_OPENGL_ES_2;QT_OPENGL_ES_2_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>qtmaind.lib;E:\projects\Private\Qt\lib\basedll_d.lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Widgetsd.lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Guid.lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Cored.lib;libEGLd.lib;libGLESv2d.lib;gdi32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\projects\Private\Qt\lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot; %(AdditionalOptions)</AdditionalOptions>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+      <OutputFile>$(OutDir)\ks08_04_d.exe</OutputFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;TRAIN_DEBUG;TRAIN_64;_WIN32_WINNT=0x0501;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_OPENGL_ES_2;QT_OPENGL_ES_2_ANGLE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">
+    <ClCompile>
+      <AdditionalIncludeDirectories>&quot;.&quot;;&quot;..\..\..\include&quot;;&quot;E:\projects\Private\Qt\include\ks08_04&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtWidgets&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtGui&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtANGLE&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtCore&quot;;&quot;..\..\..\obj\release\chapter04\ks08_04\moc&quot;;C:\Qt\Qt5.2.1\5.2.1\msvc2012\mkspecs\win32-msvc2012;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>..\..\..\obj\release\chapter04\ks08_04\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <DisableSpecificWarnings>4819;4996;4251;4275;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>..\..\..\obj\release\chapter04\ks08_04\</ObjectFileName>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;TRAIN_DEBUG;TRAIN_64;_WIN32_WINNT=0x0501;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_OPENGL_ES_2;QT_OPENGL_ES_2_ANGLE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>qtmain.lib;E:\projects\Private\Qt\lib\basedll_d.lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Widgets.lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Gui.lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Core.lib;libEGL.lib;libGLESv2.lib;gdi32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\projects\Private\Qt\lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot; %(AdditionalOptions)</AdditionalOptions>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+      <LinkIncremental>false</LinkIncremental>
+      <OutputFile>$(OutDir)\ks08_04_d.exe</OutputFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <SubSystem>Windows</SubSystem>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;TRAIN_DEBUG;TRAIN_64;_WIN32_WINNT=0x0501;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_OPENGL_ES_2;QT_OPENGL_ES_2_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="ceditor.cpp" />
+    <ClCompile Include="delegate.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="tablemodel.cpp" />
+    <ClCompile Include="treeview.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="ceditor.h">
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">ceditor.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">C:\Qt\Qt5.2.1\5.2.1\msvc2012\bin\moc.exe  -DUNICODE -DWIN32 -DTRAIN_DEBUG -DTRAIN_64 -D_WIN32_WINNT=0x0501 -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_OPENGL_ES_2 -DQT_OPENGL_ES_2_ANGLE -D_MSC_VER=1700 -D_WIN32 -I&quot;.&quot; -I&quot;..\..\..\include&quot; -I&quot;E:\projects\Private\Qt\include\ks08_04&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtWidgets&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtGui&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtANGLE&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtCore&quot; -I&quot;..\..\..\obj\debug\chapter04\ks08_04\moc&quot; -IC:\Qt\Qt5.2.1\5.2.1\msvc2012\mkspecs\win32-msvc2012 ceditor.h -o E:\projects\Private\Qt\obj\debug\chapter04\ks08_04\moc\moc_ceditor.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">MOC ceditor.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">E:\projects\Private\Qt\obj\debug\chapter04\ks08_04\moc\moc_ceditor.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">ceditor.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">C:\Qt\Qt5.2.1\5.2.1\msvc2012\bin\moc.exe  -DUNICODE -DWIN32 -DTRAIN_DEBUG -DTRAIN_64 -D_WIN32_WINNT=0x0501 -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_OPENGL_ES_2 -DQT_OPENGL_ES_2_ANGLE -D_MSC_VER=1700 -D_WIN32 -I&quot;.&quot; -I&quot;..\..\..\include&quot; -I&quot;E:\projects\Private\Qt\include\ks08_04&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtWidgets&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtGui&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtANGLE&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtCore&quot; -I&quot;..\..\..\obj\release\chapter04\ks08_04\moc&quot; -IC:\Qt\Qt5.2.1\5.2.1\msvc2012\mkspecs\win32-msvc2012 ceditor.h -o E:\projects\Private\Qt\obj\release\chapter04\ks08_04\moc\moc_ceditor.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">MOC ceditor.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">E:\projects\Private\Qt\obj\release\chapter04\ks08_04\moc\moc_ceditor.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="delegate.h">
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">delegate.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">C:\Qt\Qt5.2.1\5.2.1\msvc2012\bin\moc.exe  -DUNICODE -DWIN32 -DTRAIN_DEBUG -DTRAIN_64 -D_WIN32_WINNT=0x0501 -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_OPENGL_ES_2 -DQT_OPENGL_ES_2_ANGLE -D_MSC_VER=1700 -D_WIN32 -I&quot;.&quot; -I&quot;..\..\..\include&quot; -I&quot;E:\projects\Private\Qt\include\ks08_04&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtWidgets&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtGui&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtANGLE&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtCore&quot; -I&quot;..\..\..\obj\debug\chapter04\ks08_04\moc&quot; -IC:\Qt\Qt5.2.1\5.2.1\msvc2012\mkspecs\win32-msvc2012 delegate.h -o E:\projects\Private\Qt\obj\debug\chapter04\ks08_04\moc\moc_delegate.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">MOC delegate.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">E:\projects\Private\Qt\obj\debug\chapter04\ks08_04\moc\moc_delegate.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">delegate.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">C:\Qt\Qt5.2.1\5.2.1\msvc2012\bin\moc.exe  -DUNICODE -DWIN32 -DTRAIN_DEBUG -DTRAIN_64 -D_WIN32_WINNT=0x0501 -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_OPENGL_ES_2 -DQT_OPENGL_ES_2_ANGLE -D_MSC_VER=1700 -D_WIN32 -I&quot;.&quot; -I&quot;..\..\..\include&quot; -I&quot;E:\projects\Private\Qt\include\ks08_04&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtWidgets&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtGui&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtANGLE&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtCore&quot; -I&quot;..\..\..\obj\release\chapter04\ks08_04\moc&quot; -IC:\Qt\Qt5.2.1\5.2.1\msvc2012\mkspecs\win32-msvc2012 delegate.h -o E:\projects\Private\Qt\obj\release\chapter04\ks08_04\moc\moc_delegate.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">MOC delegate.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">E:\projects\Private\Qt\obj\release\chapter04\ks08_04\moc\moc_delegate.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <ClInclude Include="..\..\gui_base.pri" />
+    <ClInclude Include="ks08_04.pro" />
+    <CustomBuild Include="tablemodel.h">
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">tablemodel.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">C:\Qt\Qt5.2.1\5.2.1\msvc2012\bin\moc.exe  -DUNICODE -DWIN32 -DTRAIN_DEBUG -DTRAIN_64 -D_WIN32_WINNT=0x0501 -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_OPENGL_ES_2 -DQT_OPENGL_ES_2_ANGLE -D_MSC_VER=1700 -D_WIN32 -I&quot;.&quot; -I&quot;..\..\..\include&quot; -I&quot;E:\projects\Private\Qt\include\ks08_04&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtWidgets&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtGui&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtANGLE&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtCore&quot; -I&quot;..\..\..\obj\debug\chapter04\ks08_04\moc&quot; -IC:\Qt\Qt5.2.1\5.2.1\msvc2012\mkspecs\win32-msvc2012 tablemodel.h -o E:\projects\Private\Qt\obj\debug\chapter04\ks08_04\moc\moc_tablemodel.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">MOC tablemodel.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">E:\projects\Private\Qt\obj\debug\chapter04\ks08_04\moc\moc_tablemodel.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">tablemodel.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">C:\Qt\Qt5.2.1\5.2.1\msvc2012\bin\moc.exe  -DUNICODE -DWIN32 -DTRAIN_DEBUG -DTRAIN_64 -D_WIN32_WINNT=0x0501 -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_OPENGL_ES_2 -DQT_OPENGL_ES_2_ANGLE -D_MSC_VER=1700 -D_WIN32 -I&quot;.&quot; -I&quot;..\..\..\include&quot; -I&quot;E:\projects\Private\Qt\include\ks08_04&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtWidgets&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtGui&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtANGLE&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtCore&quot; -I&quot;..\..\..\obj\release\chapter04\ks08_04\moc&quot; -IC:\Qt\Qt5.2.1\5.2.1\msvc2012\mkspecs\win32-msvc2012 tablemodel.h -o E:\projects\Private\Qt\obj\release\chapter04\ks08_04\moc\moc_tablemodel.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">MOC tablemodel.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">E:\projects\Private\Qt\obj\release\chapter04\ks08_04\moc\moc_tablemodel.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="treeview.h">
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">treeview.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">C:\Qt\Qt5.2.1\5.2.1\msvc2012\bin\moc.exe  -DUNICODE -DWIN32 -DTRAIN_DEBUG -DTRAIN_64 -D_WIN32_WINNT=0x0501 -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_OPENGL_ES_2 -DQT_OPENGL_ES_2_ANGLE -D_MSC_VER=1700 -D_WIN32 -I&quot;.&quot; -I&quot;..\..\..\include&quot; -I&quot;E:\projects\Private\Qt\include\ks08_04&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtWidgets&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtGui&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtANGLE&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtCore&quot; -I&quot;..\..\..\obj\debug\chapter04\ks08_04\moc&quot; -IC:\Qt\Qt5.2.1\5.2.1\msvc2012\mkspecs\win32-msvc2012 treeview.h -o E:\projects\Private\Qt\obj\debug\chapter04\ks08_04\moc\moc_treeview.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">MOC treeview.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">E:\projects\Private\Qt\obj\debug\chapter04\ks08_04\moc\moc_treeview.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">treeview.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">C:\Qt\Qt5.2.1\5.2.1\msvc2012\bin\moc.exe  -DUNICODE -DWIN32 -DTRAIN_DEBUG -DTRAIN_64 -D_WIN32_WINNT=0x0501 -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_OPENGL_ES_2 -DQT_OPENGL_ES_2_ANGLE -D_MSC_VER=1700 -D_WIN32 -I&quot;.&quot; -I&quot;..\..\..\include&quot; -I&quot;E:\projects\Private\Qt\include\ks08_04&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtWidgets&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtGui&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtANGLE&quot; -I&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtCore&quot; -I&quot;..\..\..\obj\release\chapter04\ks08_04\moc&quot; -IC:\Qt\Qt5.2.1\5.2.1\msvc2012\mkspecs\win32-msvc2012 treeview.h -o E:\projects\Private\Qt\obj\release\chapter04\ks08_04\moc\moc_treeview.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">MOC treeview.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">E:\projects\Private\Qt\obj\release\chapter04\ks08_04\moc\moc_treeview.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\obj\debug\chapter04\ks08_04\moc\moc_ceditor.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\obj\release\chapter04\ks08_04\moc\moc_ceditor.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\obj\debug\chapter04\ks08_04\moc\moc_delegate.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\obj\release\chapter04\ks08_04\moc\moc_delegate.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\obj\debug\chapter04\ks08_04\moc\moc_tablemodel.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\obj\release\chapter04\ks08_04\moc\moc_tablemodel.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\obj\debug\chapter04\ks08_04\moc\moc_treeview.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\obj\release\chapter04\ks08_04\moc\moc_treeview.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="debug\qrc_ks08_04.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="release\qrc_ks08_04.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\childen_closed.png" />
+    <None Include="images\childen_open.png" />
+    <None Include="images\china.png" />
+    <CustomBuild Include="ks08_04.qrc">
+      <FileType>Document</FileType>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">ks08_04.qrc;images\childen_open.png;images\childen_closed.png;images\china.png;qss\treeview.qss;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">C:\Qt\Qt5.2.1\5.2.1\msvc2012\bin\rcc.exe -name ks08_04 ks08_04.qrc -o debug\qrc_ks08_04.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">RCC ks08_04.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">debug\qrc_ks08_04.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">ks08_04.qrc;qss\treeview.qss;images\china.png;images\childen_closed.png;images\childen_open.png;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">C:\Qt\Qt5.2.1\5.2.1\msvc2012\bin\rcc.exe -name ks08_04 ks08_04.qrc -o release\qrc_ks08_04.cpp</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">RCC ks08_04.qrc</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">release\qrc_ks08_04.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
+    <None Include="qss\treeview.qss" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

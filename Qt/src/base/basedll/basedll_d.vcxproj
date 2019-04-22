@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{594E2CFA-1B2C-379F-88DC-CE87FB786C98}</ProjectGuid>
+    <RootNamespace>basedll_d</RootNamespace>
+    <Keyword>Qt4VSv1.0</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;" Label="Configuration">
+    <PlatformToolSet>v110</PlatformToolSet>
+    <OutputDirectory>..\..\..\lib\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <IntermediateDirectory>..\..\..\obj\debug\base\basedll\</IntermediateDirectory>
+    <PrimaryOutput>basedll_d</PrimaryOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;" Label="Configuration">
+    <PlatformToolSet>v110</PlatformToolSet>
+    <OutputDirectory>..\..\..\lib\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <IntermediateDirectory>..\..\..\obj\release\base\basedll\</IntermediateDirectory>
+    <PrimaryOutput>basedll_d</PrimaryOutput>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists(&apos;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&apos;)" />
+  </ImportGroup>
+  <ImportGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists(&apos;$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props&apos;)" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">..\..\..\lib\</OutDir>
+    <IntDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">..\..\..\obj\debug\base\basedll\</IntDir>
+    <TargetName Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">basedll_d</TargetName>
+    <IgnoreImportLibrary Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">true</IgnoreImportLibrary>
+    <PostBuildEventUseInBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">true</PostBuildEventUseInBuild>
+    <OutDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">..\..\..\lib\</OutDir>
+    <IntDir Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">..\..\..\obj\release\base\basedll\</IntDir>
+    <TargetName Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">basedll_d</TargetName>
+    <IgnoreImportLibrary Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">false</LinkIncremental>
+    <PostBuildEventUseInBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">true</PostBuildEventUseInBuild>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">
+    <ClCompile>
+      <AdditionalIncludeDirectories>&quot;.&quot;;&quot;..\..\..\include&quot;;&quot;..\..\..\include\base\basedll&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtXml&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtGui&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtANGLE&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtCore&quot;;&quot;..\..\..\obj\debug\base\basedll\moc&quot;;C:\Qt\Qt5.2.1\5.2.1\msvc2012\mkspecs\win32-msvc2012;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>..\..\..\obj\debug\base\basedll\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4819;4996;4251;4275;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>..\..\..\obj\debug\base\basedll\</ObjectFileName>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;TRAIN_DEBUG;TRAIN_64;_WIN32_WINNT=0x0501;__BASEDLL_SOURCE__;QT_XML_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_OPENGL_ES_2;QT_OPENGL_ES_2_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Xmld.lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Guid.lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Cored.lib;libEGLd.lib;libGLESv2d.lib;gdi32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\projects\Private\Qt\lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+      <LinkDLL>true</LinkDLL>
+      <OutputFile>$(OutDir)\basedll_d.dll</OutputFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;TRAIN_DEBUG;TRAIN_64;_WIN32_WINNT=0x0501;__BASEDLL_SOURCE__;QT_XML_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_OPENGL_ES_2;QT_OPENGL_ES_2_ANGLE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy  &quot;$(TargetPath)&quot; &quot;..\..\..\bin&quot;</Command>
+      <Message>Copy basedll_d.dll to ..\..\..\bin</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">
+    <ClCompile>
+      <AdditionalIncludeDirectories>&quot;.&quot;;&quot;..\..\..\include&quot;;&quot;..\..\..\include\base\basedll&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtXml&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtGui&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtANGLE&quot;;&quot;C:\Qt\Qt5.2.1\5.2.1\msvc2012\include\QtCore&quot;;&quot;..\..\..\obj\release\base\basedll\moc&quot;;C:\Qt\Qt5.2.1\5.2.1\msvc2012\mkspecs\win32-msvc2012;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>..\..\..\obj\release\base\basedll\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <DisableSpecificWarnings>4819;4996;4251;4275;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ObjectFileName>..\..\..\obj\release\base\basedll\</ObjectFileName>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;TRAIN_DEBUG;TRAIN_64;_WIN32_WINNT=0x0501;__BASEDLL_SOURCE__;QT_NO_DEBUG;QT_XML_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_OPENGL_ES_2;QT_OPENGL_ES_2_ANGLE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Xml.lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Gui.lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib\Qt5Core.lib;libEGL.lib;libGLESv2.lib;gdi32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\projects\Private\Qt\lib;C:\Qt\Qt5.2.1\5.2.1\msvc2012\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+      <LinkDLL>true</LinkDLL>
+      <LinkIncremental>false</LinkIncremental>
+      <OutputFile>$(OutDir)\basedll_d.dll</OutputFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;TRAIN_DEBUG;TRAIN_64;_WIN32_WINNT=0x0501;__BASEDLL_SOURCE__;QT_NO_DEBUG;QT_XML_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_OPENGL_ES_2;QT_OPENGL_ES_2_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy  &quot;$(TargetPath)&quot; &quot;..\..\..\bin&quot;</Command>
+      <Message>Copy basedll_d.dll to ..\..\..\bin</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="basedll.cpp" />
+    <ClCompile Include="fileattribute.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\include\base\basedll\baseapi.h" />
+    <ClInclude Include="basedll.pro" />
+    <ClInclude Include="..\..\..\include\base\basedll\fileattribute.h" />
+    <ClInclude Include="..\..\gui_base.pri" />
+    <ClInclude Include="..\..\..\include\base\basedll\iniconfig.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

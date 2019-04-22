@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ApplicationClass</class>
+ <widget class="QMainWindow" name="ApplicationClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Application</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="2" column="2">
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>已阅读并同意此协定</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPlainTextEdit" name="plainTextEdit">
+      <property name="tabChangesFocus">
+       <bool>true</bool>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+      <property name="plainText">
+       <string>       	                        保密协定
+    根据中兴通讯股份有限责任公司要求，公司员工必须遵从以下保密规则，如有违反愿接受国家法律制裁：
+    1. 不得传播公司代码、文档到互联网；
+    2. 不得泄露公司商业机密、投标方案。
+    请仔细阅读本协定并签名提交。</string>
+      </property>
+      <property name="backgroundVisible">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QLineEdit" name="lineEdit">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="placeholderText">
+       <string>请签名</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>600</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="application.qrc"/>
+ </resources>
+ <connections/>
+</ui>

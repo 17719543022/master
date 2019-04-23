@@ -5,34 +5,52 @@
 #include "log_format.h"
 #include "opencv.hpp"
 #include <gtest/gtest.h>
+
 using namespace std;
 using namespace cv;
 
-void getFeature(char *imgPath,char *outFeature)
-{
-	int detChannelId = ISCreateDetTrackChannel(46,1000,0);
-	int featureChannelId = ISCreateFeatureChannel(0,0,0,0,0);
-	int outRst[50][4];
-	int outLength;
+namespace{
+	#define DEFAULT_DET_TRACK_CHANNEL() ISCreateDetTrackChannel(46,1000,0);
+	#define DEFAULT_FEATURE_CHANNEL() ISCreateFeatureChannel(0,0,0,0,0);
+	#define DEFAULT_COMPARE_CHANNEL() ISCreateCompareChannel();
+	#define DESTROY_DET_TRACK_CHANNEL(x) ISDestroyDetTrackChannel(x);
+	#define DESTROY_FEATURE_CHANNEL(x) ISDestroyFeatureChannel(x);
+	#define DESTROY_COMPARE_CHANNEL(x) ISDestroyCompareChannel(x);
 
-	Mat image = imread(imgPath,1);
-	EXPECT_TRUE(SUCC == ISFaceDetectRgb(detChannelId,(char*)image.data,image.rows*image.cols*3,image.cols,image.rows,outRst,&outLength));
-	if(outLength==0)
+	void faceDetectRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int outResult[][4],int *outLen)
 	{
-		return;
+		int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
+		EXPECT_TRUE(SUCC == ISFaceDetectRgb(defaultDetTrackChannel, imgData, imgLen, imgWidth, imgHeight, outResult, outLen));
+		DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 	}
-	EXPECT_TRUE(SUCC == ISGetFeatureWithFacePosRgb(featureChannelId,(char*)image.data,image.rows*image.cols*3,image.cols,image.rows,outRst,1,outFeature));
 
-	Rect rect = Rect(outRst[0][0],outRst[0][1],outRst[0][2]-outRst[0][0]+1,outRst[0][3]-outRst[0][1]+1);
-	rectangle(image,rect,Scalar(0,0,255));
-	imshow(imgPath,image);
-	waitKey(10);
-
-	ISDestroyDetTrackChannel(detChannelId);
-	ISDestroyFeatureChannel(featureChannelId);
+	void getFeatureWithFacePosRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int param[][4], int faceNum, char *outFeature)
+	{
+		int defaultFeatureChannel = ISCreateFeatureChannel(0,0,0,0,0);
+		EXPECT_TRUE(SUCC == ISGetFeatureWithFacePosRgb(defaultFeatureChannel, imgData, imgLen, imgWidth, imgHeight, param, faceNum, outFeature));
+		DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
+	}
 }
 
-void traverseDirectory(const char *dir,char *idCard,char *live,bool *over)
+void getFeature(char *imgPath, char *outFeature)
+{
+	int outRst[50][4];
+	int outLength = 0;
+
+	Mat image = imread(imgPath, 1);
+
+	faceDetectRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &outLength);
+	if(outLength == 0){
+		ERR_LOG("%s detected no face!\n", imgPath);
+		return;
+	}
+
+	getFeatureWithFacePosRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, outLength, outFeature);
+}
+
+//void forFiles(...);
+
+void forFolders(const char *dir,char *idCard,char *live,bool *over)
 {
 	_finddata_t findData;
 

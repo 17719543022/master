@@ -15,7 +15,7 @@ TEST(ftInterface, displayVersionNo)
 
 TEST(ftInterface, theGivenPictureHasMoreThan15FacesBeDetected)
 {
-	char *imgPath = "..\\..\\..\\Images\\beauty.jpg";
+	char *imgPath = "..\\..\\Images\\beauty.jpg";
 	int len = 0;
 	int outResult[50][4] = {0};
 

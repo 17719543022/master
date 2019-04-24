@@ -9,7 +9,7 @@ using namespace std;
 TEST(ftAppliance,personAndIdCardCompareOfOneDirectory)
 {
 	//需要进行人证对比的整个文件夹的路径
-	string dirInput = "..\\..\\..\\Images\\人证1比1";
+	string dirInput = "..\\..\\Images\\人证1比1";
 
 	_finddata_t tFolder;
 	intptr_t hFolder = _findfirst((dirInput + "\\*.*").data(), &tFolder);
@@ -51,8 +51,8 @@ TEST(ftAppliance,personAndIdCardCompareOfOneDirectory)
 
 TEST(ftAppliance,reviewOfTwoSeparateDirectories)
 {
-	string dirA = "..\\..\\..\\Images\\复核\\A";
-	string dirB = "..\\..\\..\\Images\\复核\\B";
+	string dirA = "..\\..\\Images\\复核\\A";
+	string dirB = "..\\..\\Images\\复核\\B";
 
 	//实景照片检测到的人脸可能不止一张
 	char feature1[5][8196];

@@ -10,13 +10,6 @@ using namespace std;
 using namespace cv;
 
 namespace{
-	#define DEFAULT_DET_TRACK_CHANNEL() ISCreateDetTrackChannel(46,1000,0);
-	#define DESTROY_DET_TRACK_CHANNEL(x) ISDestroyDetTrackChannel(x);
-	#define DEFAULT_FEATURE_CHANNEL() ISCreateFeatureChannel(0,0,0,0,0);
-	#define DESTROY_FEATURE_CHANNEL(x) ISDestroyFeatureChannel(x);
-	#define DEFAULT_COMPARE_CHANNEL() ISCreateCompareChannel();
-	#define DESTROY_COMPARE_CHANNEL(x) ISDestroyCompareChannel(x);
-
 	void faceDetectRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int outResult[][4],int *outLen)
 	{
 		int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
@@ -31,6 +24,51 @@ namespace{
 		EXPECT_TRUE(SUCC == ISGetFeatureWithFacePosRgb(defaultFeatureChannel, imgData, imgLen, imgWidth, imgHeight, param, 1, outFeature));
 		DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 	}
+
+	char *getFilename(char *p)
+	{
+		char ch = '\\';
+		char *q = strrchr(p, ch) + 1;
+ 
+		return q;
+	}
+}
+
+void imShowWithRect(char *name, Mat image, int outRst[][4], int len)
+{
+	if(len < 1) return;
+
+	for(int i=0; i<len; i++)
+	{
+		Rect rect = Rect(outRst[i][0],outRst[i][1],outRst[i][2]-outRst[i][0]+1,outRst[i][3]-outRst[i][1]+1);
+		rectangle(image, rect, Scalar(0,0,255));
+	}
+
+	imshow(name, image);
+	waitKey();
+}
+
+void imReadAndShow(char *imgPath)
+{
+	int outRst[50][4];
+	int len;
+	Mat image = imread(imgPath);
+
+	faceDetectRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &len);
+
+	imshow(getFilename(imgPath), image);
+	waitKey();
+}
+
+void imReadAndShowWithRect(char *imgPath)
+{
+	int outRst[50][4];
+	int len;
+	Mat image = imread(imgPath);
+
+	faceDetectRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &len);
+
+	imShowWithRect(getFilename(imgPath), image, outRst, len);
 }
 
 void faceDetectPath(char *imgPath,int outResult[][4],int *outLen)

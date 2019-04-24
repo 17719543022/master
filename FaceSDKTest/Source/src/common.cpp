@@ -11,10 +11,10 @@ using namespace cv;
 
 namespace{
 	#define DEFAULT_DET_TRACK_CHANNEL() ISCreateDetTrackChannel(46,1000,0);
-	#define DEFAULT_FEATURE_CHANNEL() ISCreateFeatureChannel(0,0,0,0,0);
-	#define DEFAULT_COMPARE_CHANNEL() ISCreateCompareChannel();
 	#define DESTROY_DET_TRACK_CHANNEL(x) ISDestroyDetTrackChannel(x);
+	#define DEFAULT_FEATURE_CHANNEL() ISCreateFeatureChannel(0,0,0,0,0);
 	#define DESTROY_FEATURE_CHANNEL(x) ISDestroyFeatureChannel(x);
+	#define DEFAULT_COMPARE_CHANNEL() ISCreateCompareChannel();
 	#define DESTROY_COMPARE_CHANNEL(x) ISDestroyCompareChannel(x);
 
 	void faceDetectRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int outResult[][4],int *outLen)
@@ -26,13 +26,21 @@ namespace{
 
 	void getFeatureWithFacePosRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int param[][4], int faceNum, char *outFeature)
 	{
-		int defaultFeatureChannel = ISCreateFeatureChannel(0,0,0,0,0);
-		EXPECT_TRUE(SUCC == ISGetFeatureWithFacePosRgb(defaultFeatureChannel, imgData, imgLen, imgWidth, imgHeight, param, faceNum, outFeature));
+		int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
+		//如果有多张人脸，超出了给outFeature分配的大小，这个地方可能不安全。
+		EXPECT_TRUE(SUCC == ISGetFeatureWithFacePosRgb(defaultFeatureChannel, imgData, imgLen, imgWidth, imgHeight, param, 1, outFeature));
 		DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 	}
 }
 
-void getFeature(char *imgPath, char *outFeature)
+void faceDetectPath(char *imgPath,int outResult[][4],int *outLen)
+{
+	int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
+	EXPECT_TRUE(SUCC == ISFaceDetectPath(defaultDetTrackChannel, imgPath, outResult, outLen));
+	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
+}
+
+int getFeature(const char *imgPath, char *outFeature)
 {
 	int outRst[50][4];
 	int outLength = 0;
@@ -40,35 +48,23 @@ void getFeature(char *imgPath, char *outFeature)
 	Mat image = imread(imgPath, 1);
 
 	faceDetectRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &outLength);
-	if(outLength == 0){
-		ERR_LOG("%s detected no face!\n", imgPath);
-		return;
+	if(outLength < 1){
+		DBG_LOG("%s detect no face!\n", imgPath);
+		return DETECT_NO_FACE;
+	}
+	else if(outLength > 1){
+		DBG_LOG("%s detect more than one face.\n", imgPath);
 	}
 
 	getFeatureWithFacePosRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, outLength, outFeature);
+
+	return SUCC;
 }
 
-//void forFiles(...);
-
-void forFolders(const char *dir,char *idCard,char *live,bool *over)
+void compare(char *feature1, char *feature2, float *outScore)
 {
-	_finddata_t findData;
-
-	intptr_t handle = _findfirst(dir, &findData);
-	EXPECT_TRUE(handle != -1);
-
-	do
-	{
-		if (findData.attrib & _A_SUBDIR
-				&& (strcmp(findData.name, ".") == 0 || strcmp(findData.name, "..") == 0))
-		{
-			continue;
-		}
-		else
-		{
-			cout << findData.name << endl;
-		}
-	} while (_findnext(handle, &findData) == 0);
-
-	_findclose(handle);
+	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
+	ISCompare(defaultCompareChannel, feature1, feature2, outScore);
+	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
 }
+

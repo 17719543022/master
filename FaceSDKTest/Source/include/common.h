@@ -3,8 +3,10 @@
 
 #include "face_sdk.h"
 
-void getFeature(char *imgPath,char *outFeature);
-//void forFiles(...);
-void forFolders(const char *dir,char *idCard,char *live,bool *over);
+void faceDetectPath(char *imgPath,int outResult[][4],int *outLen);
+
+int getFeature(const char *imgPath,char *outFeature);
+
+void compare(char *feature1, char *feature2, float *outScore);
 
 #endif

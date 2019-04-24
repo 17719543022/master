@@ -6,62 +6,106 @@
 
 using namespace std;
 
-TEST(face,shouldIdCardAndLiveBatchCompareSuccess)
+TEST(ftAppliance,personAndIdCardCompareOfOneDirectory)
 {
-	const char dirRoot[200]="..\\..\\..\\Images\\人证1比1\\";
-	char dirToUse[200]="\0";
+	//需要进行人证对比的整个文件夹的路径
+	string dirInput = "..\\..\\..\\Images\\人证1比1";
 
-	//遍历dir目录变量下的所有目录
-	_finddata_t dataDir;
-	strcpy(dirToUse,dirRoot);
-	intptr_t hDir = _findfirst(strcat(dirToUse,"*.*"), &dataDir);
-	EXPECT_TRUE(hDir != -1);
+	_finddata_t tFolder;
+	intptr_t hFolder = _findfirst((dirInput + "\\*.*").data(), &tFolder);
+	EXPECT_TRUE(hFolder != -1);
 
 	do{
-		if (strcmp(dataDir.name, ".") == 0 || strcmp(dataDir.name, "..") == 0)
+		if (strcmp(tFolder.name, ".") == 0 || strcmp(tFolder.name, "..") == 0)
+		{
+			continue;
+		}
+
+		//身份证照片只可能有一张人脸
+		char feature1[8196];
+		//实景照片检测到的人脸可能不止一张
+		char feature2[5][8196];
+
+		if(DETECT_NO_FACE == getFeature((dirInput + "\\" + tFolder.name + "\\idcard.jpg").data(), feature1))
+		{
+			cout<<(dirInput + "\\" + tFolder.name + "\\idcard.jpg").data()<<"No Face"<<endl;
+			continue;
+		}
+		if(DETECT_NO_FACE == getFeature((dirInput + "\\" + tFolder.name + "\\live.jpg").data(), feature2[0]))
+		{
+			cout<<(dirInput + "\\" + tFolder.name + "\\live.jpg").data()<<"No Face"<<endl;
+			continue;
+		}
+
+		float score = 0;
+		compare(feature1, feature2[0], &score);
+
+		//打印测试结果
+		cout << (dirInput + "\\" + tFolder.name + "\\").data() << endl;
+		cout << "\tidcard.jpg + " << "live.jpg" << " = Compare Score: " << score << endl;
+	}
+	while (_findnext(hFolder, &tFolder) == 0);
+
+	_findclose(hFolder);
+}
+
+TEST(ftAppliance,reviewOfTwoSeparateDirectories)
+{
+	string dirA = "..\\..\\..\\Images\\复核\\A";
+	string dirB = "..\\..\\..\\Images\\复核\\B";
+
+	//实景照片检测到的人脸可能不止一张
+	char feature1[5][8196];
+	char feature2[5][8196];
+
+	//遍历A目录下的所有图片
+	_finddata_t tA;
+	intptr_t hA = _findfirst((dirA + "\\*.*").data(), &tA);
+	EXPECT_TRUE(hA != -1);
+
+	do{
+		if (strcmp(tA.name, ".") == 0 || strcmp(tA.name, "..") == 0)
 		{
 			continue;
 		}
 		else
 		{
 			{
-				//遍历dir目录下每个子目录下的所有文件
-				_finddata_t dataFile;
-				cout<<dirRoot;
-				strcpy(dirToUse,dirRoot);
-				intptr_t hFile = _findfirst(strcat(strcat(dirToUse,dataDir.name),"\\*.*"),&dataFile);
-				EXPECT_TRUE(hFile != -1);
-				cout<<dataDir.name<<"\\"<<endl;
+				//对A目录的每张图片同B目录的每张图片做compare运算
+				cout<<(dirA + "\\" + tA.name).data()<<endl;
+				if(DETECT_NO_FACE == getFeature((dirA + "\\" + tA.name).data(),feature1[0]))
+				{
+					continue;
+				}
 
-				char feature1[8196],feature2[8196];
-				strcpy(dirToUse,dirRoot);
-				strcat(strcat(dirToUse,dataDir.name),"\\idcard.jpg");
-				getFeature(dirToUse,feature1);
+				_finddata_t tB;
+				intptr_t hB = _findfirst((dirB + "\\*.*").data(), &tB);
+				EXPECT_TRUE(hB != -1);
 
 				do{
-					if(strcmp(dataFile.name, ".") == 0 || strcmp(dataFile.name, "..") == 0 || strcmp(dataFile.name,"idcard.jpg")==0)
+					if(strcmp(tB.name, ".") == 0 || strcmp(tB.name, "..") == 0)
 					{
 						continue;
 					}
 					else
 					{
-						strcpy(dirToUse,dirRoot);
-						strcat(strcat(strcat(dirToUse,dataDir.name),"\\"),dataFile.name);
-						getFeature(dirToUse,feature2);
+						if(DETECT_NO_FACE == getFeature((dirB + "\\" + tB.name).data(),feature2[0]))
+						{
+							cout<<setw(10)<<setiosflags(ios::left)<<"No Face";
+							continue;
+						}
 
 						float score = 0;
-						int similarityChannelId = ISCreateCompareChannel();
-						ISCompare(similarityChannelId,feature1,feature2,&score);
-						ISDestroyCompareChannel(similarityChannelId);
-
-						cout<<"\tidcard.jpg + "<<dataFile.name<<" = Compare Score: "<<score<<endl;
+						compare(feature1[0], feature2[0], &score);
+						cout<<setw(10)<<setiosflags(ios::left)<<score;
 					}
-				}while(_findnext(hFile,&dataFile)==0);
+				}while(_findnext(hB, &tB)==0);
 
-				_findclose(hFile);
+				_findclose(hB);
+				cout<<endl;
 			}
 		}
-	} while (_findnext(hDir, &dataDir) == 0);
+	} while (_findnext(hA, &tA) == 0);
 
-	_findclose(hDir);
+	_findclose(hA);
 }

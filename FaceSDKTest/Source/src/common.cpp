@@ -9,22 +9,9 @@
 using namespace std;
 using namespace cv;
 
+bool viewSwitch = true;
+
 namespace{
-	void faceDetectRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int outResult[][4],int *outLen)
-	{
-		int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
-		EXPECT_TRUE(SUCC == ISFaceDetectRgb(defaultDetTrackChannel, imgData, imgLen, imgWidth, imgHeight, outResult, outLen));
-		DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
-	}
-
-	void getFeatureWithFacePosRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int param[][4], int faceNum, char *outFeature)
-	{
-		int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
-		//如果有多张人脸，超出了给outFeature分配的大小，这个地方可能不安全。
-		EXPECT_TRUE(SUCC == ISGetFeatureWithFacePosRgb(defaultFeatureChannel, imgData, imgLen, imgWidth, imgHeight, param, 1, outFeature));
-		DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
-	}
-
 	char *getFilename(char *p)
 	{
 		char ch = '\\';
@@ -32,6 +19,29 @@ namespace{
  
 		return q;
 	}
+
+	void getFeatureWithFacePosRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int param[][4], int faceNum, char *outFeature)
+	{
+		int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
+		//如果有多张人脸，超出了给outFeature分配的大小，这个地方可能不安全。
+		EXPECT_TRUE(SUCC == ISGetFeatureWithFacePosRgb(defaultFeatureChannel, imgData, imgLen, imgWidth, imgHeight, param, faceNum, outFeature));
+		DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
+	}
+}
+
+void switchShow(char *name, Mat image)
+{
+	if(viewSwitch)
+	{
+		imshow(name, image);
+	}
+}
+
+void faceDetectRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int outResult[][4],int *outLen)
+{
+	int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
+	EXPECT_TRUE(SUCC == ISFaceDetectRgb(defaultDetTrackChannel, imgData, imgLen, imgWidth, imgHeight, outResult, outLen));
+	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 }
 
 void imShowWithRect(char *name, Mat image, int outRst[][4], int len)
@@ -44,7 +54,7 @@ void imShowWithRect(char *name, Mat image, int outRst[][4], int len)
 		rectangle(image, rect, Scalar(0,0,255));
 	}
 
-	imshow(name, image);
+	switchShow(name, image);
 	waitKey();
 }
 
@@ -56,7 +66,7 @@ void imReadAndShow(char *imgPath)
 
 	faceDetectRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &len);
 
-	imshow(getFilename(imgPath), image);
+	switchShow(getFilename(imgPath), image);
 	waitKey();
 }
 
@@ -78,25 +88,42 @@ void faceDetectPath(char *imgPath,int outResult[][4],int *outLen)
 	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 }
 
-int getFeature(const char *imgPath, char *outFeature)
+int getFeatureWithFacePosRgb(const char *imgPath, char *outFeature, int outResult[][4], int *outLen)
 {
-	int outRst[50][4];
-	int outLength = 0;
-
+	int rst[50][4];
+	int len = 0;
 	Mat image = imread(imgPath, 1);
 
-	faceDetectRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &outLength);
-	if(outLength < 1){
-		DBG_LOG("%s detect no face!\n", imgPath);
+	faceDetectRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, rst, &len);
+	DBG_LOG("%s detect %d face!\n", imgPath, len);
+	
+	if(outLen != NULL){
+		*outLen = len;
+	}
+	if(outResult != NULL){
+		memcpy(outResult, rst, len);
+	}
+
+	if(len < 1){
 		return DETECT_NO_FACE;
 	}
-	else if(outLength > 1){
-		DBG_LOG("%s detect more than one face.\n", imgPath);
-	}
 
-	getFeatureWithFacePosRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, outLength, outFeature);
-
+	getFeatureWithFacePosRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, rst, len, outFeature);
 	return SUCC;
+}
+
+void getFeatureRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, char *outFeature, float KPtScore)
+{
+	int featureChannelId2 = DEFAULT_FEATURE_CHANNEL();
+	EXPECT_TRUE(SUCC == ISGetFeatureRgb(featureChannelId2, imgData, imgLen, imgWidth, imgHeight, outFeature, KPtScore));
+	DESTROY_FEATURE_CHANNEL(featureChannelId2);
+}
+
+void getPcaFea(char* fea_Org,char* fea_Pca)
+{
+	int featureChannelId = DEFAULT_FEATURE_CHANNEL();
+	EXPECT_TRUE(SUCC == ISGetPcaFea(featureChannelId, fea_Org, fea_Pca));
+	DESTROY_FEATURE_CHANNEL(featureChannelId);
 }
 
 void compare(char *feature1, char *feature2, float *outScore)
@@ -106,3 +133,9 @@ void compare(char *feature1, char *feature2, float *outScore)
 	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
 }
 
+void compareMN(char **featureM, int numM, char **featureN, int numN, float **outScore)
+{
+	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
+	EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, featureM, numM, featureN, numN, outScore));
+	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
+}

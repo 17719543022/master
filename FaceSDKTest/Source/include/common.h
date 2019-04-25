@@ -16,11 +16,16 @@ using namespace cv;
 void imShowWithRect(char *name, Mat img, int outRst[][4], int len);
 void imReadAndShow(char *imgPath);
 void imReadAndShowWithRect(char *imgPath);
+void switchShow(char *name, Mat image);
 
 void faceDetectPath(char *imgPath, int outResult[][4], int *outLen);
+void faceDetectRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int outResult[][4],int *outLen);
 
-int getFeature(const char *imgPath,char *outFeature);
+int getFeatureWithFacePosRgb(const char *imgPath, char *outFeature, int outResult[][4] = NULL, int *outLen = NULL);
+void getFeatureRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, char *outFeature, float KPtScore=0.5);
+void getPcaFea(char* fea_Org,char* fea_Pca);
 
 void compare(char *feature1, char *feature2, float *outScore);
+void compareMN(char **featureM, int numM, char **featureN, int numN, float **outScore);
 
 #endif

@@ -22,16 +22,16 @@ TEST(ftAppliance,personAndIdCardCompareOfOneDirectory)
 		}
 
 		//身份证照片只可能有一张人脸
-		char feature1[8196];
+		char feature1[8192];
 		//实景照片检测到的人脸可能不止一张
-		char feature2[5][8196];
+		char feature2[5][8192];
 
-		if(DETECT_NO_FACE == getFeature((dirInput + "\\" + tFolder.name + "\\idcard.jpg").data(), feature1))
+		if(DETECT_NO_FACE == getFeatureWithFacePosRgb((dirInput + "\\" + tFolder.name + "\\idcard.jpg").data(), feature1))
 		{
 			cout<<(dirInput + "\\" + tFolder.name + "\\idcard.jpg").data()<<"No Face"<<endl;
 			continue;
 		}
-		if(DETECT_NO_FACE == getFeature((dirInput + "\\" + tFolder.name + "\\live.jpg").data(), feature2[0]))
+		if(DETECT_NO_FACE == getFeatureWithFacePosRgb((dirInput + "\\" + tFolder.name + "\\live.jpg").data(), feature2[0]))
 		{
 			cout<<(dirInput + "\\" + tFolder.name + "\\live.jpg").data()<<"No Face"<<endl;
 			continue;
@@ -55,8 +55,8 @@ TEST(ftAppliance,reviewOfTwoSeparateDirectories)
 	string dirB = "..\\..\\Images\\复核\\B";
 
 	//实景照片检测到的人脸可能不止一张
-	char feature1[5][8196];
-	char feature2[5][8196];
+	char feature1[5][8192];
+	char feature2[5][8192];
 
 	//遍历A目录下的所有图片
 	_finddata_t tA;
@@ -73,7 +73,7 @@ TEST(ftAppliance,reviewOfTwoSeparateDirectories)
 			{
 				//对A目录的每张图片同B目录的每张图片做compare运算
 				cout<<(dirA + "\\" + tA.name).data()<<endl;
-				if(DETECT_NO_FACE == getFeature((dirA + "\\" + tA.name).data(),feature1[0]))
+				if(DETECT_NO_FACE == getFeatureWithFacePosRgb((dirA + "\\" + tA.name).data(),feature1[0]))
 				{
 					continue;
 				}
@@ -89,7 +89,7 @@ TEST(ftAppliance,reviewOfTwoSeparateDirectories)
 					}
 					else
 					{
-						if(DETECT_NO_FACE == getFeature((dirB + "\\" + tB.name).data(),feature2[0]))
+						if(DETECT_NO_FACE == getFeatureWithFacePosRgb((dirB + "\\" + tB.name).data(),feature2[0]))
 						{
 							cout<<setw(10)<<setiosflags(ios::left)<<"No Face";
 							continue;

@@ -3,7 +3,7 @@
 
 bool logSwitch = false;
 
-int printfWrapper(const char* format, ...)
+int switchPrintf(const char* format, ...)
 {
 	return 0;
 }

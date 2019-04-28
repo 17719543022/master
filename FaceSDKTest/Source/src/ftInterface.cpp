@@ -26,53 +26,57 @@ TEST(ftInterface, theGivenPictureHasMoreThan15FacesBeDetected)
 	EXPECT_TRUE(len >= 15);
 }
 
-TEST(ftInterface, drawsTheMostKptScoreFace)
+TEST(ftInterface, whatFaceReturnsEarlierInOutResultAndWhatLater)
 {
 	char *imgPath = "..\\..\\Images\\beauty.jpg";
 	int len = 0;
 	int outResult[50][4] = {0};
 	Mat image = imread(imgPath);
 
-	char outFeature2[8192];
-	getFeatureRgb((char *)image.data, image.rows*image.cols*3, image.cols, image.rows, outFeature2);
-
 	char outFeature1[50][8192];
 	getFeatureWithFacePosRgb(imgPath, outFeature1[0], outResult, &len);
 
-	int numM = len;
-	int numN = 1;
-	char **featureM = new char*[numM];
-	char **featureN = new char*[numN];
-	float **outScoreMN = new float*[numN];
-	for(int i=0;i<numN;i++)
-	{
-		outScoreMN[i] = new float[numM];
-	}
-	for(int m=0; m<numM; m++)
-	{
-		featureM[m] = outFeature1[m];
-		getPcaFea(featureM[m], featureM[m]);
-	}
-	featureN[0] = outFeature2;
-	getPcaFea(featureN[0],featureN[0]);
+	imShowWithRect("beauty.jpg", image, outResult, len);
+}
 
-	compareMN(featureN, numN, featureM, numM, outScoreMN);
+TEST(ftInterface, convolutionOfAllFacesInOnePicture)
+{
+	char *imgPath = "..\\..\\Images\\beauty.jpg";
+	int len = 0;
+	int outResult[50][4] = {0};
+	Mat image = imread(imgPath);
 
-	cout<<"M:N"<<endl;
-	for(int i=0;i<numN;i++)
+	char outFeature[50][8192];
+	getFeatureWithFacePosRgb(imgPath, outFeature[0], outResult, &len);
+
+	char **featureM;
+	ALLOC_DOUBLE_STAR(len, 8192, char, featureM, M)
+	for(int i=0; i<len; i++)
 	{
-		for(int j=0;j<numM;j++)
+		featureM[i] = outFeature[i];
+		getPcaFea(featureM[0],featureM[0]);
+	}
+
+	char **featureN;
+	ALLOC_DOUBLE_STAR(len, 8192, char, featureN, N)
+	for(int i=0; i<len; i++)
+	{
+		featureN[i] = outFeature[i];
+		getPcaFea(featureN[i], featureN[i]);
+	}
+
+	float **outScoreMN;
+	ALLOC_DOUBLE_STAR(len, len, float, outScoreMN, S)
+	compareMN(featureM, len, featureN, len, outScoreMN);
+
+	for(int i=0; i<len; i++)
+	{
+		for(int j=0;j<len;j++)
 		{
-			cout<<outScoreMN[i][j]<<" ";
+			cout << setw(10) << setiosflags(ios::left) << outScoreMN[i][j];
 		}
 		cout<<endl;
 	}
-
-	Rect rect = Rect(outResult[0][0],outResult[0][1],outResult[0][2]-outResult[0][0]+1,outResult[0][3]-outResult[0][1]+1);
-	rectangle(image, rect, Scalar(0,0,255));
-
-	switchShow("beauty.jpg", image);
-	waitKey();
 }
 
 TEST(ftInterface, gotFeatureLengthBeCorrect)

@@ -3,6 +3,7 @@
 
 #include "face_sdk.h"
 #include "opencv.hpp"
+#include <vector>
 
 using namespace cv;
 
@@ -12,6 +13,20 @@ using namespace cv;
 #define DESTROY_FEATURE_CHANNEL(x) ISDestroyFeatureChannel(x);
 #define DEFAULT_COMPARE_CHANNEL() ISCreateCompareChannel();
 #define DESTROY_COMPARE_CHANNEL(x) ISDestroyCompareChannel(x);
+
+#define ALLOC_DOUBLE_STAR(m, n, type, star, tag) \
+	vector<type*> target##tag(m);\
+	vector<type> vec1##tag(n);\
+	vector<vector<type>> vec2##tag;\
+	for(int i=0; i<m; i++)\
+	{\
+		vec2##tag.push_back(vec1##tag);\
+	}\
+	for(int i=0; i<m; i++)\
+	{\
+		target##tag[i] = &*vec2##tag[i].begin();\
+	}\
+	star = target##tag.data();
 
 void imShowWithRect(char *name, Mat img, int outRst[][4], int len);
 void imReadAndShow(char *imgPath);

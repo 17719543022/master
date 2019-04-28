@@ -51,11 +51,13 @@ void imShowWithRect(char *name, Mat image, int outRst[][4], int len)
 	for(int i=0; i<len; i++)
 	{
 		Rect rect = Rect(outRst[i][0],outRst[i][1],outRst[i][2]-outRst[i][0]+1,outRst[i][3]-outRst[i][1]+1);
-		rectangle(image, rect, Scalar(0,0,255));
-	}
+		rectangle(image, rect, Scalar(0,0,255), 2);
 
-	switchShow(name, image);
-	waitKey();
+		switchShow(name, image);
+		waitKey(1000);
+	}
+	waitKey(3000);
+	destroyAllWindows();
 }
 
 void imReadAndShow(char *imgPath)
@@ -95,13 +97,14 @@ int getFeatureWithFacePosRgb(const char *imgPath, char *outFeature, int outResul
 	Mat image = imread(imgPath, 1);
 
 	faceDetectRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, rst, &len);
+
 	DBG_LOG("%s detect %d face!\n", imgPath, len);
 	
 	if(outLen != NULL){
 		*outLen = len;
 	}
 	if(outResult != NULL){
-		memcpy(outResult, rst, len);
+		memcpy(outResult, rst, len*4*4);
 	}
 
 	if(len < 1){

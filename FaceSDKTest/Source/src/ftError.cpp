@@ -12,7 +12,7 @@ TEST(ftError, inputImagesWithATooSmallSize)
 {
 	int outRst[50][4];
 	int outLength;
-	Mat image = imread("..//..//Images//ERROR//501.jpg");
+	Mat image = imread("..\\..\\Images\\ERROR\\501.jpg");
 	
 	int detChannelId = DEFAULT_DET_TRACK_CHANNEL();
 	EXPECT_TRUE(IMG_SIZE_TOO_SMALL == ISFaceDetectRgb(detChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &outLength));
@@ -23,7 +23,7 @@ TEST(ftError, inputImagesCanNotBeFound)
 {
 	int outRst[50][4];
 	int outLength;
-	Mat image = imread("..//..//Images//ERROR//50x.jpg");
+	Mat image = imread("..\\..\\Images\\ERROR\\50x.jpg");
 	
 	int detChannelId = DEFAULT_DET_TRACK_CHANNEL();
 	EXPECT_TRUE(IMG_DATA_ERROR == ISFaceDetectRgb(detChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &outLength));
@@ -34,7 +34,7 @@ TEST(ftError, detectWithOutCreatingDectectChannel)
 {
 	int outRst[50][4];
 	int outLength;
-	Mat image = imread("..//..//Images//ERROR//50x.jpg");
+	Mat image = imread("..\\..\\Images\\ERROR\\50x.jpg");
 	
 	EXPECT_TRUE(UNKNOWN_ERROR == ISFaceDetectRgb(0, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &outLength));
 }
@@ -43,13 +43,23 @@ TEST(ftError, inputImagesDetectedNoFace)
 {
 	int outRst[50][4];
 	int outLength;
-	Mat image = imread("..//..//Images//ERROR//502.jpg");
+	Mat image = imread("..\\..\\Images\\ERROR\\502.jpg");
 	
-	imReadAndShowWithRect("..//..//Images//ERROR//502.jpg");
+	imReadAndShowWithRect("..\\..\\Images\\ERROR\\502.jpg");
 
 	int detChannelId = DEFAULT_DET_TRACK_CHANNEL();
 	//检测不到人脸的时候应该返回DETECT_NO_FACE，实际返回SUCC？
 	EXPECT_TRUE(SUCC == ISFaceDetectRgb(detChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &outLength));
 	EXPECT_TRUE(0 == outLength);
 	DESTROY_DET_TRACK_CHANNEL(detChannelId);
+}
+
+TEST(ftError, inputImagesGetNoFeature)
+{
+	Mat image = imread("..\\..\\Images\\ERROR\\502.jpg");
+
+	vector<char> vec(8192);
+	int defaultFeatureChannelId = PREDICT_FEATURE_CHANNEL();
+	EXPECT_TRUE(DETECT_NO_FACE == ISGetFeatureRgb(defaultFeatureChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, vec.data()));
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
 }

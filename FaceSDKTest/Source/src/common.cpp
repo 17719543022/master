@@ -54,7 +54,12 @@ void calFaceInfoRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int 
 
 void imShowWithRect(char *name, Mat image, int outRst[][4], int len, int thickness, int delay)
 {
-	if(len < 1) return;
+	if(len < 1) 
+	{
+		switchShow(name, image);
+		waitKey(3000);
+		return;
+	}
 
 	for(int i=0; i<len; i++)
 	{
@@ -104,8 +109,6 @@ int getFeatureWithFacePosRgb(const char *imgPath, char *outFeature, int outRst[]
 
 	faceDetectRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, rst, &len);
 
-	DBG_LOG("%s detect %d face!\n", imgPath, len);
-	
 	if(outLen != NULL){
 		*outLen = len;
 	}
@@ -115,6 +118,10 @@ int getFeatureWithFacePosRgb(const char *imgPath, char *outFeature, int outRst[]
 
 	if(len < 1){
 		return DETECT_NO_FACE;
+	}
+	if(len != 1)
+	{
+		DBG_LOG("%s detect %d face!\n", imgPath, len);
 	}
 
 	getFeatureWithFacePosRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, rst, len, outFeature);

@@ -4,6 +4,7 @@
 #include "sdk_error_code.h"
 #include "log_format.h"
 #include <fstream>
+#include "timer.h"
 
 using namespace std;
 
@@ -211,7 +212,8 @@ TEST(ftAppliance, camera)
 	VideoCapture cap = VideoCapture(0);
 	Mat img;
 	char tempStr[64];
-	while(true)
+
+	while(!isTimeOut(300))
 	{
 		cap >> img;
 		if(!img.data)

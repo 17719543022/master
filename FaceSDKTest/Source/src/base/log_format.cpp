@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "log_format.h"
 
-bool logSwitch = false;
+bool logSwitch = true;
 
 int switchPrintf(const char* format, ...)
 {

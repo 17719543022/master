@@ -30,6 +30,15 @@ TEST(ftError, inputImagesCanNotBeFound)
 	DESTROY_DET_TRACK_CHANNEL(detChannelId);
 }
 
+TEST(ftError, detectWithOutCreatingDectectChannel)
+{
+	int outRst[50][4];
+	int outLength;
+	Mat image = imread("..//..//Images//ERROR//50x.jpg");
+	
+	EXPECT_TRUE(UNKNOWN_ERROR == ISFaceDetectRgb(0, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &outLength));
+}
+
 TEST(ftError, inputImagesDetectedNoFace)
 {
 	int outRst[50][4];

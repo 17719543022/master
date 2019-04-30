@@ -37,27 +37,33 @@ void switchShow(char *name, Mat image)
 	}
 }
 
-void faceDetectRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int outResult[][4],int *outLen)
+void faceDetectRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int outRst[][4], int *outLen)
 {
 	int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
-	EXPECT_TRUE(SUCC == ISFaceDetectRgb(defaultDetTrackChannel, imgData, imgLen, imgWidth, imgHeight, outResult, outLen));
+	EXPECT_TRUE(SUCC == ISFaceDetectRgb(defaultDetTrackChannel, imgData, imgLen, imgWidth, imgHeight, outRst, outLen));
 	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 }
 
-void imShowWithRect(char *name, Mat image, int outRst[][4], int len)
+void calFaceInfoRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int outRst[][4], int *outLen, int keyPoint[][6], float angle[][3], float kScore[])
+{
+	int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
+	int nRet = ISFaceDetectRgb(defaultDetTrackChannel, imgData, imgLen, imgWidth, imgHeight, outRst, outLen);
+	int ret = ISCalFaceInfoRgb(defaultDetTrackChannel, imgData, imgLen, imgWidth, imgHeight, outRst, *outLen, keyPoint, angle, kScore);
+	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
+}
+
+void imShowWithRect(char *name, Mat image, int outRst[][4], int len, int thickness, int delay)
 {
 	if(len < 1) return;
 
 	for(int i=0; i<len; i++)
 	{
 		Rect rect = Rect(outRst[i][0],outRst[i][1],outRst[i][2]-outRst[i][0]+1,outRst[i][3]-outRst[i][1]+1);
-		rectangle(image, rect, Scalar(0,0,255), 2);
+		rectangle(image, rect, Scalar(0,0,255), thickness);
 
 		switchShow(name, image);
-		waitKey(1000);
+		waitKey(delay);
 	}
-	waitKey(3000);
-	destroyAllWindows();
 }
 
 void imReadAndShow(char *imgPath)
@@ -72,7 +78,7 @@ void imReadAndShow(char *imgPath)
 	waitKey();
 }
 
-void imReadAndShowWithRect(char *imgPath)
+void imReadAndShowWithRect(char *imgPath, int thickness, int delay)
 {
 	int outRst[50][4];
 	int len;
@@ -80,17 +86,17 @@ void imReadAndShowWithRect(char *imgPath)
 
 	faceDetectRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &len);
 
-	imShowWithRect(getFilename(imgPath), image, outRst, len);
+	imShowWithRect(getFilename(imgPath), image, outRst, len, thickness, delay);
 }
 
-void faceDetectPath(char *imgPath,int outResult[][4],int *outLen)
+void faceDetectPath(char *imgPath,int outRst[][4],int *outLen)
 {
 	int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
-	EXPECT_TRUE(SUCC == ISFaceDetectPath(defaultDetTrackChannel, imgPath, outResult, outLen));
+	EXPECT_TRUE(SUCC == ISFaceDetectPath(defaultDetTrackChannel, imgPath, outRst, outLen));
 	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 }
 
-int getFeatureWithFacePosRgb(const char *imgPath, char *outFeature, int outResult[][4], int *outLen)
+int getFeatureWithFacePosRgb(const char *imgPath, char *outFeature, int outRst[][4], int *outLen)
 {
 	int rst[50][4];
 	int len = 0;
@@ -103,8 +109,8 @@ int getFeatureWithFacePosRgb(const char *imgPath, char *outFeature, int outResul
 	if(outLen != NULL){
 		*outLen = len;
 	}
-	if(outResult != NULL){
-		memcpy(outResult, rst, len*4*4);
+	if(outRst != NULL){
+		memcpy(outRst, rst, len*4*4);
 	}
 
 	if(len < 1){
@@ -117,16 +123,39 @@ int getFeatureWithFacePosRgb(const char *imgPath, char *outFeature, int outResul
 
 void getFeatureRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, char *outFeature, float KPtScore)
 {
-	int featureChannelId2 = DEFAULT_FEATURE_CHANNEL();
-	EXPECT_TRUE(SUCC == ISGetFeatureRgb(featureChannelId2, imgData, imgLen, imgWidth, imgHeight, outFeature, KPtScore));
-	DESTROY_FEATURE_CHANNEL(featureChannelId2);
+	int defaultFeatureChannelId = DEFAULT_FEATURE_CHANNEL();
+	EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannelId, imgData, imgLen, imgWidth, imgHeight, outFeature, KPtScore));
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
 }
 
 void getPcaFea(char* fea_Org,char* fea_Pca)
 {
-	int featureChannelId = DEFAULT_FEATURE_CHANNEL();
-	EXPECT_TRUE(SUCC == ISGetPcaFea(featureChannelId, fea_Org, fea_Pca));
-	DESTROY_FEATURE_CHANNEL(featureChannelId);
+	int defaultFeatureChannelId = DEFAULT_FEATURE_CHANNEL();
+	EXPECT_TRUE(SUCC == ISGetPcaFea(defaultFeatureChannelId, fea_Org, fea_Pca));
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
+}
+
+void getFeatureAndPredict(char *imgData
+						  , int imgLen
+						  , int imgWidth
+						  , int imgHeight
+						  , char *expression
+						  , char *glasses
+						  , char *smile
+						  , float *age
+						  , char *gender
+						  , float *beauty
+						  , float kScore)
+{
+	vector<char> vec(8192);
+	int defaultFeatureChannelId = PREDICT_FEATURE_CHANNEL();
+	EXPECT_TRUE_EX(ISGetFeatureRgb(defaultFeatureChannelId, imgData, imgLen, imgWidth, imgHeight, vec.data()));
+	EXPECT_TRUE_EX(ISpredictExpression(defaultFeatureChannelId, vec.data(), expression));
+	EXPECT_TRUE_EX(ISpredictGlasses(defaultFeatureChannelId, vec.data(), glasses));
+	EXPECT_TRUE_EX(ISpredictSmile(defaultFeatureChannelId, vec.data(), smile));
+	EXPECT_TRUE_EX(ISpredictAgeGender(defaultFeatureChannelId, vec.data(), age, gender));
+	EXPECT_TRUE_EX(ISpredictBeauty(defaultFeatureChannelId, vec.data(), beauty));
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
 }
 
 void compare(char *feature1, char *feature2, float *outScore)
@@ -140,5 +169,13 @@ void compareMN(char **featureM, int numM, char **featureN, int numN, float **out
 {
 	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
 	EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, featureM, numM, featureN, numN, outScore));
+	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
+}
+
+void compareMNfaster(char **featureM, int numM, char **featureN, int numN, float **outScore)
+{
+	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
+	EXPECT_TRUE(SUCC == ISCompareMNfasterprep(defaultCompareChannel, featureM, numM));
+	EXPECT_TRUE(SUCC == ISCompareMNfaster(defaultCompareChannel, featureN, numN, outScore));
 	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
 }

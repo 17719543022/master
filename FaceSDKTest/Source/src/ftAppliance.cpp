@@ -214,7 +214,6 @@ TEST(ftAppliance, camera)
 
 	while(!isTimeOut(300))
 	{
-		cout << "enter while loop." << endl;
 		cap >> img;
 		if(!img.data)
 		{
@@ -240,7 +239,7 @@ TEST(ftAppliance, camera)
 		float beauty;
 		char glasses[20];
 		char smile[20];
-		char expression[20];
+		char expression[100];
 		float age;
 		char gender[10];
 
@@ -254,7 +253,6 @@ TEST(ftAppliance, camera)
 							, &age
 							, gender
 							, &beauty);
-		cout << "getFeatureAndPredict invoke succ." << endl;
 
 		/*
 		 * 注意把这些putText放在最后执行，

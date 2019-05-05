@@ -156,11 +156,8 @@ void getFeatureAndPredict(char *imgData
 {
 	vector<char> vec(8192);
 	int defaultFeatureChannelId = PREDICT_FEATURE_CHANNEL();
-	cout << "defaultFeatureChannelId create succ." << endl;
 	EXPECT_TRUE_EX(ISGetFeatureRgb(defaultFeatureChannelId, imgData, imgLen, imgWidth, imgHeight, vec.data()));
-	cout << "ISGetFeatureRgb invoke succ." << endl;
 	EXPECT_TRUE_EX(ISpredictExpression(defaultFeatureChannelId, vec.data(), expression));
-	cout << "ISpredictExpression invoke succ." << endl;
 	EXPECT_TRUE_EX(ISpredictGlasses(defaultFeatureChannelId, vec.data(), glasses));
 	EXPECT_TRUE_EX(ISpredictSmile(defaultFeatureChannelId, vec.data(), smile));
 	EXPECT_TRUE_EX(ISpredictAgeGender(defaultFeatureChannelId, vec.data(), age, gender));

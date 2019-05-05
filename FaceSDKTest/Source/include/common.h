@@ -29,9 +29,9 @@ using namespace cv;
 	}\
 	star = target##tag.data();
 
-void imShowWithRect(char *name, Mat img, int outRst[][4], int len, int thickness = 2, int delay = 1000);
+void imCommonShow(char *name, Mat img, int outRst[][4], int len, int thickness = 2, int delay = 1000);
 void imReadAndShow(char *imgPath);
-void imReadAndShowWithRect(char *imgPath, int thickness = 2, int delay = 1000);
+void imCommonReadAndShow(char *imgPath, int thickness = 2, int delay = 1000);
 void switchShow(char *name, Mat image);
 
 void faceDetectPath(char *imgPath, int outRst[][4], int *outLen);

@@ -52,7 +52,7 @@ void calFaceInfoRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int 
 	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 }
 
-void imShowWithRect(char *name, Mat image, int outRst[][4], int len, int thickness, int delay)
+void imCommonShow(char *name, Mat image, int outRst[][4], int len, int thickness, int delay)
 {
 	if(len < 1) 
 	{
@@ -83,7 +83,7 @@ void imReadAndShow(char *imgPath)
 	waitKey();
 }
 
-void imReadAndShowWithRect(char *imgPath, int thickness, int delay)
+void imCommonReadAndShow(char *imgPath, int thickness, int delay)
 {
 	int outRst[50][4];
 	int len;
@@ -91,7 +91,7 @@ void imReadAndShowWithRect(char *imgPath, int thickness, int delay)
 
 	faceDetectRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &len);
 
-	imShowWithRect(getFilename(imgPath), image, outRst, len, thickness, delay);
+	imCommonShow(getFilename(imgPath), image, outRst, len, thickness, delay);
 }
 
 void faceDetectPath(char *imgPath,int outRst[][4],int *outLen)
@@ -156,8 +156,11 @@ void getFeatureAndPredict(char *imgData
 {
 	vector<char> vec(8192);
 	int defaultFeatureChannelId = PREDICT_FEATURE_CHANNEL();
+	cout << "defaultFeatureChannelId create succ." << endl;
 	EXPECT_TRUE_EX(ISGetFeatureRgb(defaultFeatureChannelId, imgData, imgLen, imgWidth, imgHeight, vec.data()));
+	cout << "ISGetFeatureRgb invoke succ." << endl;
 	EXPECT_TRUE_EX(ISpredictExpression(defaultFeatureChannelId, vec.data(), expression));
+	cout << "ISpredictExpression invoke succ." << endl;
 	EXPECT_TRUE_EX(ISpredictGlasses(defaultFeatureChannelId, vec.data(), glasses));
 	EXPECT_TRUE_EX(ISpredictSmile(defaultFeatureChannelId, vec.data(), smile));
 	EXPECT_TRUE_EX(ISpredictAgeGender(defaultFeatureChannelId, vec.data(), age, gender));

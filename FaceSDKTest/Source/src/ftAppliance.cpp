@@ -3,7 +3,6 @@
 #include "common.h"
 #include "sdk_error_code.h"
 #include "log_format.h"
-#include <fstream>
 #include "timer.h"
 
 using namespace std;
@@ -122,7 +121,7 @@ TEST(ftAppliance, whatFaceReturnsEarlierInOutResultAndWhatLater)
 	char outFeature1[50][8192];
 	getFeatureWithFacePosRgb(imgPath, outFeature1[0], outRst, &len);
 
-	imShowWithRect("beauty.jpg", image, outRst, len);
+	imCommonShow("beauty.jpg", image, outRst, len);
 	waitKey(3000);
 	destroyAllWindows();
 }
@@ -215,6 +214,7 @@ TEST(ftAppliance, camera)
 
 	while(!isTimeOut(300))
 	{
+		cout << "enter while loop." << endl;
 		cap >> img;
 		if(!img.data)
 		{
@@ -237,22 +237,13 @@ TEST(ftAppliance, camera)
 						, angle
 						, kScore);
 
-		sprintf_s(tempStr, "Angle: %.3f %.3f %.3f", angle[0][0], angle[0][1], angle[0][2]);
-		putText(img, tempStr, cvPoint(10, 160), CV_FONT_HERSHEY_COMPLEX, 1.0, cvScalar(0, 0, 255));
-		sprintf_s(tempStr, "kScore: %.3f", kScore[0]);
-		putText(img, tempStr, cvPoint(10, 200), CV_FONT_HERSHEY_COMPLEX, 1.0, cvScalar(0, 0, 255));
-
-		for (int i = 0; i < 3; i++)
-		{
-			circle(img, Point(cvRound(keyPoint[0][2*i]), cvRound(keyPoint[0][2*i+1])), 35, Scalar(0, 0, 255));
-		}
-
 		float beauty;
 		char glasses[20];
 		char smile[20];
 		char expression[20];
 		float age;
 		char gender[10];
+
 		getFeatureAndPredict((char *)img.data
 							, img.rows*img.cols*3
 							, img.cols
@@ -263,6 +254,21 @@ TEST(ftAppliance, camera)
 							, &age
 							, gender
 							, &beauty);
+		cout << "getFeatureAndPredict invoke succ." << endl;
+
+		/*
+		 * 注意把这些putText放在最后执行，
+		 * 否则，可能image被污染了之后还在进行提取特征等操作。
+		 */
+		sprintf_s(tempStr, "Angle: %.3f %.3f %.3f", angle[0][0], angle[0][1], angle[0][2]);
+		putText(img, tempStr, cvPoint(10, 160), CV_FONT_HERSHEY_COMPLEX, 1.0, cvScalar(0, 0, 255));
+		sprintf_s(tempStr, "kScore: %.3f", kScore[0]);
+		putText(img, tempStr, cvPoint(10, 200), CV_FONT_HERSHEY_COMPLEX, 1.0, cvScalar(0, 0, 255));
+
+		for (int i = 0; i < 3; i++)
+		{
+			circle(img, Point(cvRound(keyPoint[0][2*i]), cvRound(keyPoint[0][2*i+1])), 35, Scalar(0, 0, 255));
+		}
 
 		sprintf_s(tempStr,"%d %s %.3f", (int)age, gender, beauty);
 		putText(img, tempStr, cvPoint(outRst[0][0], outRst[0][1]), CV_FONT_HERSHEY_COMPLEX, 1.0, cvScalar(0, 0, 255));
@@ -270,7 +276,7 @@ TEST(ftAppliance, camera)
 		putText(img, smile, cvPoint(10, 80), CV_FONT_HERSHEY_COMPLEX, 1.0, cvScalar(0, 0, 255));
 		putText(img, expression, cvPoint(10, 120), CV_FONT_HERSHEY_COMPLEX, 1.0, cvScalar(0, 0, 255));
 
-		imShowWithRect("Tracking", img, outRst, outLen, 1, 500);
+		imCommonShow("Tracking", img, outRst, outLen, 1, 500);
 	}
 }
 #if 0

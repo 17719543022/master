@@ -4,50 +4,44 @@
 #include "sdk_error_code.h"
 #include "log_format.h"
 #include "timer.h"
-
+#include <string>
+#include "listOut.h"
 using namespace std;
 
 TEST(ftAppliance, personAndIdCardCompareOfOneDirectory)
 {
-	//需要进行人证对比的整个文件夹的路径
-	string dirInput = "..\\..\\Images\\人证1比1";
+	string dir = "..\\..\\Images\\人证1比1";
+	string idcard = "idcard.jpg";
+	string live = "live.jpg";
+	vector<string> listCard;
+	vector<string> listLive;
 
-	_finddata_t tFolder;
-	intptr_t hFolder = _findfirst((dirInput + "\\*.*").data(), &tFolder);
-	EXPECT_TRUE(hFolder != -1);
+	listOutSubdirectoryFiles(dir, idcard, listCard);
+	listOutSubdirectoryFiles(dir, live, listLive);
 
-	do{
-		if (strcmp(tFolder.name, ".") == 0 || strcmp(tFolder.name, "..") == 0)
+	//身份证照片只可能有一张人脸
+	char featureCard[8192];
+	//实景照片检测到的人脸可能不止一张
+	char featureLive[5][8192];
+	float score = 0;
+
+	for(unsigned int i=0; i<listCard.size(); i++){
+		if(DETECT_NO_FACE == getFeatureWithFacePosRgb(listCard[i].data(), featureCard))
 		{
+			cout<<listCard[i].data()<<"No Face"<<endl;
+			continue;
+		}
+		if(DETECT_NO_FACE == getFeatureWithFacePosRgb(listLive[i].data(), featureLive[0]))
+		{
+			cout<<listLive[i].data()<<"No Face"<<endl;
 			continue;
 		}
 
-		//身份证照片只可能有一张人脸
-		char feature1[8192];
-		//实景照片检测到的人脸可能不止一张
-		char feature2[5][8192];
-
-		if(DETECT_NO_FACE == getFeatureWithFacePosRgb((dirInput + "\\" + tFolder.name + "\\idcard.jpg").data(), feature1))
-		{
-			cout<<(dirInput + "\\" + tFolder.name + "\\idcard.jpg").data()<<"No Face"<<endl;
-			continue;
-		}
-		if(DETECT_NO_FACE == getFeatureWithFacePosRgb((dirInput + "\\" + tFolder.name + "\\live.jpg").data(), feature2[0]))
-		{
-			cout<<(dirInput + "\\" + tFolder.name + "\\live.jpg").data()<<"No Face"<<endl;
-			continue;
-		}
-
-		float score = 0;
-		compare(feature1, feature2[0], &score);
+		compare(featureCard, featureLive[0], &score);
 
 		//打印测试结果
-		cout << (dirInput + "\\" + tFolder.name + "\\").data() << endl;
-		cout << "\tidcard.jpg + " << "live.jpg" << " = Compare Score: " << score << endl;
+		cout << setw(45) << setiosflags(ios::right) << listCard[i].data() << " + " << "live.jpg" << " = Compare Score: " << score << endl;
 	}
-	while (_findnext(hFolder, &tFolder) == 0);
-
-	_findclose(hFolder);
 }
 
 TEST(ftAppliance, reviewOfTwoSeparateDirectories)
@@ -56,59 +50,30 @@ TEST(ftAppliance, reviewOfTwoSeparateDirectories)
 	string dirB = "..\\..\\Images\\复核\\B";
 
 	//实景照片检测到的人脸可能不止一张
-	char feature1[5][8192];
-	char feature2[5][8192];
+	char featureA[5][8192];
+	char featureB[5][8192];
+	vector<string> vecA;
+	vector<string> vecB;
+	
+	listOutDirectoryFiles(dirA, vecA);
+	listOutDirectoryFiles(dirB, vecB);
 
-	//遍历A目录下的所有图片
-	_finddata_t tA;
-	intptr_t hA = _findfirst((dirA + "\\*.*").data(), &tA);
-	EXPECT_TRUE(hA != -1);
-
-	do{
-		if (strcmp(tA.name, ".") == 0 || strcmp(tA.name, "..") == 0)
-		{
+	for(unsigned int i=0; i<vecA.size(); i++){
+		cout << vecA[i].data() << endl;
+		if(DETECT_NO_FACE == getFeatureWithFacePosRgb(vecA[i].data(), featureA[0])) {
 			continue;
 		}
-		else
-		{
-			{
-				//对A目录的每张图片同B目录的每张图片做compare运算
-				cout<<(dirA + "\\" + tA.name).data()<<endl;
-				if(DETECT_NO_FACE == getFeatureWithFacePosRgb((dirA + "\\" + tA.name).data(), feature1[0]))
-				{
-					continue;
-				}
-
-				_finddata_t tB;
-				intptr_t hB = _findfirst((dirB + "\\*.*").data(), &tB);
-				EXPECT_TRUE(hB != -1);
-
-				do{
-					if(strcmp(tB.name, ".") == 0 || strcmp(tB.name, "..") == 0)
-					{
-						continue;
-					}
-					else
-					{
-						if(DETECT_NO_FACE == getFeatureWithFacePosRgb((dirB + "\\" + tB.name).data(), feature2[0]))
-						{
-							cout<<setw(10) << setiosflags(ios::left) << "No Face";
-							continue;
-						}
-
-						float score = 0;
-						compare(feature1[0], feature2[0], &score);
-						cout << setw(10) << setiosflags(ios::left) << score;
-					}
-				}while(_findnext(hB, &tB)==0);
-
-				_findclose(hB);
-				cout << endl;
+		for(unsigned int j=0; j<vecB.size(); j++){
+			if(DETECT_NO_FACE == getFeatureWithFacePosRgb(vecB[j].data(), featureB[0])) {
+				cout<<setw(10) << setiosflags(ios::left) << "No Face";
+				continue;
 			}
+			float score = 0;
+			compare(featureA[0], featureB[0], &score);
+			cout << setw(10) << setiosflags(ios::left) << score;
 		}
-	} while (_findnext(hA, &tA) == 0);
-
-	_findclose(hA);
+		cout << endl;
+	}
 }
 
 TEST(ftAppliance, whatFaceReturnsEarlierInOutResultAndWhatLater)

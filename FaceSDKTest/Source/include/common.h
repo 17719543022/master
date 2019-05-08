@@ -4,7 +4,6 @@
 #include "face_sdk.h"
 #include "opencv.hpp"
 #include <vector>
-
 using namespace cv;
 
 #define DEFAULT_DET_TRACK_CHANNEL() ISCreateDetTrackChannel(46, 1000, 0);

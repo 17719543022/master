@@ -181,5 +181,5 @@ float iniReader::readFloat(const char* section, const char* item, const float& d
 	{
 		return default_value;
 	}
-	return atof(it_item->second.c_str());
+	return float(atof(it_item->second.c_str()));
 }

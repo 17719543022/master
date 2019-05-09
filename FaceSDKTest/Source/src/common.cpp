@@ -105,7 +105,7 @@ int getFeatureWithFacePosRgb(const char *imgPath, char *outFeature, int outRst[]
 {
 	int rst[50][4];
 	int len = 0;
-	Mat image = imread(imgPath, 1);
+	Mat image = imread(imgPath);
 
 	faceDetectRgb((char*)image.data, image.rows*image.cols*3, image.cols, image.rows, rst, &len);
 

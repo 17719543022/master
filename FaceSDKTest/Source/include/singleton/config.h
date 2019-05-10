@@ -14,6 +14,8 @@ struct Config{
 	float recogniseFaceValue;
 	int maxImgNum;
 	string imgPath;
+	string feaPath;
+	string pcaFeaPath;
 	string report;
 	string log;
 };
@@ -29,6 +31,8 @@ public:
 	float getRecogniseFaceValue();
 	int getMaxImgNum();
 	string getImgPath();
+	string getFeaPath();
+	string getPcaFeaPath();
 	string getReport();
 	string getLog();
 	void dump();

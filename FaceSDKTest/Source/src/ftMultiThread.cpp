@@ -8,9 +8,21 @@
 #include "face_sdk.h"
 #include <iostream>
 #include <Windows.h>
+#include <fstream>
 using namespace std;
 
 namespace{
+	char *getFileHeader(char *p)
+	{
+		char slash = '\\';
+		char *q = strrchr(p, slash) + 1;
+		char dot = '.';
+		char *t = strrchr(p, dot);
+		*t = '\0';
+
+		return q;
+	}
+
 	int getGap(SYSTEMTIME tStart, SYSTEMTIME tStop){
 		int gap = 0;
 
@@ -139,6 +151,35 @@ TEST(ftMultiThread, get1000FaceFeaturesWithSingleThreadAndDetermineCost)
 	cout << "单线程提取1000张人脸特征总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
 
+TEST(ftMultiThread, get1000FacePcaFeaturesWithSingleThreadAndSave)
+{
+	string imgPath = GConfig::getInstance().getImgPath();
+	vector<string> images;
+	listOutDirectoryFiles(imgPath, images);
+
+	fstream f;
+	string pcaFeaPath = GConfig::getInstance().getPcaFeaPath();
+
+	int defaultFeatureChannelId = DEFAULT_FEATURE_CHANNEL();
+	for(unsigned int i=0; i<images.size(); i++){
+		Mat image = imread(images[i]);
+		char feature[8192];
+		EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, feature));
+
+		char pcaFeature[2048];
+		EXPECT_TRUE(SUCC == ISGetPcaFea(defaultFeatureChannelId, feature, pcaFeature));
+
+		string savePath = pcaFeaPath + "\\" + getFileHeader(const_cast<char*>(images[i].data())) + ".pca";
+		cout << savePath << endl;
+
+		f.open(savePath, ios::out | ios::binary);
+		f.write(pcaFeature, sizeof(pcaFeature));
+		f.close();
+		f.clear();
+	}
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
+}
+
 TEST(ftMultiThread, get1000FaceFeaturesWithMultiThreadAndDetermineCost)
 {
 	string imgPath = GConfig::getInstance().getImgPath();
@@ -175,3 +216,4 @@ TEST(ftMultiThread, get1000FaceFeaturesWithMultiThreadAndDetermineCost)
     GetSystemTime(&tStop);
 	cout << "多线程提取1000张人脸特征总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
+

@@ -15,6 +15,8 @@ Config::Config(){
 	recogniseFaceValue = reader.readFloat("PARAM", "recogniseFaceValue", 0);
 	maxImgNum = reader.readInt("PARAM", "maxImgNum", 0);
 	imgPath = reader.readString("SOURCE", "imgPath", "");
+	feaPath = reader.readString("SOURCE", "feaPath", "");
+	pcaFeaPath = reader.readString("SOURCE", "pcaFeaPath", "");
 	report = reader.readString("RESULT", "report", "");
 	log = reader.readString("RESULT", "log", "");
 }
@@ -68,6 +70,14 @@ string GConfig::getImgPath(){
 	return config.imgPath;
 }
 
+string GConfig::getFeaPath(){
+	return config.feaPath;
+}
+
+string GConfig::getPcaFeaPath(){
+	return config.pcaFeaPath;
+}
+
 string GConfig::getReport(){
 	return config.report;
 }
@@ -85,6 +95,8 @@ void GConfig::dump(){
 	cout << "recogniseFaceValue = " << getRecogniseFaceValue() << endl;
 	cout << "maxImgNum = " << getMaxImgNum() << endl;
 	cout << "imgPath = " << getImgPath() << endl;
+	cout << "feaPath = " << getFeaPath() << endl;
+	cout << "pcaFeaPath = " << getPcaFeaPath() << endl;
 	cout << "report = " << getReport() << endl;
 	cout << "log = " << getLog() << endl;
 }

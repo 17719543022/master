@@ -157,25 +157,36 @@ TEST(ftMultiThread, get1000FacePcaFeaturesWithSingleThreadAndSave)
 	vector<string> images;
 	listOutDirectoryFiles(imgPath, images);
 
-	fstream f;
+	fstream fileFea, filePca;
+	string feaPath = GConfig::getInstance().getFeaPath();
 	string pcaFeaPath = GConfig::getInstance().getPcaFeaPath();
 
 	int defaultFeatureChannelId = DEFAULT_FEATURE_CHANNEL();
 	for(unsigned int i=0; i<images.size(); i++){
+		/* 存fea目录 */
 		Mat image = imread(images[i]);
 		char feature[8192];
 		EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, feature));
 
+		string saveFeaPath = feaPath + "\\" + getFileHeader(const_cast<char*>(images[i].data())) + ".fea";
+		cout << saveFeaPath << endl;
+
+		fileFea.open(saveFeaPath, ios::out | ios::binary);
+		fileFea.write(feature, sizeof(feature));
+		fileFea.close();
+		fileFea.clear();
+
+		/* 存pca目录 */
 		char pcaFeature[2048];
 		EXPECT_TRUE(SUCC == ISGetPcaFea(defaultFeatureChannelId, feature, pcaFeature));
 
-		string savePath = pcaFeaPath + "\\" + getFileHeader(const_cast<char*>(images[i].data())) + ".pca";
-		cout << savePath << endl;
+		string savePcaFeaPath = pcaFeaPath + "\\" + getFileHeader(const_cast<char*>(images[i].data())) + ".pca";
+		cout << savePcaFeaPath << endl;
 
-		f.open(savePath, ios::out | ios::binary);
-		f.write(pcaFeature, sizeof(pcaFeature));
-		f.close();
-		f.clear();
+		filePca.open(savePcaFeaPath, ios::out | ios::binary);
+		filePca.write(pcaFeature, sizeof(pcaFeature));
+		filePca.close();
+		filePca.clear();
 	}
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
 }
@@ -217,3 +228,35 @@ TEST(ftMultiThread, get1000FaceFeaturesWithMultiThreadAndDetermineCost)
 	cout << "多线程提取1000张人脸特征总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
 
+TEST(ftMultiThread, toPointOutTheRecogniseFaceValueStatisfiedPcaOfAGivenImage)
+{
+	string path = "..\\..\\Images\\image\\250.jpg";
+	char fea250[8192];
+	Mat image = imread(path);
+	
+	getFeatureRgb((char *)image.data, image.rows*image.cols*3, image.cols, image.rows, fea250);
+
+	////////////////////////////////////////////////
+	float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
+	vector<string> feaFiles;
+	string feaPath = GConfig::getInstance().getFeaPath();
+	listOutDirectoryFiles(feaPath, feaFiles);
+
+	float score;
+	char feaSaved[8192];
+	fstream f;
+	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
+	for(unsigned int i=0; i<feaFiles.size(); i++){
+		f.open(feaFiles[i], ios::in | ios::binary);
+		f.seekg(0, ios::beg);
+		f.read(feaSaved, 8192);
+		f.clear();
+		f.close();
+
+		EXPECT_TRUE(SUCC == ISCompare(defaultCompareChannel, fea250, feaSaved, &score));
+		if(score > recongiseFaceValue){
+			cout << feaFiles[i] << endl;
+		}
+	}
+	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
+}

@@ -11,21 +11,22 @@
 #include <fstream>
 using namespace std;
 
-namespace{
-	char *getFileHeader(char *p)
-	{
-		char slash = '\\';
-		char *q = strrchr(p, slash) + 1;
-		char dot = '.';
-		char *t = strrchr(p, dot);
-		*t = '\0';
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-		return q;
+namespace{
+	string getFileHeader(const char *p){
+		char slash = '\\';
+		const char *q = strrchr(p, slash) + 1;
+		char dot = '.';
+		const char *t = strrchr(p, dot);
+
+		return string(q, t);
 	}
 
 	int getGap(SYSTEMTIME tStart, SYSTEMTIME tStop){
 		int gap = 0;
 
+		gap += (tStop.wHour - tStart.wHour)*60*60*1000;
 		gap += (tStop.wMinute - tStart.wMinute)*60*1000;
 		gap += (tStop.wSecond - tStart.wSecond)*1000;
 		gap += tStop.wMilliseconds - tStart.wMilliseconds;
@@ -48,8 +49,8 @@ namespace{
 		return NULL;
 	}
 
-	void *faceFeature(void *ptr1){
-		vector<string> images = *(vector<string> *)ptr1;
+	void *faceFeature(void *ptr){
+		vector<string> images = *(vector<string> *)ptr;
 
 		int defaultFeatureChannelId = DEFAULT_FEATURE_CHANNEL();
 		char feature[8192];
@@ -115,7 +116,7 @@ TEST(ftMultiThread, detect1000FacesWithMultiThreadAndDetermineCost)
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 
-	pthread_t pThread[10];
+	vector<pthread_t> pThread(detectThreadNum);
 	for(unsigned int i=0; i<detectThreadNum; i++){
 		EXPECT_TRUE(SUCC == pthread_create(&pThread[i], NULL, faceDetect, (void *)&image[i]));
 	}
@@ -168,7 +169,7 @@ TEST(ftMultiThread, get1000FacePcaFeaturesWithSingleThreadAndSave)
 		char feature[8192];
 		EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, feature));
 
-		string saveFeaPath = feaPath + "\\" + getFileHeader(const_cast<char*>(images[i].data())) + ".fea";
+		string saveFeaPath = feaPath + "\\" + getFileHeader(images[i].data()) + ".fea";
 		cout << saveFeaPath << endl;
 
 		fileFea.open(saveFeaPath, ios::out | ios::binary);
@@ -180,7 +181,7 @@ TEST(ftMultiThread, get1000FacePcaFeaturesWithSingleThreadAndSave)
 		char pcaFeature[2048];
 		EXPECT_TRUE(SUCC == ISGetPcaFea(defaultFeatureChannelId, feature, pcaFeature));
 
-		string savePcaFeaPath = pcaFeaPath + "\\" + getFileHeader(const_cast<char*>(images[i].data())) + ".pca";
+		string savePcaFeaPath = pcaFeaPath + "\\" + getFileHeader(images[i].data()) + ".pca";
 		cout << savePcaFeaPath << endl;
 
 		filePca.open(savePcaFeaPath, ios::out | ios::binary);
@@ -214,7 +215,7 @@ TEST(ftMultiThread, get1000FaceFeaturesWithMultiThreadAndDetermineCost)
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 
-	pthread_t pThread[10];
+	vector<pthread_t> pThread(detectThreadNum);
 	for(unsigned int i=0; i<detectThreadNum; i++){
 		EXPECT_TRUE(SUCC == pthread_create(&pThread[i], NULL, faceFeature, (void *)&image[i]));
 	}
@@ -228,15 +229,14 @@ TEST(ftMultiThread, get1000FaceFeaturesWithMultiThreadAndDetermineCost)
 	cout << "多线程提取1000张人脸特征总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
 
-TEST(ftMultiThread, toPointOutTheRecogniseFaceValueStatisfiedPcaOfAGivenImage)
+TEST(ftMultiThread, toPointOutTheRecogniseFaceValueStatisfiedFeaFileOfAGivenImage)
 {
 	string path = "..\\..\\Images\\image\\250.jpg";
-	char fea250[8192];
+	char feature[8192];
 	Mat image = imread(path);
 	
-	getFeatureRgb((char *)image.data, image.rows*image.cols*3, image.cols, image.rows, fea250);
+	getFeatureRgb((char *)image.data, image.rows*image.cols*3, image.cols, image.rows, feature);
 
-	////////////////////////////////////////////////
 	float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
 	vector<string> feaFiles;
 	string feaPath = GConfig::getInstance().getFeaPath();
@@ -253,10 +253,64 @@ TEST(ftMultiThread, toPointOutTheRecogniseFaceValueStatisfiedPcaOfAGivenImage)
 		f.clear();
 		f.close();
 
-		EXPECT_TRUE(SUCC == ISCompare(defaultCompareChannel, fea250, feaSaved, &score));
+		EXPECT_TRUE(SUCC == ISCompare(defaultCompareChannel, feature, feaSaved, &score));
 		if(score > recongiseFaceValue){
 			cout << feaFiles[i] << endl;
 		}
 	}
 	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
+}
+
+TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue_SingleThread)
+{
+	// 第一层循环使用的数据
+	string imgPath = GConfig::getInstance().getImgPath();
+	vector<string> images;
+	listOutDirectoryFiles(imgPath, images);
+	char feature[8192];
+	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
+
+	// 第二层循环使用的数据
+	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
+	float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
+	vector<string> feaFiles;
+	string feaPath = GConfig::getInstance().getFeaPath();
+	listOutDirectoryFiles(feaPath, feaFiles);
+	float score;
+	char feaSaved[8192];
+	fstream f;
+
+	SYSTEMTIME tStart, tStop;
+    GetSystemTime(&tStart);
+
+	for(unsigned int i=0; i<images.size(); i++){
+		Mat image = imread(images[i]);
+		getFeatureRgb((char *)image.data, image.rows*image.cols*3, image.cols, image.rows, feature);
+		EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannel, (char *)image.data, image.rows*image.cols*3, image.cols, image.rows, feature));
+
+		for(unsigned int j=0; j<feaFiles.size(); j++){
+			f.open(feaFiles[j], ios::in | ios::binary);
+			f.seekg(0, ios::beg);
+			f.read(feaSaved, 8192);
+			f.clear();
+			f.close();
+
+			EXPECT_TRUE(SUCC == ISCompare(defaultCompareChannel, feature, feaSaved, &score));
+			if(score < recongiseFaceValue 
+				&& 0 == strcmp(getFileHeader(images[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
+			{
+				cout << images[i] << " + " << feaFiles[j] << " = 是本人，但算出来的score值小于recongiseFaceValue" << endl;
+			}
+			if(score >= recongiseFaceValue
+				&& 0 != strcmp(getFileHeader(images[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
+			{
+				cout << images[i] << " + " << feaFiles[j] << " = 不是本人，但算出来的score值大于recongiseFaceValue" << endl;
+			}
+		}
+	}
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
+	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
+
+    GetSystemTime(&tStop);
+	cout << "多线程提取1000张人脸特征总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }

@@ -130,9 +130,9 @@ int getFeatureWithFacePosRgb(const char *imgPath, char *outFeature, int outRst[]
 
 void getFeatureRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, char *outFeature, float KPtScore)
 {
-	int defaultFeatureChannelId = DEFAULT_FEATURE_CHANNEL();
-	EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannelId, imgData, imgLen, imgWidth, imgHeight, outFeature, KPtScore));
-	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
+	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
+	EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannel, imgData, imgLen, imgWidth, imgHeight, outFeature, KPtScore));
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 }
 
 void getPcaFea(char* fea_Org,char* fea_Pca)

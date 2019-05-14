@@ -96,7 +96,6 @@ TEST(ftAppliance, convolutionOfAllFacesInOnePicture)
 	char *imgPath = "..\\..\\Images\\beauty.jpg";
 	int len = 0;
 	int outRst[50][4] = {0};
-	Mat image = imread(imgPath);
 
 	char outFeature[50][8192];
 	getFeatureWithFacePosRgb(imgPath, outFeature[0], outRst, &len);
@@ -106,7 +105,7 @@ TEST(ftAppliance, convolutionOfAllFacesInOnePicture)
 	for(int i=0; i<len; i++)
 	{
 		featureM[i] = outFeature[i];
-		getPcaFea(featureM[0], featureM[0]);
+		getPcaFea(featureM[i], featureM[i]);
 	}
 
 	char **featureN;
@@ -136,17 +135,16 @@ TEST(ftAppliance, compareMNfasterWay)
 	char *imgPath = "..\\..\\Images\\beauty.jpg";
 	int len = 0;
 	int outRst[50][4] = {0};
-	Mat image = imread(imgPath);
 
 	char outFeature[50][8192];
 	getFeatureWithFacePosRgb(imgPath, outFeature[0], outRst, &len);
 
 	char **featureM;
-	ALLOC_DOUBLE_STAR(len, 8192, char, featureM, M)
+	ALLOC_DOUBLE_STAR(len, 8912, char, featureM, M)
 	for(int i=0; i<len; i++)
 	{
 		featureM[i] = outFeature[i];
-		getPcaFea(featureM[0],featureM[0]);
+		getPcaFea(featureM[i], featureM[i]);
 	}
 
 	char **featureN;

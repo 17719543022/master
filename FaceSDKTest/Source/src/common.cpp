@@ -137,9 +137,9 @@ void getFeatureRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, char 
 
 void getPcaFea(char* fea_Org,char* fea_Pca)
 {
-	int defaultFeatureChannelId = DEFAULT_FEATURE_CHANNEL();
-	EXPECT_TRUE(SUCC == ISGetPcaFea(defaultFeatureChannelId, fea_Org, fea_Pca));
-	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
+	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
+	EXPECT_TRUE(SUCC == ISGetPcaFea(defaultFeatureChannel, fea_Org, fea_Pca));
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 }
 
 void getFeatureAndPredict(char *imgData
@@ -155,14 +155,14 @@ void getFeatureAndPredict(char *imgData
 						  , float kScore)
 {
 	vector<char> vec(8192);
-	int defaultFeatureChannelId = PREDICT_FEATURE_CHANNEL();
-	EXPECT_TRUE_EX(ISGetFeatureRgb(defaultFeatureChannelId, imgData, imgLen, imgWidth, imgHeight, vec.data()));
-	EXPECT_TRUE_EX(ISpredictExpression(defaultFeatureChannelId, vec.data(), expression));
-	EXPECT_TRUE_EX(ISpredictGlasses(defaultFeatureChannelId, vec.data(), glasses));
-	EXPECT_TRUE_EX(ISpredictSmile(defaultFeatureChannelId, vec.data(), smile));
-	EXPECT_TRUE_EX(ISpredictAgeGender(defaultFeatureChannelId, vec.data(), age, gender));
-	EXPECT_TRUE_EX(ISpredictBeauty(defaultFeatureChannelId, vec.data(), beauty));
-	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
+	int defaultFeatureChannel = PREDICT_FEATURE_CHANNEL();
+	EXPECT_TRUE_EX(ISGetFeatureRgb(defaultFeatureChannel, imgData, imgLen, imgWidth, imgHeight, vec.data()));
+	EXPECT_TRUE_EX(ISpredictExpression(defaultFeatureChannel, vec.data(), expression));
+	EXPECT_TRUE_EX(ISpredictGlasses(defaultFeatureChannel, vec.data(), glasses));
+	EXPECT_TRUE_EX(ISpredictSmile(defaultFeatureChannel, vec.data(), smile));
+	EXPECT_TRUE_EX(ISpredictAgeGender(defaultFeatureChannel, vec.data(), age, gender));
+	EXPECT_TRUE_EX(ISpredictBeauty(defaultFeatureChannel, vec.data(), beauty));
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 }
 
 void compare(char *feature1, char *feature2, float *outScore)

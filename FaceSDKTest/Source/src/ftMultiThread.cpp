@@ -124,20 +124,20 @@ namespace{
 											 , feature
 											 , feaSaved
 											 , &score));
-				//if(score < recongiseFaceValue 
-				//	&& 0 == strcmp(getFileHeader(imagesOfCurrentThread[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
-				//{
-				//	pthread_mutex_lock(&mutex);
-				//	cout << imagesOfCurrentThread[i] << " + " << feaFiles[j] << " = 是本人，但算出来的score值小于recongiseFaceValue" << endl;
-				//	pthread_mutex_unlock(&mutex);
-				//}
-				//if(score >= recongiseFaceValue
-				//	&& 0 != strcmp(getFileHeader(imagesOfCurrentThread[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
-				//{
-				//	pthread_mutex_lock(&mutex);
-				//	cout << imagesOfCurrentThread[i] << " + " << feaFiles[j] << " = 不是本人，但算出来的score值大于recongiseFaceValue" << endl;
-				//	pthread_mutex_unlock(&mutex);
-				//}
+				if(score < recongiseFaceValue 
+					&& 0 == strcmp(getFileHeader(imagesOfCurrentThread[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
+				{
+					pthread_mutex_lock(&mutex);
+					cout << imagesOfCurrentThread[i] << " + " << feaFiles[j] << " = 是本人，但算出来的score值小于recongiseFaceValue" << endl;
+					pthread_mutex_unlock(&mutex);
+				}
+				if(score >= recongiseFaceValue
+					&& 0 != strcmp(getFileHeader(imagesOfCurrentThread[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
+				{
+					pthread_mutex_lock(&mutex);
+					cout << imagesOfCurrentThread[i] << " + " << feaFiles[j] << " = 不是本人，但算出来的score值大于recongiseFaceValue" << endl;
+					pthread_mutex_unlock(&mutex);
+				}
 			}
 		}
 
@@ -366,7 +366,6 @@ TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue
 
 	for(unsigned int i=0; i<images.size(); i++){
 		Mat image = imread(images[i]);
-		getFeatureRgb((char *)image.data, image.rows*image.cols*3, image.cols, image.rows, feature);
 		EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannel, (char *)image.data, image.rows*image.cols*3, image.cols, image.rows, feature));
 
 		for(unsigned int j=0; j<feaFiles.size(); j++){
@@ -377,16 +376,16 @@ TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue
 			f.close();
 
 			EXPECT_TRUE(SUCC == ISCompare(defaultCompareChannel, feature, feaSaved, &score));
-			//if(score < recongiseFaceValue 
-			//	&& 0 == strcmp(getFileHeader(images[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
-			//{
-			//	cout << images[i] << " + " << feaFiles[j] << " = 是本人，但算出来的score值小于recongiseFaceValue" << endl;
-			//}
-			//if(score >= recongiseFaceValue
-			//	&& 0 != strcmp(getFileHeader(images[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
-			//{
-			//	cout << images[i] << " + " << feaFiles[j] << " = 不是本人，但算出来的score值大于recongiseFaceValue" << endl;
-			//}
+			if(score < recongiseFaceValue 
+				&& 0 == strcmp(getFileHeader(images[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
+			{
+				cout << images[i] << " + " << feaFiles[j] << " = 是本人，但算出来的score值小于recongiseFaceValue" << endl;
+			}
+			if(score >= recongiseFaceValue
+				&& 0 != strcmp(getFileHeader(images[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
+			{
+				cout << images[i] << " + " << feaFiles[j] << " = 不是本人，但算出来的score值大于recongiseFaceValue" << endl;
+			}
 		}
 	}
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
@@ -423,4 +422,71 @@ TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue
 
 	GetSystemTime(&tStop);
 	cout << "5线程下，1000张人脸特征卷积Compare共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+}
+
+TEST(ftMultiThread, toCompareMNEachImageWithAllFeaFilesAccordingToCompareFaceValue_SingleThread)
+{
+	// ISCompareMNfasterprep
+	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
+	float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
+	vector<string> pcaFeaFiles;
+	string pcaFeaPath = GConfig::getInstance().getPcaFeaPath();
+	listOutDirectoryFiles(pcaFeaPath, pcaFeaFiles);
+	float **score;
+	ALLOC_DOUBLE_STAR(1, pcaFeaFiles.size(), float, score, S)
+	char **pcaFeaSaved;
+	fstream f;
+
+	ALLOC_DOUBLE_STAR(pcaFeaFiles.size(), 2048, char, pcaFeaSaved, M)
+	for(unsigned int i=0; i<pcaFeaFiles.size(); i++)
+	{
+		char pcaFeaTemp[2048];
+
+		f.open(pcaFeaFiles[i], ios::in | ios::binary);
+		f.seekg(0, ios::beg);
+		f.read(pcaFeaTemp, 2048);
+		f.clear();
+		f.close();
+
+		memcpy(pcaFeaSaved[i], pcaFeaTemp, 2048);
+	}
+
+	EXPECT_TRUE(SUCC == ISCompareMNfasterprep(defaultCompareChannel, pcaFeaSaved, pcaFeaFiles.size()));
+
+	// ISGetFeatureRgb && ISCompareMN
+	string imgPath = GConfig::getInstance().getImgPath();
+	vector<string> images;
+	listOutDirectoryFiles(imgPath, images);
+	char feature[8192];
+	char featurePca[2048];
+	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
+
+	SYSTEMTIME tStart, tStop;
+    GetSystemTime(&tStart);
+
+	for(unsigned int s=0; s<images.size(); s++){
+		Mat image = imread(images[s]);
+		EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannel, (char *)image.data, image.rows*image.cols*3, image.cols, image.rows, feature));
+		EXPECT_TRUE(SUCC == ISGetPcaFea(defaultFeatureChannel, feature, featurePca));
+
+		char **featureMN;
+		ALLOC_DOUBLE_STAR(1, 2048, char, featureMN, N)
+		featureMN[0] = featurePca;
+		EXPECT_TRUE(SUCC == ISCompareMNfaster(defaultCompareChannel, featureMN, 1, score));
+		for(unsigned int t=0; t<images.size(); t++){
+			if(score[0][t]<recongiseFaceValue && s==t)
+			{
+				cout << images[s] << " + " << pcaFeaFiles[t] << " = 是本人，但算出来的score值小于recongiseFaceValue" << endl;
+			}
+			if(score[0][t]>=recongiseFaceValue && s!=t)
+			{
+				cout << images[s] << " + " << pcaFeaFiles[t] << " = 不是本人，但算出来的score值大于recongiseFaceValue" << endl;
+			}
+		}
+	}
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
+	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
+
+    GetSystemTime(&tStop);
+	cout << "单线程下，1000张人脸特征卷积CompareMN共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }

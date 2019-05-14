@@ -62,6 +62,87 @@ namespace{
 
 		return NULL;
 	}
+
+	struct ThreadEssentials{
+		pthread_t pThread;
+		int featureChannel;
+		int compareChannel;
+	};
+
+	void *faceCompare(void *ptr){
+		// 计算得出当前线程在线程数组中的index，以便后面拿到对应的入参
+		vector<ThreadEssentials> essentials = *(vector<ThreadEssentials> *)ptr;
+		unsigned int currentThreadIndex;
+		for(unsigned int i=0; i<essentials.size(); i++){
+			if(0 != pthread_equal(pthread_self(), essentials[i].pThread)){
+				currentThreadIndex = i;
+			}
+		}
+
+		// 计算得出当前线程需要处理的imgNumPerThread张图片的地址，并存在imagesOfCurrentThread中
+		string imgPath = GConfig::getInstance().getImgPath();
+		vector<string> images;
+		listOutDirectoryFiles(imgPath, images);
+		unsigned int imgNumPerThread = unsigned int(images.size()/essentials.size());
+		vector<string> imagesOfCurrentThread;
+		if(currentThreadIndex == essentials.size()-1){
+			imagesOfCurrentThread.assign(images.begin()+currentThreadIndex*imgNumPerThread, images.end());
+		}
+		else{
+			imagesOfCurrentThread.assign(images.begin()+currentThreadIndex*imgNumPerThread, images.begin()+(currentThreadIndex+1)*imgNumPerThread);
+		}
+
+		// 将分配给当前线程处理的imgNumPerThread张图片，与getFeaPath()中的所有feaFiles进行Compare
+		float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
+		vector<string> feaFiles;
+		string feaPath = GConfig::getInstance().getFeaPath();
+		listOutDirectoryFiles(feaPath, feaFiles);
+		float score;
+		char feaSaved[8192];
+		char feature[8192];
+		fstream f;
+
+		// 第一层循环提取分给本线程的imagesOfCurrentThread的一张图片的特征
+		for(unsigned int i=0; i<imagesOfCurrentThread.size(); i++){
+			Mat image = imread(imagesOfCurrentThread[i]);
+
+			EXPECT_TRUE(SUCC == ISGetFeatureRgb( essentials[currentThreadIndex].featureChannel
+											   , (char *)image.data
+											   , image.rows*image.cols*3
+											   , image.cols
+											   , image.rows
+											   , feature));
+			// 第二层将提取特征与特征文件目录中的每个特征文件进行compare
+			for(unsigned int j=0; j<feaFiles.size(); j++){
+				f.open(feaFiles[j], ios::in | ios::binary);
+				f.seekg(0, ios::beg);
+				f.read(feaSaved, 8192);
+				f.clear();
+				f.close();
+
+				EXPECT_TRUE(SUCC == ISCompare( essentials[currentThreadIndex].compareChannel
+											 , feature
+											 , feaSaved
+											 , &score));
+				//if(score < recongiseFaceValue 
+				//	&& 0 == strcmp(getFileHeader(imagesOfCurrentThread[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
+				//{
+				//	pthread_mutex_lock(&mutex);
+				//	cout << imagesOfCurrentThread[i] << " + " << feaFiles[j] << " = 是本人，但算出来的score值小于recongiseFaceValue" << endl;
+				//	pthread_mutex_unlock(&mutex);
+				//}
+				//if(score >= recongiseFaceValue
+				//	&& 0 != strcmp(getFileHeader(imagesOfCurrentThread[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
+				//{
+				//	pthread_mutex_lock(&mutex);
+				//	cout << imagesOfCurrentThread[i] << " + " << feaFiles[j] << " = 不是本人，但算出来的score值大于recongiseFaceValue" << endl;
+				//	pthread_mutex_unlock(&mutex);
+				//}
+			}
+		}
+
+		return NULL;
+	}
 }
 
 TEST(ftMultiThread, dumpConfigFileOfIniFormat)
@@ -296,21 +377,50 @@ TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue
 			f.close();
 
 			EXPECT_TRUE(SUCC == ISCompare(defaultCompareChannel, feature, feaSaved, &score));
-			if(score < recongiseFaceValue 
-				&& 0 == strcmp(getFileHeader(images[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
-			{
-				cout << images[i] << " + " << feaFiles[j] << " = 是本人，但算出来的score值小于recongiseFaceValue" << endl;
-			}
-			if(score >= recongiseFaceValue
-				&& 0 != strcmp(getFileHeader(images[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
-			{
-				cout << images[i] << " + " << feaFiles[j] << " = 不是本人，但算出来的score值大于recongiseFaceValue" << endl;
-			}
+			//if(score < recongiseFaceValue 
+			//	&& 0 == strcmp(getFileHeader(images[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
+			//{
+			//	cout << images[i] << " + " << feaFiles[j] << " = 是本人，但算出来的score值小于recongiseFaceValue" << endl;
+			//}
+			//if(score >= recongiseFaceValue
+			//	&& 0 != strcmp(getFileHeader(images[i].data()).data(), getFileHeader(feaFiles[j].data()).data()))
+			//{
+			//	cout << images[i] << " + " << feaFiles[j] << " = 不是本人，但算出来的score值大于recongiseFaceValue" << endl;
+			//}
 		}
 	}
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
 
     GetSystemTime(&tStop);
-	cout << "多线程提取1000张人脸特征总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+	cout << "单线程下，1000张人脸特征卷积Compare共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+}
+
+TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue_MultiThread)
+{
+	string imgPath = GConfig::getInstance().getImgPath();
+	vector<string> images;
+	listOutDirectoryFiles(imgPath, images);
+
+	unsigned int getFeaThreadNum = GConfig::getInstance().getGetFeaThreadNum();
+
+	SYSTEMTIME tStart, tStop;
+    GetSystemTime(&tStart);
+
+	vector<ThreadEssentials> threadEssentials(getFeaThreadNum);
+	for(unsigned int m=0; m<getFeaThreadNum; m++){
+		threadEssentials[m].featureChannel = DEFAULT_FEATURE_CHANNEL();
+		threadEssentials[m].compareChannel = DEFAULT_COMPARE_CHANNEL();
+		EXPECT_TRUE(SUCC == pthread_create(&(threadEssentials[m].pThread), NULL, faceCompare, &threadEssentials));
+	}
+
+	void *retVal;
+	for(unsigned int n=0; n<getFeaThreadNum; n++){
+		EXPECT_TRUE(SUCC == pthread_join(threadEssentials[n].pThread, &retVal));
+		DESTROY_FEATURE_CHANNEL(threadEssentials[n].featureChannel);
+		DESTROY_COMPARE_CHANNEL(threadEssentials[n].compareChannel);
+	}
+
+	GetSystemTime(&tStop);
+	cout << "5线程下，1000张人脸特征卷积Compare共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }

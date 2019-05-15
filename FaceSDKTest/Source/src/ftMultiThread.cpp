@@ -342,6 +342,7 @@ TEST(ftMultiThread, toPointOutTheRecogniseFaceValueStatisfiedFeaFileOfAGivenImag
 	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
 }
 
+/* ISCompare只支持8192的feature */
 TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue_SingleThread)
 {
 	// 第一层循环使用的数据
@@ -395,6 +396,7 @@ TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue
 	cout << "单线程下，1000张人脸特征卷积Compare共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
 
+/* 无法在线程下同时创建特征提取通道和对比通道，故障修改中，现将在主线程创建好的通道传入线程，先这样用着。 */
 TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue_MultiThread)
 {
 	string imgPath = GConfig::getInstance().getImgPath();
@@ -424,20 +426,17 @@ TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue
 	cout << "5线程下，1000张人脸特征卷积Compare共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
 
-TEST(ftMultiThread, toCompareMNEachImageWithAllFeaFilesAccordingToCompareFaceValue_SingleThread)
+/* ISCompareMN/ISCompareMNfaster只支持2048的feature */
+TEST(ftMultiThread, toCompareMNFasterEachImageWithAllFeaFilesAccordingToCompareFaceValue_SingleThread)
 {
 	// ISCompareMNfasterprep
-	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
-	float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
-	vector<string> pcaFeaFiles;
 	string pcaFeaPath = GConfig::getInstance().getPcaFeaPath();
+	vector<string> pcaFeaFiles;
 	listOutDirectoryFiles(pcaFeaPath, pcaFeaFiles);
-	float **score;
-	ALLOC_DOUBLE_STAR(1, pcaFeaFiles.size(), float, score, S)
-	char **pcaFeaSaved;
-	fstream f;
 
+	char **pcaFeaSaved;
 	ALLOC_DOUBLE_STAR(pcaFeaFiles.size(), 2048, char, pcaFeaSaved, M)
+	fstream f;
 	for(unsigned int i=0; i<pcaFeaFiles.size(); i++)
 	{
 		char pcaFeaTemp[2048];
@@ -451,6 +450,7 @@ TEST(ftMultiThread, toCompareMNEachImageWithAllFeaFilesAccordingToCompareFaceVal
 		memcpy(pcaFeaSaved[i], pcaFeaTemp, 2048);
 	}
 
+	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
 	EXPECT_TRUE(SUCC == ISCompareMNfasterprep(defaultCompareChannel, pcaFeaSaved, pcaFeaFiles.size()));
 
 	// ISGetFeatureRgb && ISCompareMN
@@ -460,6 +460,9 @@ TEST(ftMultiThread, toCompareMNEachImageWithAllFeaFilesAccordingToCompareFaceVal
 	char feature[8192];
 	char featurePca[2048];
 	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
+	float **score;
+	ALLOC_DOUBLE_STAR(1, pcaFeaFiles.size(), float, score, S)
+	float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
 
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
@@ -484,6 +487,71 @@ TEST(ftMultiThread, toCompareMNEachImageWithAllFeaFilesAccordingToCompareFaceVal
 			}
 		}
 	}
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
+	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
+
+    GetSystemTime(&tStop);
+	cout << "单线程下，1000张人脸特征卷积CompareMN共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+}
+
+TEST(ftMultiThread, toCompareMNEachImageWithAllFeaFilesAccordingToCompareFaceValue_SingleThread)
+{
+	string imgPath = GConfig::getInstance().getImgPath();
+	vector<string> images;
+	listOutDirectoryFiles(imgPath, images);
+	char feature[8192];
+	char featurePca[2048];
+	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
+	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
+	float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
+
+	SYSTEMTIME tStart, tStop;
+    GetSystemTime(&tStart);
+
+	for(unsigned int s=0; s<images.size(); s++){
+		/* 将当前image的feature存放为char **的格式的featureStar */
+		Mat image = imread(images[s]);
+		EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannel, (char *)image.data, image.rows*image.cols*3, image.cols, image.rows, feature));
+		EXPECT_TRUE(SUCC == ISGetPcaFea(defaultFeatureChannel, feature, featurePca));
+		char **featureStar;
+		ALLOC_DOUBLE_STAR(1, 2048, char, featureStar, M)
+		featureStar[0] = featurePca;
+
+		/* 构造featureSaved */
+		fstream f;
+		vector<string> pcaFeaFiles;
+		string pcaFeaPath = GConfig::getInstance().getPcaFeaPath();
+		listOutDirectoryFiles(pcaFeaPath, pcaFeaFiles);
+		char pcaFeaTemp[2048];
+		char **featureSaved;
+		ALLOC_DOUBLE_STAR(pcaFeaFiles.size(), 2048, char, featureSaved, N)
+		for(unsigned int i=0; i<pcaFeaFiles.size(); i++)
+		{
+			f.open(pcaFeaFiles[i], ios::in | ios::binary);
+			f.seekg(0, ios::beg);
+			f.read(pcaFeaTemp, 2048);
+			f.clear();
+			f.close();
+
+			memcpy(featureSaved[i], pcaFeaTemp, 2048);
+		}
+
+		/* 构造score并计算score */
+		float **score;
+		ALLOC_DOUBLE_STAR(1, pcaFeaFiles.size(), float, score, S)
+		EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, featureStar, 1, featureSaved, 1000, score));
+		for(unsigned int t=0; t<images.size(); t++){
+			if(score[0][t]<recongiseFaceValue && s==t)
+			{
+				cout << images[s] << " + " << pcaFeaFiles[t] << " = 是本人，但算出来的score值小于recongiseFaceValue" << endl;
+			}
+			if(score[0][t]>=recongiseFaceValue && s!=t)
+			{
+				cout << images[s] << " + " << pcaFeaFiles[t] << " = 不是本人，但算出来的score值大于recongiseFaceValue" << endl;
+			}
+		}
+	}
+
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
 

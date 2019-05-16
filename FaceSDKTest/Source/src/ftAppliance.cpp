@@ -6,9 +6,11 @@
 #include "timer.h"
 #include <string>
 #include "listOut.h"
+#include "testSuits.h"
+
 using namespace std;
 
-TEST(ftAppliance, personAndIdCardCompareOfOneDirectory)
+TEST_F(ftAppliance, personAndIdCardCompareOfOneDirectory)
 {
 	string dir = "..\\..\\Images\\»À÷§1±»1";
 	string idcard = "idcard.jpg";
@@ -44,7 +46,7 @@ TEST(ftAppliance, personAndIdCardCompareOfOneDirectory)
 	}
 }
 
-TEST(ftAppliance, reviewOfTwoSeparateDirectories)
+TEST_F(ftAppliance, reviewOfTwoSeparateDirectories)
 {
 	string dirA = "..\\..\\Images\\∏¥∫À\\A";
 	string dirB = "..\\..\\Images\\∏¥∫À\\B";
@@ -76,7 +78,7 @@ TEST(ftAppliance, reviewOfTwoSeparateDirectories)
 	}
 }
 
-TEST(ftAppliance, whatFaceReturnsEarlierInOutResultAndWhatLater)
+TEST_F(ftAppliance, whatFaceReturnsEarlierInOutResultAndWhatLater)
 {
 	char *imgPath = "..\\..\\Images\\beauty.jpg";
 	int len = 0;
@@ -91,7 +93,7 @@ TEST(ftAppliance, whatFaceReturnsEarlierInOutResultAndWhatLater)
 	destroyAllWindows();
 }
 
-TEST(ftAppliance, convolutionOfAllFacesInOnePicture)
+TEST_F(ftAppliance, convolutionOfAllFacesInOnePicture)
 {
 	char *imgPath = "..\\..\\Images\\beauty.jpg";
 	int len = 0;
@@ -130,7 +132,7 @@ TEST(ftAppliance, convolutionOfAllFacesInOnePicture)
 	}
 }
 
-TEST(ftAppliance, compareMNfasterWay)
+TEST_F(ftAppliance, compareMNfasterWay)
 {
 	char *imgPath = "..\\..\\Images\\beauty.jpg";
 	int len = 0;
@@ -169,7 +171,7 @@ TEST(ftAppliance, compareMNfasterWay)
 	}
 }
 
-TEST(ftAppliance, camera)
+TEST_F(ftAppliance, camera)
 {
 	VideoCapture cap = VideoCapture(0);
 	Mat img;
@@ -241,7 +243,7 @@ TEST(ftAppliance, camera)
 	}
 }
 #if 0
-TEST(ftAppliance, record)
+TEST_F(ftAppliance, record)
 {
 	//int dettrackChannelId = ISCreateDetTrackChannelEx(48,1000);
 	int dettrackChannelId = ISCreateDetTrackChannel(48,1000, 0);

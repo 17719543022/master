@@ -9,6 +9,8 @@
 #include <iostream>
 #include <Windows.h>
 #include <fstream>
+#include "testSuits.h"
+
 using namespace std;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -145,12 +147,12 @@ namespace{
 	}
 }
 
-TEST(ftMultiThread, dumpConfigFileOfIniFormat)
+TEST_F(ftMultiThread, dumpConfigFileOfIniFormat)
 {
 	GConfig::getInstance().dump();
 }
 
-TEST(ftMultiThread, detect1000FacesWithSingleThreadAndDetermineCost)
+TEST_F(ftMultiThread, detect1000FacesWithSingleThreadAndDetermineCost)
 {
 	string imgPath = GConfig::getInstance().getImgPath();
 	vector<string> images;
@@ -174,7 +176,7 @@ TEST(ftMultiThread, detect1000FacesWithSingleThreadAndDetermineCost)
 	cout << "单线程检测1000张人脸总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
 
-TEST(ftMultiThread, detect1000FacesWithMultiThreadAndDetermineCost)
+TEST_F(ftMultiThread, detect1000FacesWithMultiThreadAndDetermineCost)
 {
 	string imgPath = GConfig::getInstance().getImgPath();
 	vector<string> images;
@@ -211,7 +213,7 @@ TEST(ftMultiThread, detect1000FacesWithMultiThreadAndDetermineCost)
 	cout << "多线程检测1000张人脸总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
 
-TEST(ftMultiThread, get1000FaceFeaturesWithSingleThreadAndDetermineCost)
+TEST_F(ftMultiThread, get1000FaceFeaturesWithSingleThreadAndDetermineCost)
 {
 	string imgPath = GConfig::getInstance().getImgPath();
 	vector<string> images;
@@ -233,7 +235,7 @@ TEST(ftMultiThread, get1000FaceFeaturesWithSingleThreadAndDetermineCost)
 	cout << "单线程提取1000张人脸特征总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
 
-TEST(ftMultiThread, get1000FacePcaFeaturesWithSingleThreadAndSave)
+TEST_F(ftMultiThread, get1000FacePcaFeaturesWithSingleThreadAndSave)
 {
 	string imgPath = GConfig::getInstance().getImgPath();
 	vector<string> images;
@@ -273,7 +275,7 @@ TEST(ftMultiThread, get1000FacePcaFeaturesWithSingleThreadAndSave)
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
 }
 
-TEST(ftMultiThread, get1000FaceFeaturesWithMultiThreadAndDetermineCost)
+TEST_F(ftMultiThread, get1000FaceFeaturesWithMultiThreadAndDetermineCost)
 {
 	string imgPath = GConfig::getInstance().getImgPath();
 	vector<string> images;
@@ -310,7 +312,7 @@ TEST(ftMultiThread, get1000FaceFeaturesWithMultiThreadAndDetermineCost)
 	cout << "多线程提取1000张人脸特征总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
 
-TEST(ftMultiThread, toPointOutTheRecogniseFaceValueStatisfiedFeaFileOfAGivenImage)
+TEST_F(ftMultiThread, toPointOutTheRecogniseFaceValueStatisfiedFeaFileOfAGivenImage)
 {
 	string path = "..\\..\\Images\\image\\250.jpg";
 	char feature[8192];
@@ -343,7 +345,7 @@ TEST(ftMultiThread, toPointOutTheRecogniseFaceValueStatisfiedFeaFileOfAGivenImag
 }
 
 /* ISCompare只支持8192的feature */
-TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue_SingleThread)
+TEST_F(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue_SingleThread)
 {
 	// 第一层循环使用的数据
 	string imgPath = GConfig::getInstance().getImgPath();
@@ -397,7 +399,7 @@ TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue
 }
 
 /* 无法在线程下同时创建特征提取通道和对比通道，故障修改中，现将在主线程创建好的通道传入线程，先这样用着。 */
-TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue_MultiThread)
+TEST_F(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue_MultiThread)
 {
 	string imgPath = GConfig::getInstance().getImgPath();
 	vector<string> images;
@@ -427,17 +429,18 @@ TEST(ftMultiThread, toCompareEachImageWithAllFeaFilesAccordingToCompareFaceValue
 }
 
 /* ISCompareMN/ISCompareMNfaster只支持2048的feature */
-TEST(ftMultiThread, toCompareMNFasterEachImageWithAllFeaFilesAccordingToCompareFaceValue_SingleThread)
+TEST_F(ftMultiThread, toCompareMNFasterEachImageWithAllFeaFilesAccordingToCompareFaceValue_SingleThread)
 {
 	// ISCompareMNfasterprep
 	string pcaFeaPath = GConfig::getInstance().getPcaFeaPath();
 	vector<string> pcaFeaFiles;
 	listOutDirectoryFiles(pcaFeaPath, pcaFeaFiles);
+	int fileNumber = pcaFeaFiles.size();
 
 	char **pcaFeaSaved;
-	ALLOC_DOUBLE_STAR(pcaFeaFiles.size(), 2048, char, pcaFeaSaved, M)
+	ALLOC_DOUBLE_STAR(fileNumber, 2048, char, pcaFeaSaved, M)
 	fstream f;
-	for(unsigned int i=0; i<pcaFeaFiles.size(); i++)
+	for(int i=0; i<fileNumber; i++)
 	{
 		char pcaFeaTemp[2048];
 
@@ -451,7 +454,7 @@ TEST(ftMultiThread, toCompareMNFasterEachImageWithAllFeaFilesAccordingToCompareF
 	}
 
 	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
-	EXPECT_TRUE(SUCC == ISCompareMNfasterprep(defaultCompareChannel, pcaFeaSaved, pcaFeaFiles.size()));
+	EXPECT_TRUE(SUCC == ISCompareMNfasterprep(defaultCompareChannel, pcaFeaSaved, fileNumber));
 
 	// ISGetFeatureRgb && ISCompareMN
 	string imgPath = GConfig::getInstance().getImgPath();
@@ -461,7 +464,7 @@ TEST(ftMultiThread, toCompareMNFasterEachImageWithAllFeaFilesAccordingToCompareF
 	char featurePca[2048];
 	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
 	float **score;
-	ALLOC_DOUBLE_STAR(1, pcaFeaFiles.size(), float, score, S)
+	ALLOC_DOUBLE_STAR(1, fileNumber, float, score, S)
 	float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
 
 	SYSTEMTIME tStart, tStop;
@@ -494,7 +497,7 @@ TEST(ftMultiThread, toCompareMNFasterEachImageWithAllFeaFilesAccordingToCompareF
 	cout << "单线程下，1000张人脸特征卷积CompareMN共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
 
-TEST(ftMultiThread, toCompareMNEachImageWithAllFeaFilesAccordingToCompareFaceValue_SingleThread)
+TEST_F(ftMultiThread, toCompareMNEachImageWithAllFeaFilesAccordingToCompareFaceValue_SingleThread)
 {
 	string imgPath = GConfig::getInstance().getImgPath();
 	vector<string> images;
@@ -522,10 +525,11 @@ TEST(ftMultiThread, toCompareMNEachImageWithAllFeaFilesAccordingToCompareFaceVal
 		vector<string> pcaFeaFiles;
 		string pcaFeaPath = GConfig::getInstance().getPcaFeaPath();
 		listOutDirectoryFiles(pcaFeaPath, pcaFeaFiles);
+		int fileNumber = pcaFeaFiles.size();
 		char pcaFeaTemp[2048];
 		char **featureSaved;
-		ALLOC_DOUBLE_STAR(pcaFeaFiles.size(), 2048, char, featureSaved, N)
-		for(unsigned int i=0; i<pcaFeaFiles.size(); i++)
+		ALLOC_DOUBLE_STAR(fileNumber, 2048, char, featureSaved, N)
+		for(int i=0; i<fileNumber; i++)
 		{
 			f.open(pcaFeaFiles[i], ios::in | ios::binary);
 			f.seekg(0, ios::beg);
@@ -538,7 +542,7 @@ TEST(ftMultiThread, toCompareMNEachImageWithAllFeaFilesAccordingToCompareFaceVal
 
 		/* 构造score并计算score */
 		float **score;
-		ALLOC_DOUBLE_STAR(1, pcaFeaFiles.size(), float, score, S)
+		ALLOC_DOUBLE_STAR(1, fileNumber, float, score, S)
 		EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, featureStar, 1, featureSaved, 1000, score));
 		for(unsigned int t=0; t<images.size(); t++){
 			if(score[0][t]<recongiseFaceValue && s==t)

@@ -4,11 +4,12 @@
 #include "face_sdk.h"
 #include "opencv.hpp"
 #include "common.h"
+#include "testSuits.h"
 
 using namespace std;
 using namespace cv;
 
-TEST(ftError, inputImagesWithATooSmallSize)
+TEST_F(ftError, inputImagesWithATooSmallSize)
 {
 	int outRst[50][4];
 	int outLength;
@@ -19,7 +20,7 @@ TEST(ftError, inputImagesWithATooSmallSize)
 	DESTROY_DET_TRACK_CHANNEL(detChannelId);
 }
 
-TEST(ftError, inputImagesCanNotBeFound)
+TEST_F(ftError, inputImagesCanNotBeFound)
 {
 	int outRst[50][4];
 	int outLength;
@@ -30,7 +31,7 @@ TEST(ftError, inputImagesCanNotBeFound)
 	DESTROY_DET_TRACK_CHANNEL(detChannelId);
 }
 
-TEST(ftError, detectWithOutCreatingDectectChannel)
+TEST_F(ftError, detectWithOutCreatingDectectChannel)
 {
 	int outRst[50][4];
 	int outLength;
@@ -39,7 +40,7 @@ TEST(ftError, detectWithOutCreatingDectectChannel)
 	EXPECT_TRUE(UNKNOWN_ERROR == ISFaceDetectRgb(0, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &outLength));
 }
 
-TEST(ftError, inputImagesDetectedNoFace)
+TEST_F(ftError, inputImagesDetectedNoFace)
 {
 	int outRst[50][4];
 	int outLength;
@@ -54,7 +55,7 @@ TEST(ftError, inputImagesDetectedNoFace)
 	DESTROY_DET_TRACK_CHANNEL(detChannelId);
 }
 
-TEST(ftError, inputImagesGetNoFeature)
+TEST_F(ftError, inputImagesGetNoFeature)
 {
 	Mat image = imread("..\\..\\Images\\ERROR\\502.jpg");
 
@@ -64,7 +65,7 @@ TEST(ftError, inputImagesGetNoFeature)
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
 }
 
-TEST(ftError, whatImageLeadsToGetFeatureError)
+TEST_F(ftError, whatImageLeadsToGetFeatureError)
 {
 	Mat img = imread("..\\..\\Images\\ERROR\\503.jpg");
 

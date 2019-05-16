@@ -3,9 +3,9 @@ Note: Google Test filter = ftInterface.getAFacePcaFeatureAndSave
 [----------] Global test environment set-up.
 [----------] 1 test from ftInterface
 [ RUN      ] ftInterface.getAFacePcaFeatureAndSave
-[       OK ] ftInterface.getAFacePcaFeatureAndSave (1692 ms)
-[----------] 1 test from ftInterface (1693 ms total)
+[       OK ] ftInterface.getAFacePcaFeatureAndSave (1716 ms)
+[----------] 1 test from ftInterface (1716 ms total)
 
 [----------] Global test environment tear-down
-[==========] 1 test from 1 test case ran. (1693 ms total)
+[==========] 1 test from 1 test case ran. (1717 ms total)
 [  PASSED  ] 1 test.

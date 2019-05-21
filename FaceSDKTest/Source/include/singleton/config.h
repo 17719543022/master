@@ -14,6 +14,10 @@ struct Config{
 	float recogniseFaceValue;
 	int maxImgNum;
 	string imgPath;
+	string ISCompareA;
+	string ISCompareB;
+	string ISCompareMNA;
+	string ISCompareMNB;
 	string feaPath;
 	string pcaFeaPath;
 	string report;
@@ -31,6 +35,10 @@ public:
 	float getRecogniseFaceValue();
 	int getMaxImgNum();
 	string getImgPath();
+	string getISCompareA();
+	string getISCompareB();
+	string getISCompareMNA();
+	string getISCompareMNB();
 	string getFeaPath();
 	string getPcaFeaPath();
 	string getReport();

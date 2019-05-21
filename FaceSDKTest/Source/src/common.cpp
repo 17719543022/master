@@ -29,6 +29,26 @@ namespace{
 	}
 }
 
+int getGap(SYSTEMTIME tStart, SYSTEMTIME tStop){
+	int gap = 0;
+
+	gap += (tStop.wHour - tStart.wHour)*60*60*1000;
+	gap += (tStop.wMinute - tStart.wMinute)*60*1000;
+	gap += (tStop.wSecond - tStart.wSecond)*1000;
+	gap += tStop.wMilliseconds - tStart.wMilliseconds;
+
+	return gap;
+}
+
+string getFileHeader(const char *p){
+	char slash = '\\';
+	const char *q = strrchr(p, slash) + 1;
+	char dot = '.';
+	const char *t = strrchr(p, dot);
+
+	return string(q, t);
+}
+
 void switchShow(char *name, Mat image)
 {
 	if(viewSwitch)

@@ -4,6 +4,8 @@
 #include "face_sdk.h"
 #include "opencv.hpp"
 #include <vector>
+#include <Windows.h>
+
 using namespace cv;
 
 #define DEFAULT_DET_TRACK_CHANNEL() ISCreateDetTrackChannel(46, 1000, 0);
@@ -27,6 +29,9 @@ using namespace cv;
 		target##tag[i] = &*vec2##tag[i].begin();\
 	}\
 	star = target##tag.data();
+
+int getGap(SYSTEMTIME tStart, SYSTEMTIME tStop);
+string getFileHeader(const char *p);
 
 void imCommonShow(char *name, Mat img, int outRst[][4], int len, int thickness = 2, int delay = 1000);
 void imReadAndShow(char *imgPath);

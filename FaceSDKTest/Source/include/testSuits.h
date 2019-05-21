@@ -4,6 +4,8 @@
 #include <gtest/gtest.h>
 #include "opencv.hpp"
 
+using namespace cv;
+
 class ftError : public testing::Test{
 protected:
 	virtual void SetUp(){
@@ -35,6 +37,16 @@ protected:
 };
 
 class ftMultiThread : public testing::Test{
+protected:
+	virtual void SetUp(){
+
+	}
+	virtual void TearDown(){
+		destroyAllWindows();
+	}
+};
+
+class ftVersion : public testing::Test{
 protected:
 	virtual void SetUp(){
 

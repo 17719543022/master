@@ -15,6 +15,12 @@ Config::Config(){
 	recogniseFaceValue = reader.readFloat("PARAM", "recogniseFaceValue", 0);
 	maxImgNum = reader.readInt("PARAM", "maxImgNum", 0);
 	imgPath = reader.readString("SOURCE", "imgPath", "");
+
+	ISCompareA = reader.readString("SOURCE", "ISCompareA", "");
+	ISCompareB = reader.readString("SOURCE", "ISCompareB", "");
+	ISCompareMNA = reader.readString("SOURCE", "ISCompareMNA", "");
+	ISCompareMNB = reader.readString("SOURCE", "ISCompareMNB", "");
+
 	feaPath = reader.readString("SOURCE", "feaPath", "");
 	pcaFeaPath = reader.readString("SOURCE", "pcaFeaPath", "");
 	report = reader.readString("RESULT", "report", "");
@@ -70,6 +76,22 @@ string GConfig::getImgPath(){
 	return config.imgPath;
 }
 
+string GConfig::getISCompareA(){
+	return config.ISCompareA;
+}
+
+string GConfig::getISCompareB(){
+	return config.ISCompareB;
+}
+
+string GConfig::getISCompareMNA(){
+	return config.ISCompareMNA;
+}
+
+string GConfig::getISCompareMNB(){
+	return config.ISCompareMNB;
+}
+
 string GConfig::getFeaPath(){
 	return config.feaPath;
 }
@@ -95,6 +117,10 @@ void GConfig::dump(){
 	cout << "recogniseFaceValue = " << getRecogniseFaceValue() << endl;
 	cout << "maxImgNum = " << getMaxImgNum() << endl;
 	cout << "imgPath = " << getImgPath() << endl;
+	cout << "ISCompareA = " << getISCompareA() << endl;
+	cout << "ISCompareB = " << getISCompareB() << endl;
+	cout << "ISCompareMNA = " << getISCompareMNA() << endl;
+	cout << "ISCompareMNB = " << getISCompareMNB() << endl;
 	cout << "feaPath = " << getFeaPath() << endl;
 	cout << "pcaFeaPath = " << getPcaFeaPath() << endl;
 	cout << "report = " << getReport() << endl;

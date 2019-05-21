@@ -16,26 +16,6 @@ using namespace std;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 namespace{
-	string getFileHeader(const char *p){
-		char slash = '\\';
-		const char *q = strrchr(p, slash) + 1;
-		char dot = '.';
-		const char *t = strrchr(p, dot);
-
-		return string(q, t);
-	}
-
-	int getGap(SYSTEMTIME tStart, SYSTEMTIME tStop){
-		int gap = 0;
-
-		gap += (tStop.wHour - tStart.wHour)*60*60*1000;
-		gap += (tStop.wMinute - tStart.wMinute)*60*1000;
-		gap += (tStop.wSecond - tStart.wSecond)*1000;
-		gap += tStop.wMilliseconds - tStart.wMilliseconds;
-
-		return gap;
-	}
-
 	void *faceDetect(void *ptr){
 		vector<string> images = *(vector<string> *)ptr;
 		int len = 0;
@@ -55,10 +35,10 @@ namespace{
 		vector<string> images = *(vector<string> *)ptr;
 
 		int defaultFeatureChannelId = DEFAULT_FEATURE_CHANNEL();
-		char feature[8192];
+		char feature[5][8192];
 		for(unsigned int i=0; i<images.size(); i++){
 			Mat image = imread(images[i]);
-			EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, feature));
+			EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, feature[0]));
 		}
 		DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
 
@@ -213,7 +193,7 @@ TEST_F(ftMultiThread, detect1000FacesWithMultiThreadAndDetermineCost)
 	cout << "多线程检测1000张人脸总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
 
-TEST_F(ftMultiThread, get1000FaceFeaturesWithSingleThreadAndDetermineCost)
+TEST_F(ftMultiThread, get1000FaceFeaturesAndDetermineCost_SingleThread)
 {
 	string imgPath = GConfig::getInstance().getImgPath();
 	vector<string> images;
@@ -221,18 +201,55 @@ TEST_F(ftMultiThread, get1000FaceFeaturesWithSingleThreadAndDetermineCost)
 
 	SYSTEMTIME	tStart, tStop;
 	GetSystemTime(&tStart);
+	char feature[5][8192];
 
 	int defaultFeatureChannelId = DEFAULT_FEATURE_CHANNEL();
 	for(unsigned int i=0; i<images.size(); i++){
 		Mat image = imread(images[i]);
-		char feature[8192];
-		EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, feature));
+		EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, feature[0]));
 	}
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
 
 	GetSystemTime(&tStop);
 
 	cout << "单线程提取1000张人脸特征总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+}
+
+TEST_F(ftMultiThread, get1000FaceFeaturesAndDetermineCost_MultiThread)
+{
+	string imgPath = GConfig::getInstance().getImgPath();
+	vector<string> images;
+	listOutDirectoryFiles(imgPath, images);
+
+	unsigned int detectThreadNum = GConfig::getInstance().getGetFeaThreadNum();
+	int imgNumPerThread = int(images.size()/detectThreadNum);
+
+	vector<vector<string>> image;
+	for(unsigned int i=0; i<detectThreadNum; i++){
+		image.push_back(vector<string>());
+		if(i == detectThreadNum-1){
+			image[i].assign(images.begin()+i*imgNumPerThread, images.end());
+		}
+		else{
+			image[i].assign(images.begin()+i*imgNumPerThread, images.begin()+(i+1)*imgNumPerThread);
+		}
+	}
+
+	SYSTEMTIME tStart, tStop;
+    GetSystemTime(&tStart);
+
+	vector<pthread_t> pThread(detectThreadNum);
+	for(unsigned int i=0; i<detectThreadNum; i++){
+		EXPECT_TRUE(SUCC == pthread_create(&pThread[i], NULL, faceFeature, (void *)&image[i]));
+	}
+
+	void *retVal;
+	for(unsigned int i=0; i<detectThreadNum; i++){
+		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
+	}
+
+    GetSystemTime(&tStop);
+	cout << "多线程提取1000张人脸特征总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
 
 TEST_F(ftMultiThread, get1000FacePcaFeaturesWithSingleThreadAndSave)
@@ -273,43 +290,6 @@ TEST_F(ftMultiThread, get1000FacePcaFeaturesWithSingleThreadAndSave)
 		filePca.clear();
 	}
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
-}
-
-TEST_F(ftMultiThread, get1000FaceFeaturesWithMultiThreadAndDetermineCost)
-{
-	string imgPath = GConfig::getInstance().getImgPath();
-	vector<string> images;
-	listOutDirectoryFiles(imgPath, images);
-
-	unsigned int detectThreadNum = GConfig::getInstance().getGetFeaThreadNum();
-	int imgNumPerThread = int(images.size()/detectThreadNum);
-
-	vector<vector<string>> image;
-	for(unsigned int i=0; i<detectThreadNum; i++){
-		image.push_back(vector<string>());
-		if(i == detectThreadNum-1){
-			image[i].assign(images.begin()+i*imgNumPerThread, images.end());
-		}
-		else{
-			image[i].assign(images.begin()+i*imgNumPerThread, images.begin()+(i+1)*imgNumPerThread);
-		}
-	}
-
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
-
-	vector<pthread_t> pThread(detectThreadNum);
-	for(unsigned int i=0; i<detectThreadNum; i++){
-		EXPECT_TRUE(SUCC == pthread_create(&pThread[i], NULL, faceFeature, (void *)&image[i]));
-	}
-
-	void *retVal;
-	for(unsigned int i=0; i<detectThreadNum; i++){
-		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
-	}
-
-    GetSystemTime(&tStop);
-	cout << "多线程提取1000张人脸特征总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
 }
 
 TEST_F(ftMultiThread, toPointOutTheRecogniseFaceValueStatisfiedFeaFileOfAGivenImage)

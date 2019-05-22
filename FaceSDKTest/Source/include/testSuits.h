@@ -6,7 +6,7 @@
 
 using namespace cv;
 
-class ftError : public testing::Test{
+class ftDetect : public testing::Test{
 protected:
 	virtual void SetUp(){
 
@@ -16,7 +16,7 @@ protected:
 	}
 };
 
-class ftAppliance : public testing::Test{
+class ftFeature : public testing::Test{
 protected:
 	virtual void SetUp(){
 
@@ -26,27 +26,7 @@ protected:
 	}
 };
 
-class ftInterface : public testing::Test{
-protected:
-	virtual void SetUp(){
-
-	}
-	virtual void TearDown(){
-		destroyAllWindows();
-	}
-};
-
-class ftMultiThread : public testing::Test{
-protected:
-	virtual void SetUp(){
-
-	}
-	virtual void TearDown(){
-		destroyAllWindows();
-	}
-};
-
-class ftVersion : public testing::Test{
+class ftCompare : public testing::Test{
 protected:
 	virtual void SetUp(){
 

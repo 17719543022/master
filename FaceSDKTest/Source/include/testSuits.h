@@ -6,7 +6,7 @@
 
 using namespace cv;
 
-class ftDetect : public testing::Test{
+class ftISDetTrack : public testing::Test{
 protected:
 	virtual void SetUp(){
 
@@ -16,7 +16,7 @@ protected:
 	}
 };
 
-class ftFeature : public testing::Test{
+class ftISFeature : public testing::Test{
 protected:
 	virtual void SetUp(){
 
@@ -26,7 +26,7 @@ protected:
 	}
 };
 
-class ftCompare : public testing::Test{
+class ftISCompare : public testing::Test{
 protected:
 	virtual void SetUp(){
 

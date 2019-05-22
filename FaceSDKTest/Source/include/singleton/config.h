@@ -14,8 +14,11 @@ struct Config{
 	float recogniseFaceValue;
 	int maxImgNum;
 	string detectImgPath;
-	string rectangleSPath;
-	string rectangleMPath;
+	string recDetectSPath;
+	string recDetectMPath;
+	string trackImgPath;
+	string recTrackSPath;
+	string recTrackMPath;
 	string report;
 	string log;
 };
@@ -31,8 +34,11 @@ public:
 	float getRecogniseFaceValue();
 	int getMaxImgNum();
 	string getDetectImgPath();
-	string getRectangleSPath();
-	string getRectangleMPath();
+	string getRecDetectSPath();
+	string getRecDetectMPath();
+	string getTrackImgPath();
+	string getRecTrackSPath();
+	string getRecTrackMPath();
 	string getReport();
 	string getLog();
 	void dump();

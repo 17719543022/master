@@ -15,8 +15,11 @@ Config::Config(){
 	recogniseFaceValue = reader.readFloat("PARAM", "recogniseFaceValue", 0);
 	maxImgNum = reader.readInt("PARAM", "maxImgNum", 0);
 	detectImgPath = reader.readString("ISFaceDetectPath", "detectImgPath", "");
-	rectangleSPath = reader.readString("ISFaceDetectPath", "rectangleSPath", "");
-	rectangleMPath = reader.readString("ISFaceDetectPath", "rectangleMPath", "");
+	recDetectSPath = reader.readString("ISFaceDetectPath", "recDetectSPath", "");
+	recDetectMPath = reader.readString("ISFaceDetectPath", "recDetectMPath", "");
+	trackImgPath = reader.readString("ISFaceDetTrackRgb", "trackImgPath", "");
+	recTrackSPath = reader.readString("ISFaceDetTrackRgb", "recTrackSPath", "");
+	recTrackMPath = reader.readString("ISFaceDetTrackRgb", "recTrackMPath", "");
 	report = reader.readString("RESULT", "report", "");
 	log = reader.readString("RESULT", "log", "");
 }
@@ -66,44 +69,28 @@ int GConfig::getMaxImgNum(){
 	return config.maxImgNum;
 }
 
-//string GConfig::getImgPath(){
-//	return config.imgPath;
-//}
-//
-//string GConfig::getISCompareA(){
-//	return config.ISCompareA;
-//}
-//
-//string GConfig::getISCompareB(){
-//	return config.ISCompareB;
-//}
-//
-//string GConfig::getISCompareMNA(){
-//	return config.ISCompareMNA;
-//}
-//
-//string GConfig::getISCompareMNB(){
-//	return config.ISCompareMNB;
-//}
-//
-//string GConfig::getFeaPath(){
-//	return config.feaPath;
-//}
-//
-//string GConfig::getPcaFeaPath(){
-//	return config.pcaFeaPath;
-//}
-
 string GConfig::getDetectImgPath(){
 	return config.detectImgPath;
 }
 
-string GConfig::getRectangleSPath(){
-	return config.rectangleSPath;
+string GConfig::getRecDetectSPath(){
+	return config.recDetectSPath;
 }
 
-string GConfig::getRectangleMPath(){
-	return config.rectangleMPath;
+string GConfig::getRecDetectMPath(){
+	return config.recDetectMPath;
+}
+
+string GConfig::getTrackImgPath(){
+	return config.trackImgPath;
+}
+
+string GConfig::getRecTrackSPath(){
+	return config.recTrackSPath;
+}
+
+string GConfig::getRecTrackMPath(){
+	return config.recTrackMPath;
 }
 
 string GConfig::getReport(){
@@ -123,8 +110,11 @@ void GConfig::dump(){
 	cout << "recogniseFaceValue = " << getRecogniseFaceValue() << endl;
 	cout << "maxImgNum = " << getMaxImgNum() << endl;
 	cout << "detectImgPath" << getDetectImgPath() << endl;
-	cout << "rectangleSPath" << getRectangleSPath() << endl;
-	cout << "rectangleMPath" << getRectangleMPath() << endl;
+	cout << "recDetectSPath" << getRecDetectSPath() << endl;
+	cout << "recDetectMPath" << getRecDetectMPath() << endl;
+	cout << "trackImgPath" << getTrackImgPath() << endl;
+	cout << "recTrackSPath" << getRecTrackSPath() << endl;
+	cout << "recTrackMPath" << getRecTrackMPath() << endl;
 	cout << "report = " << getReport() << endl;
 	cout << "log = " << getLog() << endl;
 }

@@ -19,6 +19,9 @@ struct Config{
 	string trackImgPath;
 	string recTrackSPath;
 	string recTrackMPath;
+	string faceInfoImgPath;
+	string faceInfoSPath;
+	string faceInfoMPath;
 	string report;
 	string log;
 };
@@ -39,6 +42,9 @@ public:
 	string getTrackImgPath();
 	string getRecTrackSPath();
 	string getRecTrackMPath();
+	string getFaceInfoImgPath();
+	string getFaceInfoSPath();
+	string getFaceInfoMPath();
 	string getReport();
 	string getLog();
 	void dump();

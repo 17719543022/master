@@ -20,6 +20,9 @@ Config::Config(){
 	trackImgPath = reader.readString("ISFaceDetTrackRgb", "trackImgPath", "");
 	recTrackSPath = reader.readString("ISFaceDetTrackRgb", "recTrackSPath", "");
 	recTrackMPath = reader.readString("ISFaceDetTrackRgb", "recTrackMPath", "");
+	faceInfoImgPath = reader.readString("ISCalFaceInfoPath", "faceInfoImgPath", "");
+	faceInfoSPath = reader.readString("ISCalFaceInfoPath", "faceInfoSPath", "");
+	faceInfoMPath = reader.readString("ISCalFaceInfoPath", "faceInfoMPath", "");
 	report = reader.readString("RESULT", "report", "");
 	log = reader.readString("RESULT", "log", "");
 }
@@ -93,6 +96,18 @@ string GConfig::getRecTrackMPath(){
 	return config.recTrackMPath;
 }
 
+string GConfig::getFaceInfoImgPath(){
+	return config.faceInfoImgPath;
+}
+
+string GConfig::getFaceInfoSPath(){
+	return config.faceInfoSPath;
+}
+
+string GConfig::getFaceInfoMPath(){
+	return config.faceInfoMPath;
+}
+
 string GConfig::getReport(){
 	return config.report;
 }
@@ -115,6 +130,9 @@ void GConfig::dump(){
 	cout << "trackImgPath" << getTrackImgPath() << endl;
 	cout << "recTrackSPath" << getRecTrackSPath() << endl;
 	cout << "recTrackMPath" << getRecTrackMPath() << endl;
+	cout << "faceInfoImgPath" << getFaceInfoImgPath() << endl;
+	cout << "faceInfoSPath" << getFaceInfoSPath() << endl;
+	cout << "faceInfoMPath" << getFaceInfoMPath() << endl;
 	cout << "report = " << getReport() << endl;
 	cout << "log = " << getLog() << endl;
 }

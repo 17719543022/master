@@ -23,6 +23,17 @@ Config::Config(){
 	faceInfoImgPath = reader.readString("ISCalFaceInfoPath", "faceInfoImgPath", "");
 	faceInfoSPath = reader.readString("ISCalFaceInfoPath", "faceInfoSPath", "");
 	faceInfoMPath = reader.readString("ISCalFaceInfoPath", "faceInfoMPath", "");
+	featureImgPath = reader.readString("ISGetFeaturePath", "featureImgPath", "");
+	feaSPath = reader.readString("ISGetFeaturePath", "feaSPath", "");
+	pcaSPath = reader.readString("ISGetFeaturePath", "pcaSPath", "");
+	feaMPath = reader.readString("ISGetFeaturePath", "feaMPath", "");
+	pcaMPath = reader.readString("ISGetFeaturePath", "pcaMPath", "");
+	compareImgAPath = reader.readString("ISCompare", "compareImgAPath", "");
+	compareImgBPath = reader.readString("ISCompare", "compareImgBPath", "");
+	featureAPath = reader.readString("ISCompare", "featureAPath", "");
+	featureBPath = reader.readString("ISCompare", "featureBPath", "");
+	pcaAPath = reader.readString("ISCompare", "pcaAPath", "");
+	pcaBPath = reader.readString("ISCompare", "pcaBPath", "");
 	report = reader.readString("RESULT", "report", "");
 	log = reader.readString("RESULT", "log", "");
 }
@@ -108,6 +119,50 @@ string GConfig::getFaceInfoMPath(){
 	return config.faceInfoMPath;
 }
 
+string GConfig::getFeatureImgPath(){
+	return config.featureImgPath;
+}
+
+string GConfig::getFeaSPath(){
+	return config.feaSPath;
+}
+
+string GConfig::getPcaSPath(){
+	return config.pcaSPath;
+}
+
+string GConfig::getFeaMPath(){
+	return config.feaMPath;
+}
+
+string GConfig::getPcaMPath(){
+	return config.pcaMPath;
+}
+
+string GConfig::getCompareImgAPath(){
+	return config.compareImgAPath;
+}
+
+string GConfig::getCompareImgBPath(){
+	return config.compareImgBPath;
+}
+
+string GConfig::getFeatureAPath(){
+	return config.featureAPath;
+}
+
+string GConfig::getFeatureBPath(){
+	return config.featureBPath;
+}
+
+string GConfig::getPcaAPath(){
+	return config.pcaAPath;
+}
+
+string GConfig::getPcaBPath(){
+	return config.pcaBPath;
+}
+
 string GConfig::getReport(){
 	return config.report;
 }
@@ -133,6 +188,17 @@ void GConfig::dump(){
 	cout << "faceInfoImgPath" << getFaceInfoImgPath() << endl;
 	cout << "faceInfoSPath" << getFaceInfoSPath() << endl;
 	cout << "faceInfoMPath" << getFaceInfoMPath() << endl;
+	cout << "featureImgPath" << getFeatureImgPath() << endl;
+	cout << "feaSPath" << getFeaSPath() << endl;
+	cout << "pcaSPath" << getPcaSPath() << endl;
+	cout << "feaMPath" << getFeaMPath() << endl;
+	cout << "pcaMPath" << getPcaMPath() << endl;
+	cout << "compareImgAPath" << getCompareImgAPath() << endl;
+	cout << "compareImgBPath" << getCompareImgBPath() << endl;
+	cout << "featureAPath" << getFeatureAPath() << endl;
+	cout << "featureBPath" << getFeatureBPath() << endl;
+	cout << "pcaAPath" << getPcaAPath() << endl;
+	cout << "pcaBPath" << getPcaBPath() << endl;
 	cout << "report = " << getReport() << endl;
 	cout << "log = " << getLog() << endl;
 }

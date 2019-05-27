@@ -54,6 +54,8 @@ namespace{
 
 TEST_F(ftISFeature, ISGetFeaturePath_SingleThread)
 {
+	SYSTEMTIME	tStart, tStop;
+	GetSystemTime(&tStart);
 	string imgPath = GConfig::getInstance().getFeatureImgPath();
 	vector<string> images;
 	listOutDirectoryFiles(imgPath, images);
@@ -64,8 +66,6 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread)
 	cout << "线程数：" << "单线程" << endl;
 	cout << ">>Outputs<<" << endl;
 
-	SYSTEMTIME	tStart, tStop;
-	GetSystemTime(&tStart);
 	char feature[5][8192];
 	char pca[2048];
 	fstream fileF, fileP;
@@ -109,6 +109,8 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread)
 
 TEST_F(ftISFeature, ISGetFeaturePath_MultiThread)
 {
+	SYSTEMTIME tStart, tStop;
+    GetSystemTime(&tStart);
 	string imgPath = GConfig::getInstance().getFeatureImgPath();
 	vector<string> images;
 	listOutDirectoryFiles(imgPath, images);
@@ -132,9 +134,6 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread)
 			image[i].assign(images.begin()+i*imgNumPerThread, images.begin()+(i+1)*imgNumPerThread);
 		}
 	}
-
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
 
 	vector<pthread_t> pThread(detectThreadNum);
 	for(unsigned int i=0; i<detectThreadNum; i++){

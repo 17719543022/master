@@ -111,6 +111,9 @@ namespace{
 
 TEST_F(ftISDetTrack, ISFaceDetectPath_SingleThread)
 {
+	SYSTEMTIME tStart, tStop;
+    GetSystemTime(&tStart);
+
 	string imgPath = GConfig::getInstance().getDetectImgPath();
 	vector<string> images;
 	listOutDirectoryFiles(imgPath, images);
@@ -128,8 +131,6 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_SingleThread)
 	command = "mkdir " + recDetectS;
 	system(command.c_str());
 
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
 	detectedNum = 0;
 	fstream f;
 	
@@ -163,6 +164,9 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_SingleThread)
 
 TEST_F(ftISDetTrack, ISFaceDetectPath_MultiThread)
 {
+	SYSTEMTIME tStart, tStop;
+    GetSystemTime(&tStart);
+
 	string imgPath = GConfig::getInstance().getDetectImgPath();
 	unsigned int detectThreadNum = GConfig::getInstance().getDetectThreadNum();
 	vector<string> images;
@@ -191,8 +195,6 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_MultiThread)
 		}
 	}
 
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
 	detectedNum = 0;
 
 	vector<pthread_t> pThread(detectThreadNum);
@@ -262,6 +264,9 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_OutResultCheck)
 
 TEST_F(ftISDetTrack, ISFaceDetTrackRgb_SingleThread)
 {
+	SYSTEMTIME tStart, tStop;
+    GetSystemTime(&tStart);
+
 	string imgPath = GConfig::getInstance().getTrackImgPath();
 	vector<string> images;
 	listOutDirectoryFiles(imgPath, images);
@@ -279,8 +284,6 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_SingleThread)
 	command = "mkdir " + recTrackS;
 	system(command.c_str());
 
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
 	detectedNum = 0;
 	fstream f;
 	
@@ -317,6 +320,9 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_SingleThread)
 
 TEST_F(ftISDetTrack, ISFaceDetTrackRgb_MultiThread)
 {
+	SYSTEMTIME tStart, tStop;
+    GetSystemTime(&tStart);
+
 	string imgPath = GConfig::getInstance().getTrackImgPath();
 	unsigned int detectThreadNum = GConfig::getInstance().getDetectThreadNum();
 	vector<string> images;
@@ -345,10 +351,7 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_MultiThread)
 		}
 	}
 
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
 	detectedNum = 0;
-
 	vector<pthread_t> pThread(detectThreadNum);
 	for(unsigned int i=0; i<detectThreadNum; i++){
 		EXPECT_TRUE(SUCC == pthread_create(&pThread[i], NULL, faceTrack, (void *)&image[i]));
@@ -416,6 +419,9 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_OutResultCheck)
 
 TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread)
 {
+	SYSTEMTIME tStart, tStop;
+    GetSystemTime(&tStart);
+
 	string imgPath = GConfig::getInstance().getFaceInfoImgPath();
 	vector<string> images;
 	listOutDirectoryFiles(imgPath, images);
@@ -436,8 +442,6 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread)
 	command = "mkdir " + faceInfoS;
 	system(command.c_str());
 
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
 	detectedNum = 0;
 	fstream f;
 	
@@ -475,6 +479,9 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread)
 
 TEST_F(ftISDetTrack, ISCalFaceInfoPath_MultiThread)
 {
+	SYSTEMTIME tStart, tStop;
+    GetSystemTime(&tStart);
+
 	string imgPath = GConfig::getInstance().getFaceInfoImgPath();
 	unsigned int detectThreadNum = GConfig::getInstance().getDetectThreadNum();
 	vector<string> images;
@@ -503,10 +510,7 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_MultiThread)
 		}
 	}
 
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
 	detectedNum = 0;
-
 	vector<pthread_t> pThread(detectThreadNum);
 	for(unsigned int i=0; i<detectThreadNum; i++){
 		EXPECT_TRUE(SUCC == pthread_create(&pThread[i], NULL, faceInfo, (void *)&image[i]));

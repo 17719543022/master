@@ -109,8 +109,7 @@ namespace{
 	}
 }
 
-TEST_F(ftISDetTrack, ISFaceDetectPath_SingleThread)
-{
+TEST_F(ftISDetTrack, ISFaceDetectPath_SingleThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 
@@ -121,8 +120,8 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_SingleThread)
 	int outRst[50][4];
 
 	cout << ">>Inputs <<" << endl;
-	cout << "待检测人脸目录：" << imgPath << endl;
-	cout << "线程数：" << "单线程" << endl;
+	cout << "image directory: " << imgPath << endl;
+	cout << "Threads Num: " << "1" << endl;
 	cout << ">>Outputs<<" << endl;
 
 	string recDetectS = GConfig::getInstance().getRecDetectSPath();
@@ -152,18 +151,17 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_SingleThread)
 
 	GetSystemTime(&tStop);
 
-	cout << "输入图片张数：" << images.size() << endl;
-	cout << "检出到人脸张数：" << detectedNum << endl;
+	cout << "picture num of image directory: " << images.size() << endl;
+	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
-	cout << "检出成功率：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "检出结果存放路径：" << recDetectS << endl;
-	cout << "总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "output detect result to: " << recDetectS << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
-	cout << "单张图片耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
-TEST_F(ftISDetTrack, ISFaceDetectPath_MultiThread)
-{
+TEST_F(ftISDetTrack, ISFaceDetectPath_MultiThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 
@@ -174,8 +172,8 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_MultiThread)
 	int imgNumPerThread = int(images.size()/detectThreadNum);
 
 	cout << ">>Inputs <<" << endl;
-	cout << "待检测人脸目录：" << imgPath << endl;
-	cout << "线程数：" << detectThreadNum << endl;
+	cout << "image directory: " << imgPath << endl;
+	cout << "Threads Num: " << detectThreadNum << endl;
 	cout << ">>Outputs<<" << endl;
 
 	string recDetectM = GConfig::getInstance().getRecDetectMPath();
@@ -209,19 +207,18 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_MultiThread)
 
     GetSystemTime(&tStop);
 
-	cout << "输入图片张数：" << images.size() << endl;
-	cout << "每个线程输入图片张数：" << imgNumPerThread << endl;
-	cout << "检出到人脸张数：" << detectedNum << endl;
+	cout << "picture num of image directory: " << images.size() << endl;
+	cout << "picture num allocated to each thread: " << imgNumPerThread << endl;
+	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
-	cout << "检出成功率：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "检出结果存放路径：" << recDetectM << endl;
-	cout << "总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "output detect result to: " << recDetectM << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
-	cout << "单张图片耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
-TEST_F(ftISDetTrack, ISFaceDetectPath_OutResultCheck)
-{
+TEST_F(ftISDetTrack, ISFaceDetectPath_OutResultCheck){
 	string recDetectS = GConfig::getInstance().getRecDetectSPath();
 	vector<string> recS;
 	listOutDirectoryFiles(recDetectS, recS);
@@ -229,6 +226,11 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_OutResultCheck)
 	string recDetectM = GConfig::getInstance().getRecDetectMPath();
 	vector<string> recM;
 	listOutDirectoryFiles(recDetectM, recM);
+
+	cout << ">>Inputs <<" << endl;
+	cout << "single thread detect result path: " << recDetectS << endl;
+	cout << "multi thread detect result path: " << recDetectM << endl;
+	cout << ">>Outputs<<" << endl;
 
 	EXPECT_TRUE(recS.size()==recM.size());
 
@@ -259,11 +261,10 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_OutResultCheck)
 		}
 	}
 
-	cout << "单线程和多线程ISFaceDetectPath函数返回的outResult和len完全一致！" << endl;
+	cout << "whether single thread or multi thread, the detect result(len/outResult) by ISFaceDetectPath are the same" << endl;
 }
 
-TEST_F(ftISDetTrack, ISFaceDetTrackRgb_SingleThread)
-{
+TEST_F(ftISDetTrack, ISFaceDetTrackRgb_SingleThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 
@@ -274,8 +275,8 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_SingleThread)
 	int outRst[50][4];
 
 	cout << ">>Inputs <<" << endl;
-	cout << "待检测人脸目录：" << imgPath << endl;
-	cout << "线程数：" << "单线程" << endl;
+	cout << "image directory: " << imgPath << endl;
+	cout << "threads num: " << "1" << endl;
 	cout << ">>Outputs<<" << endl;
 
 	string recTrackS = GConfig::getInstance().getRecTrackSPath();
@@ -308,18 +309,17 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_SingleThread)
 
 	GetSystemTime(&tStop);
 
-	cout << "输入图片张数：" << images.size() << endl;
-	cout << "检出到人脸张数：" << detectedNum << endl;
+	cout << "picture num of image directory: " << images.size() << endl;
+	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
-	cout << "检出成功率：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "检出结果存放路径：" << recTrackS << endl;
-	cout << "总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "output detect result to: " << recTrackS << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
-	cout << "单张图片耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
-TEST_F(ftISDetTrack, ISFaceDetTrackRgb_MultiThread)
-{
+TEST_F(ftISDetTrack, ISFaceDetTrackRgb_MultiThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 
@@ -330,8 +330,8 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_MultiThread)
 	int imgNumPerThread = int(images.size()/detectThreadNum);
 
 	cout << ">>Inputs <<" << endl;
-	cout << "待检测人脸目录：" << imgPath << endl;
-	cout << "线程数：" << detectThreadNum << endl;
+	cout << "image directory: " << imgPath << endl;
+	cout << "threads num: " << detectThreadNum << endl;
 	cout << ">>Outputs<<" << endl;
 
 	string recTrackM = GConfig::getInstance().getRecTrackMPath();
@@ -364,19 +364,18 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_MultiThread)
 
     GetSystemTime(&tStop);
 
-	cout << "输入图片张数：" << images.size() << endl;
-	cout << "每个线程输入图片张数：" << imgNumPerThread << endl;
-	cout << "检出到人脸张数：" << detectedNum << endl;
+	cout << "picture num of image directory: " << images.size() << endl;
+	cout << "picture num allocated to each thread: " << imgNumPerThread << endl;
+	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
-	cout << "检出成功率：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "检出结果存放路径：" << recTrackM << endl;
-	cout << "总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "output detect result to: " << recTrackM << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
-	cout << "单张图片耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
-TEST_F(ftISDetTrack, ISFaceDetTrackRgb_OutResultCheck)
-{
+TEST_F(ftISDetTrack, ISFaceDetTrackRgb_OutResultCheck){
 	string recTrackS = GConfig::getInstance().getRecTrackSPath();
 	vector<string> recS;
 	listOutDirectoryFiles(recTrackS, recS);
@@ -384,6 +383,11 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_OutResultCheck)
 	string recTrackM = GConfig::getInstance().getRecTrackMPath();
 	vector<string> recM;
 	listOutDirectoryFiles(recTrackM, recM);
+
+	cout << ">>Inputs <<" << endl;
+	cout << "single thread detect result path: " << recTrackS << endl;
+	cout << "multi thread detect result path: " << recTrackM << endl;
+	cout << ">>Outputs<<" << endl;
 
 	EXPECT_TRUE(recS.size()==recM.size());
 
@@ -414,11 +418,10 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_OutResultCheck)
 		}
 	}
 
-	cout << "单线程和多线程ISFaceDetTrackRgb函数返回的outResult和len完全一致！" << endl;
+	cout << "whether single thread or multi thread, the detect result(len/outResult) by ISFaceDetTrackRgb are the same" << endl;
 }
 
-TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread)
-{
+TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 
@@ -432,8 +435,8 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread)
 	float kScore[50];
 
 	cout << ">>Inputs <<" << endl;
-	cout << "待检测人脸目录：" << imgPath << endl;
-	cout << "线程数：" << "单线程" << endl;
+	cout << "image directory: " << imgPath << endl;
+	cout << "threads num: " << "1" << endl;
 	cout << ">>Outputs<<" << endl;
 
 	string faceInfoS = GConfig::getInstance().getFaceInfoSPath();
@@ -467,18 +470,17 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread)
 
 	GetSystemTime(&tStop);
 
-	cout << "输入图片张数：" << images.size() << endl;
-	cout << "检出到人脸张数：" << detectedNum << endl;
+	cout << "picture num of image directory: " << images.size() << endl;
+	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
-	cout << "检出成功率：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "检出结果存放路径：" << faceInfoS << endl;
-	cout << "总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "output detect result to: " << faceInfoS << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
-	cout << "单张图片耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "timer cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
-TEST_F(ftISDetTrack, ISCalFaceInfoPath_MultiThread)
-{
+TEST_F(ftISDetTrack, ISCalFaceInfoPath_MultiThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 
@@ -489,8 +491,8 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_MultiThread)
 	int imgNumPerThread = int(images.size()/detectThreadNum);
 
 	cout << ">>Inputs <<" << endl;
-	cout << "待检测人脸目录：" << imgPath << endl;
-	cout << "线程数：" << detectThreadNum << endl;
+	cout << "image directory: " << imgPath << endl;
+	cout << "thread num: " << detectThreadNum << endl;
 	cout << ">>Outputs<<" << endl;
 
 	string faceInfoM = GConfig::getInstance().getFaceInfoMPath();
@@ -523,19 +525,18 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_MultiThread)
 
     GetSystemTime(&tStop);
 
-	cout << "输入图片张数：" << images.size() << endl;
-	cout << "每个线程输入图片张数：" << imgNumPerThread << endl;
-	cout << "检出到人脸张数：" << detectedNum << endl;
+	cout << "picture num of image directory: " << images.size() << endl;
+	cout << "picture num allocated to each thread: " << imgNumPerThread << endl;
+	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
-	cout << "检出成功率：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "检出结果存放路径：" << faceInfoM << endl;
-	cout << "总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "output detect result to: " << faceInfoM << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
-	cout << "单张图片耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
-TEST_F(ftISDetTrack, ISCalFaceInfoPath_OutResultCheck)
-{
+TEST_F(ftISDetTrack, ISCalFaceInfoPath_OutResultCheck){
 	string faceInfoS = GConfig::getInstance().getFaceInfoSPath();
 	vector<string> recS;
 	listOutDirectoryFiles(faceInfoS, recS);
@@ -543,6 +544,11 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_OutResultCheck)
 	string faceInfoM = GConfig::getInstance().getFaceInfoMPath();
 	vector<string> recM;
 	listOutDirectoryFiles(faceInfoM, recM);
+
+	cout << ">>Inputs <<" << endl;
+	cout << "single thread detect result path: " << faceInfoS << endl;
+	cout << "multi thread detect result path: " << faceInfoM << endl;
+	cout << ">>Outputs<<" << endl;
 
 	EXPECT_TRUE(recS.size()==recM.size());
 
@@ -598,5 +604,5 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_OutResultCheck)
 		}
 	}
 
-	cout << "单线程和多线程ISFaceDetTrackRgb函数返回的len、outResult、keyPoint、angle、kScore完全一致！" << endl;
+	cout << "whether single thread or multi thread, the detect result(len/outResult/keyPoint/angle/kScore) by ISCalFaceInfoPath are the same" << endl;
 }

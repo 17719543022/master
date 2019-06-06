@@ -90,7 +90,6 @@ namespace{
 	}
 
 	void *compare(void *ptr){
-		// 计算得出当前线程在线程数组中的index，以便后面拿到对应的入参
 		vector<pthread_t> pThreads = *(vector<pthread_t> *)ptr;
 		int pThreads_size = pThreads.size();
 
@@ -101,7 +100,6 @@ namespace{
 			}
 		}
 
-		// 计算得出当前线程需要处理的featureNumPerThread张图片的Feature的地址，并存在featureAsOfCurrentThread中
 		string feaAPath = GConfig::getInstance().getFeatureAPath();
 		vector<string> featureAs;
 		listOutDirectoryFiles(feaAPath, featureAs);
@@ -163,7 +161,6 @@ namespace{
 	}
 
 	void *compareMN(void *ptr){
-		// 计算得出当前线程在线程数组中的index，以便后面拿到对应的入参
 		vector<pthread_t> pThreads = *(vector<pthread_t> *)ptr;
 		int pThreads_size = pThreads.size();
 
@@ -174,7 +171,6 @@ namespace{
 			}
 		}
 
-		// 计算得出当前线程需要处理的pcaNumPerThread张图片的Pca的地址，并存在pcaAsOfCurrentThread中
 		string pcaAPath = GConfig::getInstance().getPcaAPath();
 		vector<string> pcaAs;
 		listOutDirectoryFiles(pcaAPath, pcaAs);
@@ -249,7 +245,6 @@ namespace{
 	}
 
 	void *compareMNfaster(void *ptr){
-		// 计算得出当前线程在线程数组中的index，以便后面拿到对应的入参
 		vector<pthread_t> pThreads = *(vector<pthread_t> *)ptr;
 		int pThreads_size = pThreads.size();
 
@@ -260,7 +255,6 @@ namespace{
 			}
 		}
 
-		// 计算得出当前线程需要处理的pcaNumPerThread张图片的Pca的地址，并存在pcaAsOfCurrentThread中
 		string pcaAPath = GConfig::getInstance().getPcaAPath();
 		vector<string> pcaAs;
 		listOutDirectoryFiles(pcaAPath, pcaAs);
@@ -274,7 +268,7 @@ namespace{
 		}
 		int pcaAsOfCurrentThread_size = pcaAsOfCurrentThread.size();
 
-		// ISCompareMNfasterprep
+		//ISCompareMNfasterprep
 		string pcaBPath = GConfig::getInstance().getPcaBPath();
 		vector<string> pcaBs;
 		listOutDirectoryFiles(pcaBPath, pcaBs);
@@ -300,7 +294,7 @@ namespace{
 
 		EXPECT_TRUE(SUCC == ISCompareMNfasterprep(defaultCompareChannel, pcaB, pcaBs_size));
 	
-		// ISCompareMNfaster
+		//ISCompareMNfaster
 		char **pcaA;
 		ALLOC_DOUBLE_STAR(pcaAsOfCurrentThread_size, 2048, char, pcaA, M)
 		for(int j=0; j<pcaAsOfCurrentThread_size; j++){
@@ -339,8 +333,7 @@ namespace{
 	}
 }
 
-TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread)
-{
+TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread){
 	SYSTEMTIME	tStart, tStop;
 	GetSystemTime(&tStart);
 
@@ -373,12 +366,12 @@ TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread)
 	int imgANumPerThread = int(imageAs_size/detectThreadNum);
 	int imgBNumPerThread = int(imageBs_size/detectThreadNum);
 
-	cout << "进行特征对比之前，请先调用此测试用例" << endl;
-	cout << "\t——使用多线程快速提取待对比两个文件夹的特征和PCA" << endl;
+	cout << "Please invoke this case first!!!" << endl;
+	cout << "This case provides feature and pca for other cases" << endl;
 	cout << ">>Inputs <<" << endl;
-	cout << "待对比图片目录A：" << GConfig::getInstance().getCompareImgAPath() << endl;
-	cout << "待对比图片目录B：" << GConfig::getInstance().getCompareImgBPath() << endl;
-	cout << "线程数：" << GConfig::getInstance().getGetFeaThreadNum() << endl;
+	cout << "Image directory A: " << GConfig::getInstance().getCompareImgAPath() << endl;
+	cout << "Image directory B: " << GConfig::getInstance().getCompareImgBPath() << endl;
+	cout << "Threads Num: " << GConfig::getInstance().getGetFeaThreadNum() << endl;
 	cout << ">>Outputs<<" << endl;
 
 	vector<vector<string>> imageA, imageB;
@@ -414,26 +407,25 @@ TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread)
 	}
 
 	GetSystemTime(&tStop);
-	cout << "目录A图片张数：" << imageAs_size << endl;
-	cout << "目录A提取到人脸特征张数：" << featureNumA << endl;
+	cout << "picture num of image directory A: " << imageAs_size << endl;
+	cout << "picture num got feature succ of image directory A: " << featureNumA << endl;
 	float percent = float(featureNumA)/imageAs_size*100;
-	cout << "特征提取成功率：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "目录B图片张数：" << imageBs_size << endl;
-	cout << "目录B提取到人脸特征张数：" << featureNumB << endl;
+	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "picture num of image directory B: " << imageBs_size << endl;
+	cout << "picture num got feature succ of image directory B: " << featureNumB << endl;
 	percent = float(featureNumB)/imageBs_size*100;
-	cout << "特征提取成功率：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "输出目录A降维前的特征到：" << GConfig::getInstance().getFeatureAPath() << endl;
-	cout << "输出目录A降维后的特征到：" << GConfig::getInstance().getPcaAPath() << endl;
-	cout << "输出目录B降维前的特征到：" << GConfig::getInstance().getFeatureBPath() << endl;
-	cout << "输出目录B降维后的特征到：" << GConfig::getInstance().getPcaBPath() << endl;
-	cout << "总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "output feature of image directory A to: " << GConfig::getInstance().getFeatureAPath() << endl;
+	cout << "output pca of image directory A to: " << GConfig::getInstance().getPcaAPath() << endl;
+	cout << "output feature of image directory B to: " << GConfig::getInstance().getFeatureBPath() << endl;
+	cout << "output pca of image directory B to: " << GConfig::getInstance().getPcaBPath() << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/(imageAs_size+imageBs_size);
-	cout << "单张图片耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per picture: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
-//ISCompare只支持8192的feature
-TEST_F(ftISCompare, ISCompare_SingleThread)
-{
+//ISCompare only supports feature with length of 8192
+TEST_F(ftISCompare, ISCompare_SingleThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 
@@ -453,11 +445,10 @@ TEST_F(ftISCompare, ISCompare_SingleThread)
 	valueCountsSmall = 0;
 	valueCountsBig = 0;
 
-	cout << "进行特征对比之前，请先确保待对比两个图片文件夹的特征已经准备就绪！！" << endl;
 	cout << ">>Inputs <<" << endl;
-	cout << "待对比图片目录A的特征：" << featureAPath << endl;
-	cout << "待对比图片目录B的特征：" << featureBPath << endl;
-	cout << "线程数：" << "单线程" << endl;
+	cout << "Feature directory A: " << featureAPath << endl;
+	cout << "Feature directory B: " << featureBPath << endl;
+	cout << "Threads Num: " << "1" << endl;
 	cout << ">>Outputs<<" << endl;
 
 	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
@@ -492,37 +483,31 @@ TEST_F(ftISCompare, ISCompare_SingleThread)
 
 	GetSystemTime(&tStop);
 
-	cout << "特征目录A文件数：" << feaAFiles_size << endl;
-	cout << "特征目录B文件数：" << feaBFiles_size << endl;
-	cout << "是本人，但算出来的score值小于\"人脸对比分数阈值\"发生次数：" << valueCountsBig << endl;
+	cout << "feature num of feature directory A: " << feaAFiles_size << endl;
+	cout << "feature num of feature directory B: " << feaBFiles_size << endl;
+	cout << "for an identical person, but score less than compareFaceValue: " << valueCountsBig << endl;
 	float percent = float(valueCountsBig)/feaAFiles_size*100;
-	cout << "是本人但score值达不到\"人脸对比分数阈值\"的误识率（此类错误次数/特征目录A文件数）：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "不是本人，但算出来的score值大于\"人脸对比分数阈值\"发生次数：" << valueCountsSmall << endl;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
 	percent = float(valueCountsSmall)/feaAFiles_size*100;
-	cout << "不是本人但score值超过\"人脸对比分数阈值\"的误识率（此类错误次数/特征目录A文件数）：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "特征对比总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
-	cout << "累计完成特征对比计算次数：" << feaAFiles_size*feaBFiles_size << endl;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
+	cout << "compare times: " << feaAFiles_size*feaBFiles_size << endl;
 	float timePerPic = float(getGap(tStart, tStop))/(feaAFiles_size*feaBFiles_size);
-	cout << "单次特征对比耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per compare: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
-/* 无法在线程下同时创建特征提取通道和对比通道，故障修改中！！ 
- * 本例直接用提取好特征的两个特征目录进行对比，
- * 不涉及在线程下同时创建特征提取通道和对比通道
- */
-TEST_F(ftISCompare, ISCompare_MultiThread)
-{
+TEST_F(ftISCompare, ISCompare_MultiThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 	valueCountsSmall = 0;
 	valueCountsBig = 0;
 
-	cout << "进行特征对比之前，请先确保待对比两个图片文件夹的特征已经准备就绪！！" << endl;
 	cout << ">>Inputs <<" << endl;
-	cout << "待对比图片目录A的特征：" << GConfig::getInstance().getFeatureAPath() << endl;
-	cout << "待对比图片目录B的特征：" << GConfig::getInstance().getFeatureBPath() << endl;
+	cout << "Feature directory A: " << GConfig::getInstance().getFeatureAPath() << endl;
+	cout << "Feature directory B: " << GConfig::getInstance().getFeatureBPath() << endl;
 	unsigned int compareThreadNum = GConfig::getInstance().getCompareThreadNum();
-	cout << "线程数：" << compareThreadNum << endl;
+	cout << "Threads Num: " << compareThreadNum << endl;
 	cout << ">>Outputs<<" << endl;
 
 	vector<pthread_t> pThreads(compareThreadNum);
@@ -547,23 +532,22 @@ TEST_F(ftISCompare, ISCompare_MultiThread)
 	listOutDirectoryFiles(imgBPath, imageBs);
 	int imageBs_size = imageBs.size();
 
-	cout << "特征目录A文件数：" << imageAs_size << endl;
-	cout << "特征目录B文件数：" << imageBs_size << endl;
-	cout << "是本人，但算出来的score值小于\"人脸对比分数阈值\"发生次数：" << valueCountsBig << endl;
+	cout << "feature num of feature directory A: " << imageAs_size << endl;
+	cout << "feature num of feature directory B: " << imageBs_size << endl;
+	cout << "for an identical person, but score less than compareFaceValue: " << valueCountsBig << endl;
 	float percent = float(valueCountsBig)/imageAs_size*100;
-	cout << "是本人但score值达不到\"人脸对比分数阈值\"的误识率（此类错误次数/特征目录A文件数）：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "不是本人，但算出来的score值大于\"人脸对比分数阈值\"发生次数：" << valueCountsSmall << endl;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
 	percent = float(valueCountsSmall)/imageAs_size*100;
-	cout << "不是本人但score值超过\"人脸对比分数阈值\"的误识率（此类错误次数/特征目录A文件数）：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "特征对比总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
-	cout << "累计完成特征对比计算次数：" << imageAs_size*imageBs_size << endl;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
+	cout << "compare times: " << imageAs_size*imageBs_size << endl;
 	float timePerPic = float(getGap(tStart, tStop))/(imageAs_size*imageBs_size);
-	cout << "单次特征对比耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per compare: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
-/* ISCompareMN/ISCompareMNfaster只支持2048的feature */
-TEST_F(ftISCompare, ISCompareMN_SingleThread)
-{
+//ISCompareMN/ISCompareMNfaster only support pca with length of 2048
+TEST_F(ftISCompare, ISCompareMN_SingleThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 
@@ -606,11 +590,10 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread)
 	float **score;
 	ALLOC_DOUBLE_STAR(pcaAs_size, pcaBs_size, float, score, S)
 
-	cout << "进行CompareMN对比之前，请先确保待对比两个图片文件夹的PCA已经准备就绪！！" << endl;
 	cout << ">>Inputs <<" << endl;
-	cout << "待对比图片目录A的PCA：" << GConfig::getInstance().getPcaAPath() << endl;
-	cout << "待对比图片目录B的PCA：" << GConfig::getInstance().getPcaBPath() << endl;
-	cout << "线程数：" << "单线程" << endl;
+	cout << "Pca directory A: " << GConfig::getInstance().getPcaAPath() << endl;
+	cout << "Pca directory B: " << GConfig::getInstance().getPcaBPath() << endl;
+	cout << "Threads Num: " << "1" << endl;
 	cout << ">>Outputs<<" << endl;
 
 	valueCountsSmall = 0;
@@ -635,33 +618,31 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread)
 	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
     GetSystemTime(&tStop);
 
-	cout << "PCA目录A文件数：" << pcaAs_size << endl;
-	cout << "PCA目录B文件数：" << pcaBs_size << endl;
-	cout << "是本人，但算出来的score值小于\"人脸对比分数阈值\"发生次数：" << valueCountsBig << endl;
+	cout << "pca num of pca directory A: " << pcaAs_size << endl;
+	cout << "pca num of pca directory B: " << pcaBs_size << endl;
+	cout << "for an identical person, but score less than recongiseFaceValue: " << valueCountsBig << endl;
 	float percent = float(valueCountsBig)/pcaAs_size*100;
-	cout << "是本人但score值达不到\"人脸对比分数阈值\"的误识率（此类错误次数/特征目录A文件数）：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "不是本人，但算出来的score值大于\"人脸对比分数阈值\"发生次数：" << valueCountsSmall << endl;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
 	percent = float(valueCountsSmall)/pcaAs_size*100;
-	cout << "不是本人但score值超过\"人脸对比分数阈值\"的误识率（此类错误次数/特征目录A文件数）：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "特征对比总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
-	cout << "累计完成特征对比计算次数：" << pcaAs_size*pcaBs_size << endl;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
+	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
 	float timePerPic = float(getGap(tStart, tStop))/(pcaAs_size*pcaBs_size);
-	cout << "单次特征对比耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per compare: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
-TEST_F(ftISCompare, ISCompareMN_MultiThread)
-{
+TEST_F(ftISCompare, ISCompareMN_MultiThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 	valueCountsSmall = 0;
 	valueCountsBig = 0;
 
-	cout << "进行CompareMN对比之前，请先确保待对比两个图片文件夹的PCA已经准备就绪！！" << endl;
 	cout << ">>Inputs <<" << endl;
-	cout << "待对比图片目录A的PCA：" << GConfig::getInstance().getPcaAPath() << endl;
-	cout << "待对比图片目录B的PCA：" << GConfig::getInstance().getPcaBPath() << endl;
+	cout << "Pca directory A: " << GConfig::getInstance().getPcaAPath() << endl;
+	cout << "Pca directory B: " << GConfig::getInstance().getPcaBPath() << endl;
 	unsigned int recogniseThreadNum = GConfig::getInstance().getRecogniseThreadNum();
-	cout << "线程数：" << recogniseThreadNum << endl;
+	cout << "Threads Num: " << recogniseThreadNum << endl;
 	cout << ">>Outputs<<" << endl;
 
 	vector<pthread_t> pThreads(recogniseThreadNum);
@@ -686,22 +667,21 @@ TEST_F(ftISCompare, ISCompareMN_MultiThread)
 	listOutDirectoryFiles(pcaBPath, pcaBs);
 	int pcaBs_size = pcaBs.size();
 
-	cout << "PCA目录A文件数：" << pcaAs_size << endl;
-	cout << "PCA目录B文件数：" << pcaBs_size << endl;
-	cout << "是本人，但算出来的score值小于\"人脸对比分数阈值\"发生次数：" << valueCountsBig << endl;
+	cout << "pca num of pca directory A: " << pcaAs_size << endl;
+	cout << "pca num of pca directory B: " << pcaBs_size << endl;
+	cout << "for an identical person, but score less than recongiseFaceValue: " << valueCountsBig << endl;
 	float percent = float(valueCountsBig)/pcaAs_size*100;
-	cout << "是本人但score值达不到\"人脸对比分数阈值\"的误识率（此类错误次数/特征目录A文件数）：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "不是本人，但算出来的score值大于\"人脸对比分数阈值\"发生次数：" << valueCountsSmall << endl;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
 	percent = float(valueCountsSmall)/pcaAs_size*100;
-	cout << "不是本人但score值超过\"人脸对比分数阈值\"的误识率（此类错误次数/特征目录A文件数）：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "CompareMN对比总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
-	cout << "累计完成CompareMN对比计算次数：" << pcaAs_size*pcaBs_size << endl;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
+	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
 	float timePerPic = float(getGap(tStart, tStop))/(pcaAs_size*pcaBs_size);
-	cout << "单次PCA对比耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per compare: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
-TEST_F(ftISCompare, ISCompareMNfaster_SingleThread)
-{
+TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 	fstream fileA, fileB;
@@ -749,11 +729,10 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread)
 	float **score;
 	ALLOC_DOUBLE_STAR(pcaAs_size, pcaBs_size, float, score, S)
 
-	cout << "进行CompareMNfaster对比之前，请先确保待对比两个图片文件夹的PCA已经准备就绪！！" << endl;
 	cout << ">>Inputs <<" << endl;
-	cout << "待对比图片目录A的PCA：" << GConfig::getInstance().getPcaAPath() << endl;
-	cout << "待对比图片目录B的PCA：" << GConfig::getInstance().getPcaBPath() << endl;
-	cout << "线程数：" << "单线程" << endl;
+	cout << "Pca directory A: " << GConfig::getInstance().getPcaAPath() << endl;
+	cout << "Pca directory B: " << GConfig::getInstance().getPcaBPath() << endl;
+	cout << "Threads Num: " << "1" << endl;
 	cout << ">>Outputs<<" << endl;
 	
 	valueCountsSmall = 0;
@@ -777,33 +756,31 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread)
 	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
     GetSystemTime(&tStop);
 	
-	cout << "PCA目录A文件数：" << pcaAs_size << endl;
-	cout << "PCA目录B文件数：" << pcaBs_size << endl;
-	cout << "是本人，但算出来的score值小于\"人脸对比分数阈值\"发生次数：" << valueCountsBig << endl;
+	cout << "pca num of pca directory A: " << pcaAs_size << endl;
+	cout << "pca num of pca directory B: " << pcaBs_size << endl;
+	cout << "for an identical person, but score less than recongiseFaceValue: " << valueCountsBig << endl;
 	float percent = float(valueCountsBig)/pcaAs_size*100;
-	cout << "是本人但score值达不到\"人脸对比分数阈值\"的误识率（此类错误次数/特征目录A文件数）：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "不是本人，但算出来的score值大于\"人脸对比分数阈值\"发生次数：" << valueCountsSmall << endl;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
 	percent = float(valueCountsSmall)/pcaAs_size*100;
-	cout << "不是本人但score值超过\"人脸对比分数阈值\"的误识率（此类错误次数/特征目录A文件数）：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "PCA对比总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
-	cout << "累计完成PCA对比计算次数：" << pcaAs_size*pcaBs_size << endl;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
+	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
 	float timePerPic = float(getGap(tStart, tStop))/(pcaAs_size*pcaBs_size);
-	cout << "单次PCA对比耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per compare: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
 }
 
-TEST_F(ftISCompare, ISCompareMNfaster_MultiThread)
-{
+TEST_F(ftISCompare, ISCompareMNfaster_MultiThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 	valueCountsSmall = 0;
 	valueCountsBig = 0;
 
-	cout << "进行CompareMNfaster对比之前，请先确保待对比两个图片文件夹的PCA已经准备就绪！！" << endl;
 	cout << ">>Inputs <<" << endl;
-	cout << "待对比图片目录A的PCA：" << GConfig::getInstance().getPcaAPath() << endl;
-	cout << "待对比图片目录B的PCA：" << GConfig::getInstance().getPcaBPath() << endl;
+	cout << "Pca directory A: " << GConfig::getInstance().getPcaAPath() << endl;
+	cout << "Pca directory B: " << GConfig::getInstance().getPcaBPath() << endl;
 	unsigned int recogniseThreadNum = GConfig::getInstance().getRecogniseThreadNum();
-	cout << "线程数：" << recogniseThreadNum << endl;
+	cout << "Threads Num: " << recogniseThreadNum << endl;
 	cout << ">>Outputs<<" << endl;
 
 	vector<pthread_t> pThreads(recogniseThreadNum);
@@ -828,16 +805,16 @@ TEST_F(ftISCompare, ISCompareMNfaster_MultiThread)
 	listOutDirectoryFiles(pcaBPath, pcaBs);
 	int pcaBs_size = pcaBs.size();
 
-	cout << "PCA目录A文件数：" << pcaAs_size << endl;
-	cout << "PCA目录B文件数：" << pcaBs_size << endl;
-	cout << "是本人，但算出来的score值小于\"人脸对比分数阈值\"发生次数：" << valueCountsBig << endl;
+	cout << "pca num of pca directory A: " << pcaAs_size << endl;
+	cout << "pca num of pca directory B: " << pcaBs_size << endl;
+	cout << "for an identical person, but score less than recongiseFaceValue: " << valueCountsBig << endl;
 	float percent = float(valueCountsBig)/pcaAs_size*100;
-	cout << "是本人但score值达不到\"人脸对比分数阈值\"的误识率（此类错误次数/特征目录A文件数）：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "不是本人，但算出来的score值大于\"人脸对比分数阈值\"发生次数：" << valueCountsSmall << endl;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
 	percent = float(valueCountsSmall)/pcaAs_size*100;
-	cout << "不是本人但score值超过\"人脸对比分数阈值\"的误识率（此类错误次数/特征目录A文件数）：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "CompareMN对比总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
-	cout << "累计完成CompareMN对比计算次数：" << pcaAs_size*pcaBs_size << endl;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
+	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
 	float timePerPic = float(getGap(tStart, tStop))/(pcaAs_size*pcaBs_size);
-	cout << "单次PCA对比耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per compare: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }

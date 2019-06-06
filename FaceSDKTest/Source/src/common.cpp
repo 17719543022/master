@@ -23,7 +23,7 @@ namespace{
 	void getFeatureWithFacePosRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int param[][4], int faceNum, char *outFeature)
 	{
 		int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
-		//如果有多张人脸，超出了给outFeature分配的大小，这个地方可能不安全。
+		//when more than one face is detected, outFeature will overflow
 		EXPECT_TRUE(SUCC == ISGetFeatureWithFacePosRgb(defaultFeatureChannel, imgData, imgLen, imgWidth, imgHeight, param, faceNum, outFeature));
 		DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 	}

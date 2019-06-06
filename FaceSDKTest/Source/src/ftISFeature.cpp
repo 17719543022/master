@@ -52,8 +52,7 @@ namespace{
 	}
 }
 
-TEST_F(ftISFeature, ISGetFeaturePath_SingleThread)
-{
+TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 	SYSTEMTIME	tStart, tStop;
 	GetSystemTime(&tStart);
 	string imgPath = GConfig::getInstance().getFeatureImgPath();
@@ -62,8 +61,8 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread)
 	featureNum = 0;
 
 	cout << ">>Inputs <<" << endl;
-	cout << "待提取特征目录：" << imgPath << endl;
-	cout << "线程数：" << "单线程" << endl;
+	cout << "image directory: " << imgPath << endl;
+	cout << "threads num: " << "1" << endl;
 	cout << ">>Outputs<<" << endl;
 
 	char feature[5][8192];
@@ -96,19 +95,18 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread)
 
 	GetSystemTime(&tStop);
 
-	cout << "输入图片张数：" << images.size() << endl;
-	cout << "提取到人脸特征张数：" << featureNum << endl;
+	cout << "picture num of image directory: " << images.size() << endl;
+	cout << "picture num got feature succ of image directory: " << featureNum << endl;
 	float percent = float(featureNum)/images.size()*100;
-	cout << "特征提取成功率：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "输出降维前的特征到目录：" << feaPath << endl;
-	cout << "输出降维后的特征到目录：" << pcaPath << endl;
-	cout << "总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "output feature of image directory to: " << feaPath << endl;
+	cout << "output pca of image directory to: " << pcaPath << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
-	cout << "单张图片耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per feature: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
-TEST_F(ftISFeature, ISGetFeaturePath_MultiThread)
-{
+TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
 	string imgPath = GConfig::getInstance().getFeatureImgPath();
@@ -120,8 +118,8 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread)
 	int imgNumPerThread = int(images.size()/detectThreadNum);
 
 	cout << ">>Inputs <<" << endl;
-	cout << "待提取特征目录：" << imgPath << endl;
-	cout << "线程数：" << detectThreadNum << endl;
+	cout << "image directory: " << imgPath << endl;
+	cout << "threads num: " << detectThreadNum << endl;
 	cout << ">>Outputs<<" << endl;
 
 	vector<vector<string>> image;
@@ -147,19 +145,18 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread)
 
     GetSystemTime(&tStop);
 
-	cout << "输入图片张数：" << images.size() << endl;
-	cout << "提取到人脸特征张数：" << featureNum << endl;
+	cout << "picture num of image directory: " << images.size() << endl;
+	cout << "picture num got feature succ of image directory: " << featureNum << endl;
 	float percent = float(featureNum)/images.size()*100;
-	cout << "特征提取成功率：" << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "输出降维前的特征到目录：" << GConfig::getInstance().getFeaMPath() << endl;
-	cout << "输出降维后的特征到目录：" << GConfig::getInstance().getPcaMPath() << endl;
-	cout << "总共耗时：" << getGap(tStart, tStop) << "毫秒" << endl;
+	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "output feature of image directory to: " << GConfig::getInstance().getFeaMPath() << endl;
+	cout << "output pca of image directory to: " << GConfig::getInstance().getPcaMPath() << endl;
+	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
-	cout << "单张图片耗时：" << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "毫秒" << endl;
+	cout << "time cost per feature: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
-TEST_F(ftISFeature, ISGetFeaturePath_OutResultCheck)
-{
+TEST_F(ftISFeature, ISGetFeaturePath_OutResultCheck){
 	string feaS = GConfig::getInstance().getFeaSPath();
 	vector<string> feaSNames;
 	listOutDirectoryFiles(feaS, feaSNames);
@@ -173,6 +170,13 @@ TEST_F(ftISFeature, ISGetFeaturePath_OutResultCheck)
 	string pcaM = GConfig::getInstance().getPcaMPath();
 	vector<string> pcaMNames;
 	listOutDirectoryFiles(pcaM, pcaMNames);
+
+	cout << ">>Inputs <<" << endl;
+	cout << "single thread feature path: " << feaS << endl;
+	cout << "single thread pca path: " << pcaS << endl;
+	cout << "multi thread feature path: " << feaM << endl;
+	cout << "multi thread pca path: " << pcaM << endl;
+	cout << ">>Outputs<<" << endl;
 
 	EXPECT_TRUE(feaSNames.size()==feaMNames.size());
 	EXPECT_TRUE(feaSNames.size()==pcaSNames.size());
@@ -219,5 +223,5 @@ TEST_F(ftISFeature, ISGetFeaturePath_OutResultCheck)
 		}
 	}
 
-	cout << "单线程和多线程ISGetFeaturePath函数返回的feature、pca完全一致！" << endl;
+	cout << "whether single thread or multi thread, the got result(pca/feature) by ISGetFeaturePath are the same" << endl;
 }

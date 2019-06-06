@@ -16,10 +16,10 @@ bool isTimeOut(int secondsSet)
 		return true;
 	}
 
-	if((stop.wDay    - start.wDay   )*24*60*60 \
-	  +(stop.wHour   - start.wHour  )*60*60 \
+	if((stop.wDay - start.wDay)*24*60*60 \
+	  +(stop.wHour - start.wHour)*60*60 \
 	  +(stop.wMinute - start.wMinute)*60 \
-	  +(stop.wSecond - start.wSecond)*1          > secondsSet)
+	  +(stop.wSecond - start.wSecond)*1 > secondsSet)
 	{
 		return true;
 	}

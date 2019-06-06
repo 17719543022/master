@@ -36,4 +36,24 @@ protected:
 	}
 };
 
+class ftError : public testing::Test{
+protected:
+	virtual void SetUp(){
+
+	}
+	virtual void TearDown(){
+		destroyAllWindows();
+	}
+};
+
+class ftAppliance : public testing::Test{
+protected:
+	virtual void SetUp(){
+
+	}
+	virtual void TearDown(){
+		destroyAllWindows();
+	}
+};
+
 #endif

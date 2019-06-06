@@ -1,11 +1,67 @@
-Note: Google Test filter = ftInterface.getAFacePcaFeatureAndSave
-[==========] Running 1 test from 1 test case.
+Note: Google Test filter = ftAppliance*
+[==========] Running 7 tests from 1 test case.
 [----------] Global test environment set-up.
-[----------] 1 test from ftInterface
-[ RUN      ] ftInterface.getAFacePcaFeatureAndSave
-[       OK ] ftInterface.getAFacePcaFeatureAndSave (1716 ms)
-[----------] 1 test from ftInterface (1716 ms total)
+[----------] 7 tests from ftAppliance
+[ RUN      ] ftAppliance.dumpVersionNo
+ISGetDetTrackVersionInfo(): 1.0.0.3
+ISGetFeatureVersionInfo(): 1.0.0.3
+ISGetCompareVersionInfo(): 1.0.0.3
+[       OK ] ftAppliance.dumpVersionNo (0 ms)
+[ RUN      ] ftAppliance.ISGetFeatureLength_Check
+[       OK ] ftAppliance.ISGetFeatureLength_Check (1347 ms)
+[ RUN      ] ftAppliance.dumpConfigIni
+detectThreadNum = 10
+getFeaThreadNum = 5
+compareThreadNum = 5
+compareFaceValue = 0.85
+recogniseThreadNum = 5
+recogniseFaceValue = 0.85
+maxImgNum = 1000
+detectImgPath = ..\..\Data\ISFaceDetectPath\detectImg
+recDetectSPath = ..\..\Data\ISFaceDetectPath\recDetectS
+recDetectMPath = ..\..\Data\ISFaceDetectPath\recDetectM
+trackImgPath = ..\..\Data\ISFaceDetTrackRgb\trackImg
+recTrackSPath = ..\..\Data\ISFaceDetTrackRgb\recTrackS
+recTrackMPath = ..\..\Data\ISFaceDetTrackRgb\recTrackM
+faceInfoImgPath = ..\..\Data\ISCalFaceInfoPath\faceInfoImg
+faceInfoSPath = ..\..\Data\ISCalFaceInfoPath\faceInfoS
+faceInfoMPath = ..\..\Data\ISCalFaceInfoPath\faceInfoM
+featureImgPath = ..\..\Data\ISGetFeaturePath\featureImg
+feaSPath = ..\..\Data\ISGetFeaturePath\feaS
+pcaSPath = ..\..\Data\ISGetFeaturePath\pcaS
+feaMPath = ..\..\Data\ISGetFeaturePath\feaM
+pcaMPath = ..\..\Data\ISGetFeaturePath\pcaM
+compareImgAPath = ..\..\Data\ISCompare\compareImgA
+compareImgBPath = ..\..\Data\ISCompare\compareImgB
+featureAPath = ..\..\Data\ISCompare\featureA
+featureBPath = ..\..\Data\ISCompare\featureB
+pcaAPath = ..\..\Data\ISCompare\pcaA
+pcaBPath = ..\..\Data\ISCompare\pcaB
+report = ..\..\report.txt
+log = ..\..\log.txt
+[       OK ] ftAppliance.dumpConfigIni (6 ms)
+[ RUN      ] ftAppliance.theGivenPictureHasMoreThan15FacesBeDetected
+[       OK ] ftAppliance.theGivenPictureHasMoreThan15FacesBeDetected (220 ms)
+[ RUN      ] ftAppliance.whatFaceReturnsEarlierInOutResultAndWhatLater
+[       OK ] ftAppliance.whatFaceReturnsEarlierInOutResultAndWhatLater (21039 ms)
+[ RUN      ] ftAppliance.personAndIdCardCompareOfOneDirectory
+         ..\..\Data\Appliance\人证1比1\01\idcard.jpg + live.jpg = Compare Score: 0.925557
+    ..\..\Data\Appliance\人证1比1\02_0.75\idcard.jpg + live.jpg = Compare Score: 0.800323
+         ..\..\Data\Appliance\人证1比1\03\idcard.jpg + live.jpg = Compare Score: 0.826978
+         ..\..\Data\Appliance\人证1比1\04\idcard.jpg + live.jpg = Compare Score: 0.885337
+    ..\..\Data\Appliance\人证1比1\05_0.83\idcard.jpg + live.jpg = Compare Score: 0.751065
+    ..\..\Data\Appliance\人证1比1\06_0.93\idcard.jpg + live.jpg = Compare Score: 0.928937
+  ..\..\Data\Appliance\人证1比1\07_0.8282\idcard.jpg + live.jpg = Compare Score: 0.827865
+   ..\..\Data\Appliance\人证1比1\08_0.936\idcard.jpg + live.jpg = Compare Score: 0.923228
+  ..\..\Data\Appliance\人证1比1\09_0.8851\idcard.jpg + live.jpg = Compare Score: 0.88052
+  ..\..\Data\Appliance\人证1比1\10_0.9058\idcard.jpg + live.jpg = Compare Score: 0.917603
+   ..\..\Data\Appliance\人证1比1\11_0.901\idcard.jpg + live.jpg = Compare Score: 0.924255
+..\..\Data\Appliance\人证1比1\12_0.851895\idcard.jpg + live.jpg = Compare Score: 0.84828
+[       OK ] ftAppliance.personAndIdCardCompareOfOneDirectory (20953 ms)
+[ RUN      ] ftAppliance.camera
+[       OK ] ftAppliance.camera (301284 ms)
+[----------] 7 tests from ftAppliance (344849 ms total)
 
 [----------] Global test environment tear-down
-[==========] 1 test from 1 test case ran. (1717 ms total)
-[  PASSED  ] 1 test.
+[==========] 7 tests from 1 test case ran. (344850 ms total)
+[  PASSED  ] 7 tests.

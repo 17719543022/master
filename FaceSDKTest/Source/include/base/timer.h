@@ -1,5 +1,5 @@
 /*
- * 先实现Windows版本
+ * for windows
  */
 #ifndef INCL_TIMER_H
 #define INCL_TIMER_H

@@ -24,14 +24,14 @@ TEST_F(ftAppliance, dumpConfigIni){
 	GConfig::getInstance().dump();
 }
 
-TEST_F(ftAppliance, theGivenPictureHasMoreThan15FacesBeDetected){
+TEST_F(ftAppliance, theGivenPictureHas16FacesBeDetected){
 	char *imgPath = "..\\..\\Data\\Appliance\\beauty.jpg";
 	int len = 0;
 	int outRst[50][4] = {0};
 
 	faceDetectPath(imgPath, outRst, &len);
 
-	EXPECT_TRUE(len >= 15);
+	EXPECT_TRUE(len == 16);
 }
 
 TEST_F(ftAppliance, whatFaceReturnsEarlierInOutResultAndWhatLater){

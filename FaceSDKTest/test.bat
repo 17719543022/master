@@ -8,9 +8,9 @@ echo 请参照config.ini准备好待测数据、修改config.ini进行参数配置：
 echo 1.ISDetTrack
 echo 2.ISFeature
 echo 3.ISCompare
-echo 4.运行以上全部
-echo 5.错误码覆盖率测试
-echo 6.其它测试
+echo 4.错误码覆盖率测试
+echo 5.其它测试
+echo 6.运行以上全部
 echo q.退出
 for /f "delims=" %%i in ('echo 请选择你想要进行的测试：') do set /p=%%i<nul
 set /p test_suits=
@@ -21,11 +21,11 @@ if %test_suits% equ 1 (
 ) else if %test_suits% equ 3 (
 	goto comparesuits
 ) else if %test_suits% equ 4 (
-	.\Debug\FaceSDKTest.exe --gtest_filter=*.*
-) else if %test_suits% equ 5 (
 	goto :errorsuits
-) else if %test_suits% equ 6 (
+) else if %test_suits% equ 5 (
 	goto :othersuits
+) else if %test_suits% equ 6 (
+	.\Debug\FaceSDKTest.exe --gtest_filter=*.*
 ) else if %test_suits% equ q (
 	exit
 ) else (

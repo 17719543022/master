@@ -21,9 +21,7 @@ if %test_suits% equ 1 (
 ) else if %test_suits% equ 3 (
 	goto comparesuits
 ) else if %test_suits% equ 4 (
-	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack*
-	.\Debug\FaceSDKTest.exe --gtest_filter=ftISFeature*
-	.\Debug\FaceSDKTest.exe --gtest_filter=ftISCompare*
+	.\Debug\FaceSDKTest.exe --gtest_filter=*.*
 ) else if %test_suits% equ 5 (
 	goto :errorsuits
 ) else if %test_suits% equ 6 (
@@ -51,9 +49,7 @@ if %detect_suits% equ 1 (
 ) else if %detect_suits% equ 3 (
 	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack.ISCalFaceInfoPath*
 ) else if %detect_suits% equ 4 (
-	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack.ISFaceDetectPath*
-	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack.ISFaceDetTrackRgb*
-	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack.ISCalFaceInfoPath*
+	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack.*
 ) else if %detect_suits% equ 5 (
 	goto testsuits
 ) else if %detect_suits% equ q (
@@ -85,7 +81,8 @@ echo 1.ÆäËüÑ¡ÏîĞèÒªÒÀÀµ´ËÌõÓÃÀıÉú³ÉµÄÁ½¸ö¶Ô±ÈÄ¿Â¼µÄfeatureºÍpcaÎÄ¼ş£¬ÇëÏÈÔËĞĞ´ËÑ
 echo 2.ISCompare
 echo 3.ISCompareMN
 echo 4.ISCompareMNfaster
-echo 5.·µ»ØÉÏÒ»²ã
+echo 5.ÔËĞĞÒÔÉÏÈ«²¿
+echo 6.·µ»ØÉÏÒ»²ã
 echo q.ÍË³ö
 for /f "delims=" %%i in ('echo ÇëÑ¡ÔñÄãÏëÒª½øĞĞµÄ²âÊÔ£º') do set /p=%%i<nul
 set /p compare_suits=
@@ -98,6 +95,8 @@ if %compare_suits% equ 1 (
 ) else if %compare_suits% equ 4 (
 	.\Debug\FaceSDKTest.exe --gtest_filter=ftISCompare.ISCompareMNfaster_*
 ) else if %compare_suits% equ 5 (
+	.\Debug\FaceSDKTest.exe --gtest_filter=ftISCompare.*
+) else if %compare_suits% equ 6 (
 	goto testsuits
 ) else if %compare_suits% equ q (
 	exit
@@ -113,8 +112,9 @@ echo 3.detectWithOutCreatingDectectChannel
 echo 4.inputImagesDetectedNoFace
 echo 5.inputImagesGetNoFeature
 echo 6.whatImageLeadsToGetFeatureError
-echo 7.ÔËĞĞÒÔÉÏÈ«²¿
-echo 8.·µ»ØÉÏÒ»²ã
+echo 7.whatIsCompareMNError
+echo 8.ÔËĞĞÒÔÉÏÈ«²¿
+echo 9.·µ»ØÉÏÒ»²ã
 echo q.ÍË³ö
 for /f "delims=" %%i in ('echo ÇëÑ¡ÔñÄãÏëÒª½øĞĞµÄ²âÊÔ£º') do set /p=%%i<nul
 set /p error_suits=
@@ -131,8 +131,10 @@ if %error_suits% equ 1 (
 ) else if %error_suits% equ 6 (
 	.\Debug\FaceSDKTest.exe --gtest_filter=ftError.whatImageLeadsToGetFeatureError
 ) else if %error_suits% equ 7 (
-	.\Debug\FaceSDKTest.exe --gtest_filter=ftError.*
+	.\Debug\FaceSDKTest.exe --gtest_filter=ftError.whatIsCompareMNError
 ) else if %error_suits% equ 8 (
+	.\Debug\FaceSDKTest.exe --gtest_filter=ftError.*
+) else if %error_suits% equ 9 (
 	goto testsuits
 ) else if %error_suits% equ q (
 	exit

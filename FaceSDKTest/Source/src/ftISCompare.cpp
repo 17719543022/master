@@ -8,9 +8,11 @@
 #include "common.h"
 #include <pthread.h>
 #include <fstream>
+#include "log_format.h"
+#include <iostream>
 
-using namespace std;
 using namespace cv;
+using namespace std;
 
 extern pthread_mutex_t mutex;
 pthread_mutex_t mutex2;
@@ -194,18 +196,6 @@ namespace{
 		int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
 		float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
 
-		char **pcaA;
-		ALLOC_DOUBLE_STAR(pcaAsOfCurrentThread_size, 2048, char, pcaA, M)
-		for(int j=0; j<pcaAsOfCurrentThread_size; j++){
-			fileA.open(pcaAsOfCurrentThread[j], ios::in | ios::binary);
-			fileA.seekg(0, ios::beg);
-			fileA.read(pcaTemp, 2048);
-			fileA.clear();
-			fileA.close();
-
-			memcpy(pcaA[j], pcaTemp, 2048);
-		}
-
 		char **pcaB;
 		ALLOC_DOUBLE_STAR(pcaBs_size, 2048, char, pcaB, N)
 		for(int i=0; i<pcaBs_size; i++)
@@ -220,18 +210,27 @@ namespace{
 		}
 
 		float **score;
-		ALLOC_DOUBLE_STAR(pcaAsOfCurrentThread_size, pcaBs_size, float, score, S)
+		ALLOC_DOUBLE_STAR(1, pcaBs_size, float, score, S)
 
-		EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, pcaA, pcaAsOfCurrentThread_size, pcaB, pcaBs_size, score));
+		char **pcaA;
+		ALLOC_DOUBLE_STAR(1, 2048, char, pcaA, M)
 		for(int s=0; s<pcaAsOfCurrentThread_size; s++){
+			fileA.open(pcaAsOfCurrentThread[s], ios::in | ios::binary);
+			fileA.seekg(0, ios::beg);
+			fileA.read(pcaTemp, 2048);
+			fileA.clear();
+			fileA.close();
+			pcaA[0] = pcaTemp;
+
+			EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, pcaA, 1, pcaB, pcaBs_size, score));
 			for(int t=0; t<pcaBs_size; t++){
-				if(score[s][t]<recongiseFaceValue && s+currentThreadIndex*pcaNumPerThread==t)
+				if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())==getFileHeader(pcaBs[t].data()))
 				{
 					pthread_mutex_lock(&mutex);
 					valueCountsBig++;
 					pthread_mutex_unlock(&mutex);
 				}
-				if(score[s][t]>=recongiseFaceValue && s+currentThreadIndex*pcaNumPerThread!=t)
+				if(score[0][t]>=recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())!=getFileHeader(pcaBs[t].data()))
 				{
 					pthread_mutex_lock(&mutex);
 					valueCountsSmall++;
@@ -295,31 +294,28 @@ namespace{
 		EXPECT_TRUE(SUCC == ISCompareMNfasterprep(defaultCompareChannel, pcaB, pcaBs_size));
 	
 		//ISCompareMNfaster
+		float **score;
+		ALLOC_DOUBLE_STAR(1, pcaBs_size, float, score, S)
+
 		char **pcaA;
-		ALLOC_DOUBLE_STAR(pcaAsOfCurrentThread_size, 2048, char, pcaA, M)
-		for(int j=0; j<pcaAsOfCurrentThread_size; j++){
-			fileA.open(pcaAsOfCurrentThread[j], ios::in | ios::binary);
+		ALLOC_DOUBLE_STAR(1, 2048, char, pcaA, M)
+		for(int s=0; s<pcaAsOfCurrentThread_size; s++){
+			fileA.open(pcaAsOfCurrentThread[s], ios::in | ios::binary);
 			fileA.seekg(0, ios::beg);
 			fileA.read(pcaTemp, 2048);
 			fileA.clear();
 			fileA.close();
+			pcaA[0] = pcaTemp;
 
-			memcpy(pcaA[j], pcaTemp, 2048);
-		}
-
-		float **score;
-		ALLOC_DOUBLE_STAR(pcaAsOfCurrentThread_size, pcaBs_size, float, score, S)
-
-		EXPECT_TRUE(SUCC == ISCompareMNfaster(defaultCompareChannel, pcaA, pcaAsOfCurrentThread_size, score));
-		for(int s=0; s<pcaAsOfCurrentThread_size; s++){
+			EXPECT_TRUE(SUCC == ISCompareMNfaster(defaultCompareChannel, pcaA, 1, score));
 			for(int t=0; t<pcaBs_size; t++){
-				if(score[s][t]<recongiseFaceValue && s+currentThreadIndex*pcaNumPerThread==t)
+				if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())==getFileHeader(pcaBs[t].data()))
 				{
 					pthread_mutex_lock(&mutex);
 					valueCountsBig++;
 					pthread_mutex_unlock(&mutex);
 				}
-				if(score[s][t]>=recongiseFaceValue && s+currentThreadIndex*pcaNumPerThread!=t)
+				if(score[0][t]>=recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())!=getFileHeader(pcaBs[t].data()))
 				{
 					pthread_mutex_lock(&mutex);
 					valueCountsSmall++;
@@ -562,17 +558,6 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread){
 
 	fstream fileA, fileB;
 	char pcaTemp[2048];
-	char **pcaA;
-	ALLOC_DOUBLE_STAR(pcaAs_size, 2048, char, pcaA, M)
-	for(int j=0; j<pcaAs_size; j++){
-		fileA.open(pcaAs[j], ios::in | ios::binary);
-		fileA.seekg(0, ios::beg);
-		fileA.read(pcaTemp, 2048);
-		fileA.clear();
-		fileA.close();
-
-		memcpy(pcaA[j], pcaTemp, 2048);
-	}
 
 	char **pcaB;
 	ALLOC_DOUBLE_STAR(pcaBs_size, 2048, char, pcaB, N)
@@ -588,7 +573,7 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread){
 	}
 
 	float **score;
-	ALLOC_DOUBLE_STAR(pcaAs_size, pcaBs_size, float, score, S)
+	ALLOC_DOUBLE_STAR(1, pcaBs_size, float, score, S)
 
 	cout << ">>Inputs <<" << endl;
 	cout << "Pca directory A: " << GConfig::getInstance().getPcaAPath() << endl;
@@ -601,14 +586,24 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread){
 	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
 	float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
 
-	EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, pcaA, pcaAs_size, pcaB, pcaBs_size, score));
+	//fill pcaA with just one fileA to prevent COMPARE_MN_ERROR
+	char **pcaA;
+	ALLOC_DOUBLE_STAR(1, 2048, char, pcaA, M)
 	for(int s=0; s<pcaAs_size; s++){
+		fileA.open(pcaAs[s], ios::in | ios::binary);
+		fileA.seekg(0, ios::beg);
+		fileA.read(pcaTemp, 2048);
+		fileA.clear();
+		fileA.close();
+
+		pcaA[0] = pcaTemp;
+		EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, pcaA, 1, pcaB, pcaBs_size, score));
 		for(int t=0; t<pcaBs_size; t++){
-			if(score[s][t]<recongiseFaceValue && s==t)
+			if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAs[s].data())==getFileHeader(pcaBs[t].data()))
 			{
 				valueCountsBig++;
 			}
-			if(score[s][t]>=recongiseFaceValue && s!=t)
+			if(score[0][t]>=recongiseFaceValue && getFileHeader(pcaAs[s].data())!=getFileHeader(pcaBs[t].data()))
 			{
 				valueCountsSmall++;
 			}
@@ -694,32 +689,20 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 	string pcaBPath = GConfig::getInstance().getPcaBPath();
 	vector<string> pcaBs;
 	listOutDirectoryFiles(pcaBPath, pcaBs);
-	int pcaBs_size = pcaAs.size();
+	int pcaBs_size = pcaBs.size();
 	char pcaTemp[2048];
-
-	char **pcaA;
-	ALLOC_DOUBLE_STAR(pcaAs_size, 2048, char, pcaA, M)
-	for(int i=0; i<pcaAs_size; i++){
-		fileA.open(pcaAs[i], ios::in | ios::binary);
-		fileA.seekg(0, ios::beg);
-		fileA.read(pcaTemp, 2048);
-		fileA.clear();
-		fileA.close();
-
-		memcpy(pcaA[i], pcaTemp, 2048);
-	}
 
 	char **pcaB;
 	ALLOC_DOUBLE_STAR(pcaBs_size, 2048, char, pcaB, N)
-	for(int j=0; j<pcaBs_size; j++)
+	for(int i=0; i<pcaBs_size; i++)
 	{
-		fileB.open(pcaBs[j], ios::in | ios::binary);
+		fileB.open(pcaBs[i], ios::in | ios::binary);
 		fileB.seekg(0, ios::beg);
 		fileB.read(pcaTemp, 2048);
 		fileB.clear();
 		fileB.close();
 
-		memcpy(pcaB[j], pcaTemp, 2048);
+		memcpy(pcaB[i], pcaTemp, 2048);
 	}
 
 	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
@@ -727,7 +710,7 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 	
 	// ISCompareMNfaster
 	float **score;
-	ALLOC_DOUBLE_STAR(pcaAs_size, pcaBs_size, float, score, S)
+	ALLOC_DOUBLE_STAR(1, pcaBs_size, float, score, S)
 
 	cout << ">>Inputs <<" << endl;
 	cout << "Pca directory A: " << GConfig::getInstance().getPcaAPath() << endl;
@@ -739,14 +722,23 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 	valueCountsBig = 0;
 
 	float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
-	EXPECT_TRUE(SUCC == ISCompareMNfaster(defaultCompareChannel, pcaA, pcaAs_size, score));
+	char **pcaA;
+	ALLOC_DOUBLE_STAR(1, 2048, char, pcaA, M)
 	for(int s=0; s<pcaAs_size; s++){
+		fileA.open(pcaAs[s], ios::in | ios::binary);
+		fileA.seekg(0, ios::beg);
+		fileA.read(pcaTemp, 2048);
+		fileA.clear();
+		fileA.close();
+
+		pcaA[0] = pcaTemp;
+		EXPECT_TRUE(SUCC == ISCompareMNfaster(defaultCompareChannel, pcaA, 1, score));
 		for(int t=0; t<pcaBs_size; t++){
-			if(score[s][t]<recongiseFaceValue && s==t)
+			if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAs[s].data())==getFileHeader(pcaBs[t].data()))
 			{
 				valueCountsBig++;
 			}
-			if(score[s][t]>=recongiseFaceValue && s!=t)
+			if(score[0][t]>=recongiseFaceValue && getFileHeader(pcaAs[s].data())!=getFileHeader(pcaBs[t].data()))
 			{
 				valueCountsSmall++;
 			}

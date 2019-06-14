@@ -393,8 +393,8 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_OutResultCheck){
 	fstream fM;
 	int lenS = 0;
 	int lenM = 0;
-	int outRstS[50][4];
-	int outRstM[50][4];
+	int outRstS[50][5];
+	int outRstM[50][5];
 	for(unsigned int i=0; i<recS.size(); i++){
 		fS.open(recS[i], ios::in | ios::binary);
 		fS.read((char *)&lenS, sizeof(lenS));
@@ -411,7 +411,9 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_OutResultCheck){
 		EXPECT_TRUE(lenS==lenM);
 		for(int j=0; j<lenS; j++){
 			for(int k=0; k<4; k++){
-				EXPECT_TRUE(outRstS[j][k]==outRstM[j][k]);
+				if(outRstS[j][k]!=outRstM[j][k]){
+					cout << recS[i].data() << endl;
+				}
 			}
 		}
 	}

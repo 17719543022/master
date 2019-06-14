@@ -71,6 +71,15 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 	string feaPath = GConfig::getInstance().getFeaSPath();
 	string pcaPath = GConfig::getInstance().getPcaSPath();
 
+	string command = "rd /s /q " + feaPath;
+	system(command.c_str());
+	command = "mkdir " + feaPath;
+	system(command.c_str());
+	command = "rd /s /q " + pcaPath;
+	system(command.c_str());
+	command = "mkdir " + pcaPath;
+	system(command.c_str());
+
 	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
 	for(unsigned int i=0; i<images.size(); i++){
 		if(SUCC != ISGetFeaturePath(defaultFeatureChannel, const_cast<char *>(images[i].data()), feature[0])){
@@ -121,6 +130,15 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
 	cout << "image directory: " << imgPath << endl;
 	cout << "threads num: " << detectThreadNum << endl;
 	cout << ">>Outputs<<" << endl;
+
+	string command = "rd /s /q " + GConfig::getInstance().getFeaMPath();
+	system(command.c_str());
+	command = "mkdir " + GConfig::getInstance().getFeaMPath();
+	system(command.c_str());
+	command = "rd /s /q " + GConfig::getInstance().getPcaMPath();
+	system(command.c_str());
+	command = "mkdir " + GConfig::getInstance().getPcaMPath();
+	system(command.c_str());
 
 	vector<vector<string>> image;
 	for(unsigned int i=0; i<detectThreadNum; i++){

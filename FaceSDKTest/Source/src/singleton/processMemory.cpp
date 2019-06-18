@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "processMemory.h"
 #include <windows.h>
 #include <Psapi.h>

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "iniReader.h"
 #include <fstream>
 #include <stdlib.h>

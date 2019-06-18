@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "log_format.h"
 
 bool logSwitch = true;

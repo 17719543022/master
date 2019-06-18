@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "timer.h"
 #include <Windows.h>
 #include <iostream>

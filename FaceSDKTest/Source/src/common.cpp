@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "common.h"
 #include <iostream>
 #include "sdk_error_code.h"

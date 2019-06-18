@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "listOut.h"
 #include <gtest/gtest.h>
 

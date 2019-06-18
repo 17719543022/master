@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <gtest/gtest.h>
 #include "opencv.hpp"
 #include "testSuits.h"

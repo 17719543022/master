@@ -1,5 +1,4 @@
 #ifdef WIN32
-#include <Windows.h>
 #include "opencv.hpp"
 #endif
 #ifdef LINUX
@@ -19,6 +18,7 @@ using namespace std;
 using namespace cv;
 
 extern pthread_mutex_t mutex;
+extern int denominator;
 int featureNum;
 
 namespace{
@@ -76,14 +76,6 @@ namespace{
 }
 
 TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
-#ifdef WIN32
-	SYSTEMTIME	tStart, tStop;
-	GetSystemTime(&tStart);
-#endif
-#ifdef LINUX
-	time_t tStart = time((time_t *)NULL);
-#endif
-
 	string imgPath = GConfig::getInstance().getFeatureImgPath();
 	vector<string> images;
 	listOutDirectoryFiles(imgPath, images);
@@ -157,39 +149,16 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 	}
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 
-#ifdef WIN32
-	GetSystemTime(&tStop);
-#endif
-#ifdef LINUX
-	time_t tStop = time((time_t *)NULL);
-#endif
-
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num got feature succ of image directory: " << featureNum << endl;
 	float percent = float(featureNum)/images.size()*100;
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output feature of image directory to: " << feaPath << endl;
 	cout << "output pca of image directory to: " << pcaPath << endl;
-#ifdef WIN32
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/images.size();
-#endif
-#ifdef LINUX
-	cout << "time cost: " << tStop - tStart << "ms" << endl;
-	float timePerPic = float(tStop - tStart)/images.size();
-#endif
-	cout << "time cost per feature: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = images.size();
 }
 
 TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
-#ifdef WIN32
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
-#endif
-#ifdef LINUX
-    time_t tStart = time((time_t *)NULL);
-#endif
-
 	string imgPath = GConfig::getInstance().getFeatureImgPath();
 	vector<string> images;
 	listOutDirectoryFiles(imgPath, images);
@@ -241,28 +210,13 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
 	}
 
-#ifdef WIN32
-    GetSystemTime(&tStop);
-#endif
-#ifdef LINUX
-    time_t tStop = time((time_t *)NULL);
-#endif
-
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num got feature succ of image directory: " << featureNum << endl;
 	float percent = float(featureNum)/images.size()*100;
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output feature of image directory to: " << GConfig::getInstance().getFeaMPath() << endl;
 	cout << "output pca of image directory to: " << GConfig::getInstance().getPcaMPath() << endl;
-#ifdef WIN32
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/images.size();
-#endif
-#ifdef LINUX
-	cout << "time cost: " << tStop - tStart << "ms" << endl;
-	float timePerPic = float(tStop - tStart)/images.size();
-#endif
-	cout << "time cost per feature: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = images.size();
 }
 
 TEST_F(ftISFeature, ISGetFeaturePath_OutResultCheck){

@@ -45,7 +45,7 @@ namespace{
 	}
 }
 
-#if 0
+#ifdef WIN32
 int getGap(SYSTEMTIME tStart, SYSTEMTIME tStop){
 	int gap = 0;
 

@@ -3,7 +3,7 @@
 
 class ProcessMemory{
 public:
-	static unsigned long long getProcessMemory();
+	static long long getProcessMemory();
 };
 
 #endif

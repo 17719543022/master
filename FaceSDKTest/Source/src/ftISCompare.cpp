@@ -1,5 +1,4 @@
 #ifdef WIN32
-#include <Windows.h>
 #include "opencv.hpp"
 #endif
 #ifdef LINUX
@@ -20,6 +19,7 @@ using namespace cv;
 using namespace std;
 
 extern pthread_mutex_t mutex;
+extern int denominator;
 pthread_mutex_t mutex2;
 int featureNumA;
 int featureNumB;
@@ -434,14 +434,6 @@ namespace{
 }
 
 TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread){
-#ifdef WIN32
-	SYSTEMTIME	tStart, tStop;
-	GetSystemTime(&tStart);
-#endif
-#ifdef LINUX
-	time_t tStart = time((time_t *)NULL);
-#endif
-
 	vector<string>paths(4);
 	paths[0] = GConfig::getInstance().getFeatureAPath();
 	paths[1] = GConfig::getInstance().getFeatureBPath();
@@ -517,12 +509,6 @@ TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
 	}
 
-#ifdef WIN32
-	GetSystemTime(&tStop);
-#endif
-#ifdef LINUX
-	time_t tStop = time((time_t *)NULL);
-#endif
 	cout << "picture num of image directory A: " << imageAs_size << endl;
 	cout << "picture num got feature succ of image directory A: " << featureNumA << endl;
 	float percent = float(featureNumA)/imageAs_size*100;
@@ -535,27 +521,11 @@ TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread){
 	cout << "output pca of image directory A to: " << GConfig::getInstance().getPcaAPath() << endl;
 	cout << "output feature of image directory B to: " << GConfig::getInstance().getFeatureBPath() << endl;
 	cout << "output pca of image directory B to: " << GConfig::getInstance().getPcaBPath() << endl;
-#ifdef WIN32
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/(imageAs_size+imageBs_size);
-#endif
-#ifdef LINUX
-	cout << "time cost: " << tStop - tStart << "ms" << endl;
-	float timePerPic = float(tStop - tStart)/(imageAs_size+imageBs_size);
-#endif
-	cout << "time cost per picture: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = imageAs_size+imageBs_size;
 }
 
 //ISCompare only supports feature with length of 8192
 TEST_F(ftISCompare, ISCompare_SingleThread){
-#ifdef WIN32
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
-#endif
-#ifdef LINUX
-    time_t tStart = time((time_t *)NULL);
-#endif
-
 #ifdef WIN32
 	fstream f;
 #endif
@@ -629,13 +599,6 @@ TEST_F(ftISCompare, ISCompare_SingleThread){
 	}
 	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
 
-#ifdef WIN32
-	GetSystemTime(&tStop);
-#endif
-#ifdef LINUX
-	time_t tStop = time((time_t *)NULL);
-#endif
-
 	cout << "feature num of feature directory A: " << feaAFiles_size << endl;
 	cout << "feature num of feature directory B: " << feaBFiles_size << endl;
 	cout << "for an identical person, but score less than compareFaceValue: " << valueCountsBig << endl;
@@ -645,25 +608,10 @@ TEST_F(ftISCompare, ISCompare_SingleThread){
 	percent = float(valueCountsSmall)/feaAFiles_size*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "compare times: " << feaAFiles_size*feaBFiles_size << endl;
-#ifdef WIN32
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/(feaAFiles_size*feaBFiles_size);
-#endif
-#ifdef LINUX
-	cout << "time cost: " << tStop - tStart << "ms" << endl;
-	float timePerPic = float(tStop - tStart)/(feaAFiles_size*feaBFiles_size);
-#endif
-	cout << "time cost per compare: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = feaAFiles_size*feaBFiles_size;
 }
 
 TEST_F(ftISCompare, ISCompare_MultiThread){
-#ifdef WIN32
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
-#endif
-#ifdef LINUX
-    time_t tStart = time((time_t *)NULL);
-#endif
 	valueCountsSmall = 0;
 	valueCountsBig = 0;
 
@@ -684,13 +632,6 @@ TEST_F(ftISCompare, ISCompare_MultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThreads[n], &retVal));
 	}
 
-#ifdef WIN32
-	GetSystemTime(&tStop);
-#endif
-#ifdef LINUX
-	time_t tStop = time((time_t *)NULL);
-#endif
-
 	string imgAPath = GConfig::getInstance().getCompareImgAPath();
 	vector<string> imageAs;
 	listOutDirectoryFiles(imgAPath, imageAs);
@@ -710,27 +651,11 @@ TEST_F(ftISCompare, ISCompare_MultiThread){
 	percent = float(valueCountsSmall)/imageAs_size*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "compare times: " << imageAs_size*imageBs_size << endl;
-#ifdef WIN32
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/(imageAs_size*imageBs_size);
-#endif
-#ifdef LINUX
-	cout << "time cost: " << tStop - tStart << "ms" << endl;
-	float timePerPic = float(tStop - tStart)/(imageAs_size*imageBs_size);
-#endif
-	cout << "time cost per compare: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = imageAs_size*imageBs_size;
 }
 
 //ISCompareMN/ISCompareMNfaster only support pca with length of 2048
 TEST_F(ftISCompare, ISCompareMN_SingleThread){
-#ifdef WIN32
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
-#endif
-#ifdef LINUX
-    time_t tStart = time((time_t *)NULL);
-#endif
-
 	string pcaAPath = GConfig::getInstance().getPcaAPath();
 	vector<string> pcaAs;
 	listOutDirectoryFiles(pcaAPath, pcaAs);
@@ -816,12 +741,6 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread){
 	}
 
 	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
-#ifdef WIN32
-    GetSystemTime(&tStop);
-#endif
-#ifdef LINUX
-    time_t tStop = time((time_t *)NULL);
-#endif
 
 	cout << "pca num of pca directory A: " << pcaAs_size << endl;
 	cout << "pca num of pca directory B: " << pcaBs_size << endl;
@@ -832,25 +751,10 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread){
 	percent = float(valueCountsSmall)/pcaAs_size*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
-#ifdef WIN32
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/(pcaAs_size*pcaBs_size);
-#endif
-#ifdef LINUX
-	cout << "time cost: " << tStop - tStart << "ms" << endl;
-	float timePerPic = float(tStop - tStart)/(pcaAs_size*pcaBs_size);
-#endif
-	cout << "time cost per compare: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = pcaAs_size*pcaBs_size;
 }
 
 TEST_F(ftISCompare, ISCompareMN_MultiThread){
-#ifdef WIN32
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
-#endif
-#ifdef LINUX
-    time_t tStart = time((time_t *)NULL);
-#endif
 	valueCountsSmall = 0;
 	valueCountsBig = 0;
 
@@ -871,13 +775,6 @@ TEST_F(ftISCompare, ISCompareMN_MultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThreads[n], &retVal));
 	}
 
-#ifdef WIN32
-	GetSystemTime(&tStop);
-#endif
-#ifdef LINUX
-	time_t tStop = time((time_t *)NULL);
-#endif
-
 	string pcaAPath = GConfig::getInstance().getPcaAPath();
 	vector<string> pcaAs;
 	listOutDirectoryFiles(pcaAPath, pcaAs);
@@ -897,25 +794,14 @@ TEST_F(ftISCompare, ISCompareMN_MultiThread){
 	percent = float(valueCountsSmall)/pcaAs_size*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
-#ifdef WIN32
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/(pcaAs_size*pcaBs_size);
-#endif
-#ifdef LINUX
-	cout << "time cost: " << tStop - tStart << "ms" << endl;
-	float timePerPic = float(tStop - tStart)/(pcaAs_size*pcaBs_size);
-#endif
-	cout << "time cost per compare: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = pcaAs_size*pcaBs_size;
 }
 
 TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 #ifdef WIN32
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
 	fstream fileA, fileB;
 #endif
 #ifdef LINUX
-	time_t tStart = time((time_t *)NULL);
 	FILE *fileA, *fileB;
 #endif
 
@@ -1000,12 +886,6 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 	}
 
 	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
-#ifdef WIN32
-    GetSystemTime(&tStop);
-#endif
-#ifdef LINUX
-    time_t tStop = time((time_t *)NULL);
-#endif
 
 	cout << "pca num of pca directory A: " << pcaAs_size << endl;
 	cout << "pca num of pca directory B: " << pcaBs_size << endl;
@@ -1016,25 +896,10 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 	percent = float(valueCountsSmall)/pcaAs_size*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
-#ifdef WIN32
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/(pcaAs_size*pcaBs_size);
-#endif
-#ifdef LINUX
-	cout << "time cost: " << tStop - tStart << "ms" << endl;
-	float timePerPic = float(tStop - tStart)/(pcaAs_size*pcaBs_size);
-#endif
-	cout << "time cost per compare: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = pcaAs_size*pcaBs_size;
 }
 
 TEST_F(ftISCompare, ISCompareMNfaster_MultiThread){
-#ifdef WIN32
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
-#endif
-#ifdef LINUX
-    time_t tStart = time((time_t *)NULL);
-#endif
 	valueCountsSmall = 0;
 	valueCountsBig = 0;
 
@@ -1055,13 +920,6 @@ TEST_F(ftISCompare, ISCompareMNfaster_MultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThreads[n], &retVal));
 	}
 
-#ifdef WIN32
-	GetSystemTime(&tStop);
-#endif
-#ifdef LINUX
-	time_t tStop = time((time_t *)NULL);
-#endif
-
 	string pcaAPath = GConfig::getInstance().getPcaAPath();
 	vector<string> pcaAs;
 	listOutDirectoryFiles(pcaAPath, pcaAs);
@@ -1081,13 +939,5 @@ TEST_F(ftISCompare, ISCompareMNfaster_MultiThread){
 	percent = float(valueCountsSmall)/pcaAs_size*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
-#ifdef WIN32
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/(pcaAs_size*pcaBs_size);
-#endif
-#ifdef LINUX
-	cout << "time cost: " << tStop - tStart << "ms" << endl;
-	float timePerPic = float(tStop - tStart)/(pcaAs_size*pcaBs_size);
-#endif
-	cout << "time cost per compare: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = pcaAs_size*pcaBs_size;
 }

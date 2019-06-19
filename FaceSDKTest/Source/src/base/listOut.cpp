@@ -1,7 +1,9 @@
+#ifdef LINUX
+#include <dirent.h>
+#endif
 #include "listOut.h"
 #include <gtest/gtest.h>
 #include "listOut.h"
-#include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>

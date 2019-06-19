@@ -35,7 +35,7 @@ using namespace cv;
 	}\
 	star = target##tag.data();
 
-#if 0
+#ifdef WIN32
 int getGap(SYSTEMTIME tStart, SYSTEMTIME tStop);
 #endif
 string getFileHeader(const char *p);

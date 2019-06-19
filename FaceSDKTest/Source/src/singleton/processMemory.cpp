@@ -5,8 +5,8 @@
 #include "processMemory.h"
 
 #ifdef WIN32
-unsigned long long ProcessMemory::getProcessMemory(){
-	unsigned long long mm = 0;
+long long ProcessMemory::getProcessMemory(){
+	long long mm = 0;
 
 	HANDLE handle=GetCurrentProcess();
 	PROCESS_MEMORY_COUNTERS_EX pmc = {0};
@@ -25,7 +25,7 @@ unsigned long long ProcessMemory::getProcessMemory(){
 #endif
 
 #ifdef LINUX
-unsigned long long ProcessMemory::getProcessMemory(){
+long long ProcessMemory::getProcessMemory(){
 	return -1;
 }
 #endif

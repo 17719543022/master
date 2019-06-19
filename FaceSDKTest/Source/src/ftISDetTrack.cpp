@@ -1,5 +1,4 @@
 #ifdef WIN32
-#include <Windows.h>
 #include "opencv.hpp"
 #endif
 #ifdef LINUX
@@ -19,6 +18,7 @@ using namespace std;
 using namespace cv;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+extern int denominator;
 int detectedNum = 0;
 
 namespace{
@@ -150,14 +150,6 @@ namespace{
 }
 
 TEST_F(ftISDetTrack, ISFaceDetectPath_SingleThread){
-#ifdef WIN32
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
-#endif
-#ifdef LINUX
-    time_t tStart = time((time_t *)NULL);
-#endif
-
 	string imgPath = GConfig::getInstance().getDetectImgPath();
 	vector<string> images;
 	listOutDirectoryFiles(imgPath, images);
@@ -214,38 +206,15 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_SingleThread){
 	}
 	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 
-#ifdef WIN32
-	GetSystemTime(&tStop);
-#endif
-#ifdef LINUX
-	time_t tStop = time((time_t *)NULL);
-#endif
-
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output detect result to: " << recDetectS << endl;
-#ifdef WIN32
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/images.size();
-#endif
-#ifdef LINUX
-	cout << "time cost: " << tStop - tStart << "ms" << endl;
-	float timePerPic = float(tStop - tStart)/images.size();
-#endif
-	cout << "time cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = images.size();
 }
 
 TEST_F(ftISDetTrack, ISFaceDetectPath_MultiThread){
-#ifdef WIN32
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
-#endif
-#ifdef LINUX
-    time_t tStart = time((time_t *)NULL);
-#endif
-
 	string imgPath = GConfig::getInstance().getDetectImgPath();
 	unsigned int detectThreadNum = GConfig::getInstance().getDetectThreadNum();
 	vector<string> images;
@@ -292,28 +261,13 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_MultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
 	}
 
-#ifdef WIN32
-    GetSystemTime(&tStop);
-#endif
-#ifdef LINUX
-    time_t tStop = time((time_t *)NULL);
-#endif
-
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num allocated to each thread: " << imgNumPerThread << endl;
 	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output detect result to: " << recDetectM << endl;
-#ifdef WIN32
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/images.size();
-#endif
-#ifdef LINUX
-	cout << "time cost: " << tStop - tStart << "ms" << endl;
-	float timePerPic = float(tStop - tStart)/images.size();
-#endif
-	cout << "time cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = images.size();
 }
 
 TEST_F(ftISDetTrack, ISFaceDetectPath_OutResultCheck){
@@ -385,9 +339,6 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_OutResultCheck){
 
 #ifdef WIN32
 TEST_F(ftISDetTrack, ISFaceDetTrackRgb_SingleThread){
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
-
 	string imgPath = GConfig::getInstance().getTrackImgPath();
 	vector<string> images;
 	listOutDirectoryFiles(imgPath, images);
@@ -426,22 +377,15 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_SingleThread){
 	}
 	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 
-	GetSystemTime(&tStop);
-
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output detect result to: " << recTrackS << endl;
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/images.size();
-	cout << "time cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = images.size();
 }
 
 TEST_F(ftISDetTrack, ISFaceDetTrackRgb_MultiThread){
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
-
 	string imgPath = GConfig::getInstance().getTrackImgPath();
 	unsigned int detectThreadNum = GConfig::getInstance().getDetectThreadNum();
 	vector<string> images;
@@ -481,17 +425,13 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_MultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
 	}
 
-    GetSystemTime(&tStop);
-
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num allocated to each thread: " << imgNumPerThread << endl;
 	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output detect result to: " << recTrackM << endl;
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/images.size();
-	cout << "time cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = images.size();
 }
 
 TEST_F(ftISDetTrack, ISFaceDetTrackRgb_OutResultCheck){
@@ -544,14 +484,6 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_OutResultCheck){
 #endif
 
 TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread){
-#ifdef WIN32
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
-#endif
-#ifdef LINUX
-    time_t tStart = time((time_t *)NULL);
-#endif
-
 	string imgPath = GConfig::getInstance().getFaceInfoImgPath();
 	vector<string> images;
 	listOutDirectoryFiles(imgPath, images);
@@ -618,38 +550,15 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread){
 	}
 	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 
-#ifdef WIN32
-	GetSystemTime(&tStop);
-#endif
-#ifdef LINUX
-	time_t tStop = time((time_t *)NULL);
-#endif
-
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output detect result to: " << faceInfoS << endl;
-#ifdef WIN32
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/images.size();
-#endif
-#ifdef LINUX
-	cout << "time cost: " << tStop - tStart << "ms" << endl;
-	float timePerPic = float(tStop - tStart)/images.size();
-#endif
-	cout << "timer cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = images.size();
 }
 
 TEST_F(ftISDetTrack, ISCalFaceInfoPath_MultiThread){
-#ifdef WIN32
-	SYSTEMTIME tStart, tStop;
-    GetSystemTime(&tStart);
-#endif
-#ifdef LINUX
-    time_t tStart = time((time_t *)NULL);
-#endif
-
 	string imgPath = GConfig::getInstance().getFaceInfoImgPath();
 	unsigned int detectThreadNum = GConfig::getInstance().getDetectThreadNum();
 	vector<string> images;
@@ -695,28 +604,13 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_MultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
 	}
 
-#ifdef WIN32
-    GetSystemTime(&tStop);
-#endif
-#ifdef LINUX
-    time_t tStop = time((time_t *)NULL);
-#endif
-
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num allocated to each thread: " << imgNumPerThread << endl;
 	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output detect result to: " << faceInfoM << endl;
-#ifdef WIN32
-	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
-	float timePerPic = float(getGap(tStart, tStop))/images.size();
-#endif
-#ifdef LINUX
-	cout << "time cost: " << tStop - tStart << "ms" << endl;
-	float timePerPic = float(tStop - tStart)/images.size();
-#endif
-	cout << "time cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	denominator = images.size();
 }
 
 TEST_F(ftISDetTrack, ISCalFaceInfoPath_OutResultCheck){

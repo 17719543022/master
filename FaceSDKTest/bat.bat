@@ -5,11 +5,11 @@ path = %path%.\..;.\..\..\Export\face\build_32\bin;.\..\..\Export\opencv\build\x
 echo prepare pics first, and then update configuration to config.ini!
 
 :testsuits
-echo 1.ftISDetTrack
-echo 2.ftISFeature
-echo 3.ftISCompare
-echo 4.ftError
-echo 5.ftAppliance
+echo 1.ISDetTrack
+echo 2.ISFeature
+echo 3.ISCompare
+echo 4.Error Code Coverage
+echo 5.Other Cases
 echo 6.All Above
 echo q.Quit
 for /f "delims=" %%i in ('echo please enter your choice: ') do set /p=%%i<nul

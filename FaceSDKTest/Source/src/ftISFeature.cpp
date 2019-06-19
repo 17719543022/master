@@ -1,9 +1,15 @@
-#include <gtest/gtest.h>
+#ifdef WIN32
+#include <Windows.h>
 #include "opencv.hpp"
+#endif
+#ifdef LINUX
+#include "opencv2/opencv.hpp"
+#include "rmDir.h"
+#endif
+#include <gtest/gtest.h>
 #include "testSuits.h"
 #include "config.h"
 #include "listOut.h"
-#include <Windows.h>
 #include "common.h"
 #include <pthread.h>
 #include <fstream>
@@ -22,7 +28,12 @@ namespace{
 		int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
 		char feature[5][8192];
 		char pca[2048];
+#ifdef WIN32
 		fstream fileF, fileP;
+#endif
+#ifdef LINUX
+		FILE *fileF, *fileP;
+#endif
 		for(unsigned int i=0; i<images.size(); i++){
 			if(SUCC != ISGetFeaturePath(defaultFeatureChannel, const_cast<char *>(images[i].data()), feature[0])){
 				continue;
@@ -32,6 +43,7 @@ namespace{
 				featureNum++;
 				pthread_mutex_unlock(&mutex);
 				ISGetPcaFea(defaultFeatureChannel, feature[0], pca);
+#ifdef WIN32
 				string saveFeaPath = GConfig::getInstance().getFeaMPath() + "\\" + getFileHeader(images[i].data()) + ".fea";
 				fileF.open(saveFeaPath, ios::out | ios::binary);
 				fileF.write(feature[0], sizeof(feature[0]));
@@ -43,6 +55,18 @@ namespace{
 				fileP.write(pca, sizeof(pca));
 				fileP.close();
 				fileP.clear();
+#endif
+#ifdef LINUX
+				string saveFeaPath = GConfig::getInstance().getFeaMPath() + "/" + getFileHeader(images[i].data()) + ".fea";
+				fileF = fopen(saveFeaPath.data(), "wb");
+				fwrite(feature, 8192, 1, fileF);
+				fclose(fileF);
+
+				string savePcaPath = GConfig::getInstance().getPcaMPath() + "/" + getFileHeader(images[i].data()) + ".pca";
+				fileP = fopen(savePcaPath.data(), "wb");
+				fwrite(pca, 2048, 1, fileP);
+				fclose(fileP);
+#endif
 			}
 		}
 		DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
@@ -52,8 +76,14 @@ namespace{
 }
 
 TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
+#ifdef WIN32
 	SYSTEMTIME	tStart, tStop;
 	GetSystemTime(&tStart);
+#endif
+#ifdef LINUX
+	time_t tStart = time((time_t *)NULL);
+#endif
+
 	string imgPath = GConfig::getInstance().getFeatureImgPath();
 	vector<string> images;
 	listOutDirectoryFiles(imgPath, images);
@@ -66,10 +96,16 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 
 	char feature[5][8192];
 	char pca[2048];
+#ifdef WIN32
 	fstream fileF, fileP;
+#endif
+#ifdef LINUX
+	FILE *fileF, *fileP;
+#endif
 	string feaPath = GConfig::getInstance().getFeaSPath();
 	string pcaPath = GConfig::getInstance().getPcaSPath();
 
+#ifdef WIN32
 	string command = "rd /s /q " + feaPath;
 	system(command.c_str());
 	command = "mkdir " + feaPath;
@@ -78,6 +114,13 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 	system(command.c_str());
 	command = "mkdir " + pcaPath;
 	system(command.c_str());
+#endif
+#ifdef LINUX
+	rmDir(feaPath);
+	mkdir(feaPath.data(), 0775);
+	rmDir(pcaPath);
+	mkdir(pcaPath.data(), 0775);
+#endif
 
 	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
 	for(unsigned int i=0; i<images.size(); i++){
@@ -87,6 +130,7 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 
 		ISGetPcaFea(defaultFeatureChannel, feature[0], pca);
 		featureNum++;
+#ifdef WIN32
 		string saveFeaPath = feaPath + "\\" + getFileHeader(images[i].data()) + ".fea";
 		fileF.open(saveFeaPath, ios::out | ios::binary);
 		fileF.write(feature[0], sizeof(feature[0]));
@@ -98,10 +142,27 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 		fileP.write(pca, sizeof(pca));
 		fileP.close();
 		fileP.clear();
+#endif
+#ifdef LINUX
+		string saveFeaPath = feaPath + "/" + getFileHeader(images[i].data()) + ".fea";
+		fileF = fopen(saveFeaPath.data(), "wb");
+		fwrite(feature, 8192, 1, fileF);
+		fclose(fileF);
+
+		string savePcaPath = pcaPath + "/" + getFileHeader(images[i].data()) + ".pca";
+		fileP = fopen(savePcaPath.data(), "wb");
+		fwrite(pca, 2048, 1, fileP);
+		fclose(fileP);
+#endif
 	}
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 
+#ifdef WIN32
 	GetSystemTime(&tStop);
+#endif
+#ifdef LINUX
+	time_t tStop = time((time_t *)NULL);
+#endif
 
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num got feature succ of image directory: " << featureNum << endl;
@@ -109,14 +170,26 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output feature of image directory to: " << feaPath << endl;
 	cout << "output pca of image directory to: " << pcaPath << endl;
+#ifdef WIN32
 	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
+#endif
+#ifdef LINUX
+	cout << "time cost: " << tStop - tStart << "ms" << endl;
+	float timePerPic = float(tStop - tStart)/images.size();
+#endif
 	cout << "time cost per feature: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
+#ifdef WIN32
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
+#endif
+#ifdef LINUX
+    time_t tStart = time((time_t *)NULL);
+#endif
+
 	string imgPath = GConfig::getInstance().getFeatureImgPath();
 	vector<string> images;
 	listOutDirectoryFiles(imgPath, images);
@@ -130,6 +203,7 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
 	cout << "threads num: " << detectThreadNum << endl;
 	cout << ">>Outputs<<" << endl;
 
+#ifdef WIN32
 	string command = "rd /s /q " + GConfig::getInstance().getFeaMPath();
 	system(command.c_str());
 	command = "mkdir " + GConfig::getInstance().getFeaMPath();
@@ -138,8 +212,15 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
 	system(command.c_str());
 	command = "mkdir " + GConfig::getInstance().getPcaMPath();
 	system(command.c_str());
+#endif
+#ifdef LINUX
+	rmDir(GConfig::getInstance().getFeaMPath());
+	mkdir(GConfig::getInstance().getFeaMPath().data(), 0775);
+	rmDir(GConfig::getInstance().getPcaMPath());
+	mkdir(GConfig::getInstance().getPcaMPath().data(), 0775);
+#endif
 
-	vector<vector<string>> image;
+	vector<vector<string> > image;
 	for(unsigned int i=0; i<detectThreadNum; i++){
 		image.push_back(vector<string>());
 		if(i == detectThreadNum-1){
@@ -160,7 +241,12 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
 	}
 
+#ifdef WIN32
     GetSystemTime(&tStop);
+#endif
+#ifdef LINUX
+    time_t tStop = time((time_t *)NULL);
+#endif
 
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num got feature succ of image directory: " << featureNum << endl;
@@ -168,8 +254,14 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output feature of image directory to: " << GConfig::getInstance().getFeaMPath() << endl;
 	cout << "output pca of image directory to: " << GConfig::getInstance().getPcaMPath() << endl;
+#ifdef WIN32
 	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
+#endif
+#ifdef LINUX
+	cout << "time cost: " << tStop - tStart << "ms" << endl;
+	float timePerPic = float(tStop - tStart)/images.size();
+#endif
 	cout << "time cost per feature: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
@@ -199,10 +291,18 @@ TEST_F(ftISFeature, ISGetFeaturePath_OutResultCheck){
 	EXPECT_TRUE(feaSNames.size()==pcaSNames.size());
 	EXPECT_TRUE(pcaMNames.size()==feaMNames.size());
 
+#ifdef WIN32
 	fstream fFeaS;
 	fstream fPcaS;
 	fstream fFeaM;
 	fstream fPcaM;
+#endif
+#ifdef LINUX
+	FILE *fFeaS;
+	FILE *fPcaS;
+	FILE *fFeaM;
+	FILE *fPcaM;
+#endif
 	int lenFea = 8192;
 	int lenPca = 2048;
 	char featureS[8192];
@@ -211,6 +311,7 @@ TEST_F(ftISFeature, ISGetFeaturePath_OutResultCheck){
 	char pcaFeatureM[8192];
 
 	for(unsigned int i=0; i<feaSNames.size(); i++){
+#ifdef WIN32
 		fFeaS.open(feaSNames[i], ios::in | ios::binary);
 		fFeaS.read(featureS, 8192);
 		fFeaS.clear();
@@ -220,11 +321,22 @@ TEST_F(ftISFeature, ISGetFeaturePath_OutResultCheck){
 		fFeaM.read(featureM, 8192);
 		fFeaM.clear();
 		fFeaM.close();
+#endif
+#ifdef LINUX
+		fFeaS = fopen(feaSNames[i].data(), "rb");
+		fread(featureS, 8192, 1, fFeaS);
+		fclose(fFeaS);
+
+		fFeaM = fopen(feaMNames[i].data(), "rb");
+		fread(featureM, 8192, 1, fFeaM);
+		fclose(fFeaM);
+#endif
 
 		for(int j=0; j<8192; j++){
 			EXPECT_TRUE(featureS[j]==featureM[j]);
 		}
 
+#ifdef WIN32
 		fPcaS.open(pcaSNames[i], ios::in | ios::binary);
 		fPcaS.read(pcaFeatureS, 2048);
 		fPcaS.clear();
@@ -234,6 +346,16 @@ TEST_F(ftISFeature, ISGetFeaturePath_OutResultCheck){
 		fPcaM.read(pcaFeatureM, 2048);
 		fPcaM.clear();
 		fPcaM.close();
+#endif
+#ifdef LINUX
+		fPcaS = fopen(pcaSNames[i].data(), "rb");
+		fread(pcaFeatureS, 2048, 1, fPcaS);
+		fclose(fPcaS);
+
+		fPcaM = fopen(pcaMNames[i].data(), "rb");
+		fread(pcaFeatureM, 2048, 1, fPcaM);
+		fclose(fPcaM);
+#endif
 
 		for(int j=0; j<2048; j++){
 			EXPECT_TRUE(pcaFeatureS[j]==pcaFeatureM[j]);

@@ -1,8 +1,11 @@
-#include "timer.h"
+#ifdef WIN32
 #include <Windows.h>
+#endif
+#include "timer.h"
 #include <iostream>
 using namespace std;
 
+#ifdef WIN32
 bool isTimeOut(int secondsSet)
 {
 	SYSTEMTIME stop;
@@ -25,3 +28,18 @@ bool isTimeOut(int secondsSet)
 
 	return false;
 }
+#endif
+
+#ifdef LINUX
+bool isTimeOut(int secondsSet)
+{
+	static time_t tStart = time((time_t *)NULL);
+
+	if(time((time_t *)NULL) - tStart > secondsSet)
+	{
+		return true;
+	}
+
+	return false;
+}
+#endif

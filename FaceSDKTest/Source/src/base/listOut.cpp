@@ -1,6 +1,14 @@
 #include "listOut.h"
 #include <gtest/gtest.h>
+#include "listOut.h"
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <vector>
+#include "log_format.h"
 
+#ifdef WIN32
 void listOutDirectoryFiles(string& path, vector<string>& list)
 {
 	_finddata_t tFolder;
@@ -36,3 +44,55 @@ void listOutSubdirectoryFiles(string& path, string& fileName, vector<string>& li
 
 	_findclose(hFolder);
 }
+#endif
+
+#ifdef LINUX
+void listOutDirectoryFiles(string& path, vector<string>& list)
+{
+	DIR *dir;
+	if (NULL == (dir = opendir(path.data())))
+	{
+		ERR_LOG("opendir directory fail.");
+		return;
+	}
+
+	struct dirent *d_ent;
+	char fullpath[128];
+
+	while ((d_ent = readdir(dir)) != NULL)
+	{
+		if(strcmp(d_ent->d_name, ".")==0 || strcmp(d_ent->d_name, "..")==0){
+			continue;
+		}
+
+		list.push_back(path + "/" + d_ent->d_name);
+	}
+
+	closedir(dir);
+}
+
+void listOutSubdirectoryFiles(string& path, string& fileName, vector<string>& list)
+{
+	DIR *dir;
+	if (NULL == (dir = opendir(path.data())))
+	{
+		ERR_LOG("opendir directory fail.");
+		return;
+	}
+
+	struct dirent *d_ent;
+	char fullpath[128];
+
+	while ((d_ent = readdir(dir)) != NULL)
+	{
+		if(strcmp(d_ent->d_name, ".")==0 || strcmp(d_ent->d_name, "..")==0){
+			continue;
+		}
+
+		list.push_back(path + "/" + d_ent->d_name + "/" + fileName);
+	}
+
+	closedir(dir);
+}
+#endif
+

@@ -1,10 +1,13 @@
-#include "processMemory.h"
+#ifdef WIN32
 #include <windows.h>
 #include <Psapi.h>
+#endif
+#include "processMemory.h"
 
+#ifdef WIN32
 unsigned long long ProcessMemory::getProcessMemory(){
 	unsigned long long mm = 0;
-//#ifdef WIN32
+
 	HANDLE handle=GetCurrentProcess();
 	PROCESS_MEMORY_COUNTERS_EX pmc = {0};
 	int a = sizeof(pmc);
@@ -16,6 +19,13 @@ unsigned long long ProcessMemory::getProcessMemory(){
 	{
 		mm = pmc.PrivateUsage/1024;
 	}
-//#endif
+
 	return mm;
 }
+#endif
+
+#ifdef LINUX
+unsigned long long ProcessMemory::getProcessMemory(){
+	return -1;
+}
+#endif

@@ -1,6 +1,6 @@
 #include "log_format.h"
 
-bool logSwitch = true;
+bool logSwitch = false;
 
 int switchPrintf(const char* format, ...)
 {

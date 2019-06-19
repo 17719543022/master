@@ -1,8 +1,13 @@
 #ifndef _INCL_TEST_SUITS_H_
 #define _INCL_TEST_SUITS_H_
 
-#include <gtest/gtest.h>
+#ifdef WIN32
 #include "opencv.hpp"
+#endif
+#ifdef LINUX
+#include "opencv2/opencv.hpp"
+#endif
+#include <gtest/gtest.h>
 #include "processMemory.h"
 
 using namespace cv;

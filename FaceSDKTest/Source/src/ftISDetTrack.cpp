@@ -1,9 +1,15 @@
-#include <gtest/gtest.h>
+#ifdef WIN32
+#include <Windows.h>
 #include "opencv.hpp"
+#endif
+#ifdef LINUX
+#include "opencv2/opencv.hpp"
+#include "rmDir.h"
+#endif
+#include <gtest/gtest.h>
 #include "testSuits.h"
 #include "config.h"
 #include "listOut.h"
-#include <Windows.h>
 #include "common.h"
 #include <pthread.h>
 #include <fstream>
@@ -20,7 +26,12 @@ namespace{
 		vector<string> images = *(vector<string> *)ptr;
 		int len = 0;
 		int outRst[50][4];
+#ifdef WIN32
 		fstream f;
+#endif
+#ifdef LINUX
+		FILE *f;
+#endif
 		string recDetectM = GConfig::getInstance().getRecDetectMPath();
 
 		int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
@@ -29,12 +40,22 @@ namespace{
 			if(len >= 1){
 				pthread_mutex_lock(&mutex);
 				detectedNum += 1;
+#ifdef WIN32
 				string saveRecPath = recDetectM + "\\" + getFileHeader(images[i].data()) + ".rec";
 				f.open(saveRecPath, ios::out | ios::binary);
 				f.write((char *)&len, sizeof(len));
 				f.write((char *)outRst[0], sizeof(outRst[0])*len);
 				f.close();
 				f.clear();
+#endif
+#ifdef LINUX
+				string saveRecPath = recDetectM + "/" + getFileHeader(images[i].data()) + ".rec";
+				f = fopen(saveRecPath.data(), "wb");
+				fseek(f, 0, SEEK_SET);
+				fwrite(&len, sizeof(int), 1, f);
+				fwrite(outRst, 4*sizeof(int)*len, 1, f);
+				fclose(f);
+#endif
 				pthread_mutex_unlock(&mutex);
 			}
 		}
@@ -43,6 +64,7 @@ namespace{
 		return NULL;
 	}
 
+#ifdef WIN32
 	void *faceTrack(void *ptr){
 		vector<string> images = *(vector<string> *)ptr;
 		int len = 0;
@@ -72,6 +94,7 @@ namespace{
 
 		return NULL;
 	}
+#endif
 
 	void *faceInfo(void *ptr){
 		vector<string> images = *(vector<string> *)ptr;
@@ -80,7 +103,12 @@ namespace{
 		int keyPoint[50][6];
 		float angle[50][3];
 		float kScore[50];
+#ifdef WIN32
 		fstream f;
+#endif
+#ifdef LINUX
+		FILE *f;
+#endif
 		string faceInfoM = GConfig::getInstance().getFaceInfoMPath();
 
 		int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
@@ -90,6 +118,7 @@ namespace{
 			if(len >= 1){
 				pthread_mutex_lock(&mutex);
 				detectedNum += 1;
+#ifdef WIN32
 				string saveRecPath = faceInfoM + "\\" + getFileHeader(images[i].data()) + ".rec";
 				f.open(saveRecPath, ios::out | ios::binary);
 				f.write((char *)&len, sizeof(len));
@@ -99,6 +128,18 @@ namespace{
 				f.write((char *)kScore, sizeof(float)*len);
 				f.close();
 				f.clear();
+#endif
+#ifdef LINUX
+				string saveRecPath = faceInfoM + "/" + getFileHeader(images[i].data()) + ".rec";
+				f = fopen(saveRecPath.data(), "wb");
+				fseek(f, 0, SEEK_SET);
+				fwrite(&len, sizeof(int), 1, f);
+				fwrite(outRst, 4*sizeof(int)*len, 1, f);
+				fwrite(keyPoint, 6*sizeof(int)*len, 1, f);
+				fwrite(angle, 3*sizeof(float)*len, 1, f);
+				fwrite(kScore, sizeof(float)*len, 1, f);
+				fclose(f);
+#endif
 				pthread_mutex_unlock(&mutex);
 			}
 		}
@@ -109,8 +150,13 @@ namespace{
 }
 
 TEST_F(ftISDetTrack, ISFaceDetectPath_SingleThread){
+#ifdef WIN32
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
+#endif
+#ifdef LINUX
+    time_t tStart = time((time_t *)NULL);
+#endif
 
 	string imgPath = GConfig::getInstance().getDetectImgPath();
 	vector<string> images;
@@ -124,44 +170,81 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_SingleThread){
 	cout << ">>Outputs<<" << endl;
 
 	string recDetectS = GConfig::getInstance().getRecDetectSPath();
+#ifdef WIN32
 	string command = "rd /s /q " + recDetectS;
 	system(command.c_str());
 	command = "mkdir " + recDetectS;
 	system(command.c_str());
+#endif
+#ifdef LINUX
+	rmDir(recDetectS);
+	mkdir(recDetectS.data(), 0775);
+#endif
 
 	detectedNum = 0;
+#ifdef WIN32
 	fstream f;
-	
+#endif
+#ifdef LINUX
+	FILE *f;
+#endif
+
 	int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
 	for(unsigned int i=0; i<images.size(); i++){
 		EXPECT_TRUE_EX(ISFaceDetectPath(defaultDetTrackChannel, const_cast<char*>(images[i].data()), outRst, &len));
 		if(len >= 1){
 			detectedNum += 1;
+#ifdef WIN32
 			string saveRecPath = recDetectS + "\\" + getFileHeader(images[i].data()) + ".rec";
 			f.open(saveRecPath, ios::out | ios::binary);
 			f.write((char *)&len, sizeof(len));
 			f.write((char *)outRst[0], sizeof(outRst[0])*len);
 			f.close();
 			f.clear();
+#endif
+#ifdef LINUX
+			string saveRecPath = recDetectS + "/" + getFileHeader(images[i].data()) + ".rec";
+			f = fopen(saveRecPath.data(), "wb");
+			fseek(f, 0, SEEK_SET);
+			fwrite(&len, sizeof(int), 1, f);
+			fwrite(outRst, 4*sizeof(int)*len, 1, f);
+			fclose(f);
+#endif
 		}
 	}
 	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 
+#ifdef WIN32
 	GetSystemTime(&tStop);
+#endif
+#ifdef LINUX
+	time_t tStop = time((time_t *)NULL);
+#endif
 
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output detect result to: " << recDetectS << endl;
+#ifdef WIN32
 	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
+#endif
+#ifdef LINUX
+	cout << "time cost: " << tStop - tStart << "ms" << endl;
+	float timePerPic = float(tStop - tStart)/images.size();
+#endif
 	cout << "time cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISDetTrack, ISFaceDetectPath_MultiThread){
+#ifdef WIN32
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
+#endif
+#ifdef LINUX
+    time_t tStart = time((time_t *)NULL);
+#endif
 
 	string imgPath = GConfig::getInstance().getDetectImgPath();
 	unsigned int detectThreadNum = GConfig::getInstance().getDetectThreadNum();
@@ -175,12 +258,18 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_MultiThread){
 	cout << ">>Outputs<<" << endl;
 
 	string recDetectM = GConfig::getInstance().getRecDetectMPath();
+#ifdef WIN32
 	string command = "rd /s /q " + recDetectM;
 	system(command.c_str());
 	command = "mkdir " + recDetectM;
 	system(command.c_str());
+#endif
+#ifdef LINUX
+	rmDir(recDetectM);
+	mkdir(recDetectM.data(), 0775);
+#endif
 
-	vector<vector<string>> image;
+	vector<vector<string> > image;
 	for(unsigned int i=0; i<detectThreadNum; i++){
 		image.push_back(vector<string>());
 		if(i == detectThreadNum-1){
@@ -203,7 +292,12 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_MultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
 	}
 
+#ifdef WIN32
     GetSystemTime(&tStop);
+#endif
+#ifdef LINUX
+    time_t tStop = time((time_t *)NULL);
+#endif
 
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num allocated to each thread: " << imgNumPerThread << endl;
@@ -211,8 +305,14 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_MultiThread){
 	float percent = float(detectedNum)/images.size()*100;
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output detect result to: " << recDetectM << endl;
+#ifdef WIN32
 	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
+#endif
+#ifdef LINUX
+	cout << "time cost: " << tStop - tStart << "ms" << endl;
+	float timePerPic = float(tStop - tStart)/images.size();
+#endif
 	cout << "time cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
@@ -232,13 +332,20 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_OutResultCheck){
 
 	EXPECT_TRUE(recS.size()==recM.size());
 
+#ifdef WIN32
 	fstream fS;
 	fstream fM;
+#endif
+#ifdef LINUX
+	FILE *fS;
+	FILE *fM;
+#endif
 	int lenS = 0;
 	int lenM = 0;
 	int outRstS[50][4];
 	int outRstM[50][4];
 	for(unsigned int i=0; i<recS.size(); i++){
+#ifdef WIN32
 		fS.open(recS[i], ios::in | ios::binary);
 		fS.read((char *)&lenS, sizeof(lenS));
 		fS.read((char *)outRstS[0], sizeof(outRstS[0])*lenS);
@@ -250,6 +357,20 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_OutResultCheck){
 		fM.read((char *)outRstM[0], sizeof(outRstM[0])*lenM);
 		fM.clear();
 		fM.close();
+#endif
+#ifdef LINUX
+		fS = fopen(recS[i].data(), "rb");
+		fseek(fS, 0, SEEK_SET);
+		fread(&lenS, sizeof(int), 1, fS);
+		fread(outRstS, 4*sizeof(int)*lenS, 1, fS);
+		fclose(fS);
+
+		fM = fopen(recM[i].data(), "rb");
+		fseek(fM, 0, SEEK_SET);
+		fread(&lenM, sizeof(int), 1, fM);
+		fread(outRstM, 4*sizeof(int)*lenM, 1, fM);
+		fclose(fM);
+#endif
 
 		EXPECT_TRUE(lenS==lenM);
 		for(int j=0; j<lenS; j++){
@@ -262,6 +383,7 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_OutResultCheck){
 	cout << "whether single thread or multi thread, the detect result(len/outResult) by ISFaceDetectPath are the same" << endl;
 }
 
+#ifdef WIN32
 TEST_F(ftISDetTrack, ISFaceDetTrackRgb_SingleThread){
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
@@ -285,7 +407,7 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_SingleThread){
 
 	detectedNum = 0;
 	fstream f;
-	
+
 	int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
 	Mat cache = imread(images[0]);
 	EXPECT_TRUE_EX(ISFaceDetTrackRgb(defaultDetTrackChannel, (char *)cache.data, cache.rows*cache.cols*3, cache.cols, cache.rows, outRst, &len));
@@ -419,10 +541,16 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_OutResultCheck){
 
 	cout << "whether single thread or multi thread, the detect result(len/outResult) by ISFaceDetTrackRgb are the same" << endl;
 }
+#endif
 
 TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread){
+#ifdef WIN32
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
+#endif
+#ifdef LINUX
+    time_t tStart = time((time_t *)NULL);
+#endif
 
 	string imgPath = GConfig::getInstance().getFaceInfoImgPath();
 	vector<string> images;
@@ -439,21 +567,32 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread){
 	cout << ">>Outputs<<" << endl;
 
 	string faceInfoS = GConfig::getInstance().getFaceInfoSPath();
+#ifdef WIN32
 	string command = "rd /s /q " + faceInfoS;
 	system(command.c_str());
 	command = "mkdir " + faceInfoS;
 	system(command.c_str());
+#endif
+#ifdef LINUX
+	rmDir(faceInfoS);
+	mkdir(faceInfoS.data(), 0775);
+#endif
 
 	detectedNum = 0;
+#ifdef WIN32
 	fstream f;
-	
+#endif
+#ifdef LINUX
+	FILE *f;
+#endif
+
 	int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
 	for(unsigned int i=0; i<images.size(); i++){
 		EXPECT_TRUE_EX(ISFaceDetectPath(defaultDetTrackChannel, const_cast<char *>(images[i].data()), outRst, &len));
 		if(len >= 1){
 			detectedNum += 1;
 			EXPECT_TRUE_EX(ISCalFaceInfoPath2(defaultDetTrackChannel, const_cast<char *>(images[i].data()), outRst, len, keyPoint, angle, kScore));
-		
+#ifdef WIN32
 			string saveFaceInfoPath = faceInfoS + "\\" + getFileHeader(images[i].data()) + ".rec";
 			f.open(saveFaceInfoPath, ios::out | ios::binary);
 			f.write((char *)&len, sizeof(len));
@@ -463,25 +602,53 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread){
 			f.write((char *)kScore, sizeof(float)*len);
 			f.close();
 			f.clear();
+#endif
+#ifdef LINUX
+			string saveFaceInfoPath = faceInfoS + "/" + getFileHeader(images[i].data()) + ".rec";
+			f = fopen(saveFaceInfoPath.data(), "wb");
+			fseek(f, 0, SEEK_SET);
+			fwrite(&len, sizeof(int), 1, f);
+			fwrite(outRst, 4*sizeof(int)*len, 1, f);
+			fwrite(keyPoint, 6*sizeof(int)*len, 1, f);
+			fwrite(angle, 3*sizeof(float)*len, 1, f);
+			fwrite(kScore, sizeof(float)*len, 1, f);
+			fclose(f);
+#endif
 		}
 	}
 	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 
+#ifdef WIN32
 	GetSystemTime(&tStop);
+#endif
+#ifdef LINUX
+	time_t tStop = time((time_t *)NULL);
+#endif
 
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num detected face succ of image directory: " << detectedNum << endl;
 	float percent = float(detectedNum)/images.size()*100;
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output detect result to: " << faceInfoS << endl;
+#ifdef WIN32
 	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
+#endif
+#ifdef LINUX
+	cout << "time cost: " << tStop - tStart << "ms" << endl;
+	float timePerPic = float(tStop - tStart)/images.size();
+#endif
 	cout << "timer cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISDetTrack, ISCalFaceInfoPath_MultiThread){
+#ifdef WIN32
 	SYSTEMTIME tStart, tStop;
     GetSystemTime(&tStart);
+#endif
+#ifdef LINUX
+    time_t tStart = time((time_t *)NULL);
+#endif
 
 	string imgPath = GConfig::getInstance().getFaceInfoImgPath();
 	unsigned int detectThreadNum = GConfig::getInstance().getDetectThreadNum();
@@ -495,12 +662,18 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_MultiThread){
 	cout << ">>Outputs<<" << endl;
 
 	string faceInfoM = GConfig::getInstance().getFaceInfoMPath();
+#ifdef WIN32
 	string command = "rd /s /q " + faceInfoM;
 	system(command.c_str());
 	command = "mkdir " + faceInfoM;
 	system(command.c_str());
+#endif
+#ifdef LINUX
+	rmDir(faceInfoM);
+	mkdir(faceInfoM.data(), 0775);
+#endif
 
-	vector<vector<string>> image;
+	vector<vector<string> > image;
 	for(unsigned int i=0; i<detectThreadNum; i++){
 		image.push_back(vector<string>());
 		if(i == detectThreadNum-1){
@@ -522,7 +695,12 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_MultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
 	}
 
+#ifdef WIN32
     GetSystemTime(&tStop);
+#endif
+#ifdef LINUX
+    time_t tStop = time((time_t *)NULL);
+#endif
 
 	cout << "picture num of image directory: " << images.size() << endl;
 	cout << "picture num allocated to each thread: " << imgNumPerThread << endl;
@@ -530,8 +708,14 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_MultiThread){
 	float percent = float(detectedNum)/images.size()*100;
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "output detect result to: " << faceInfoM << endl;
+#ifdef WIN32
 	cout << "time cost: " << getGap(tStart, tStop) << "ms" << endl;
 	float timePerPic = float(getGap(tStart, tStop))/images.size();
+#endif
+#ifdef LINUX
+	cout << "time cost: " << tStop - tStart << "ms" << endl;
+	float timePerPic = float(tStop - tStart)/images.size();
+#endif
 	cout << "time cost per detect: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
@@ -551,8 +735,14 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_OutResultCheck){
 
 	EXPECT_TRUE(recS.size()==recM.size());
 
+#ifdef WIN32
 	fstream fS;
 	fstream fM;
+#endif
+#ifdef LINUX
+	FILE *fS;
+	FILE *fM;
+#endif
 	int lenS = 0;
 	int lenM = 0;
 	int outRstS[50][4];
@@ -564,6 +754,7 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_OutResultCheck){
 	float kScoreS[50];
 	float kScoreM[50];
 	for(unsigned int i=0; i<recS.size(); i++){
+#ifdef WIN32
 		fS.open(recS[i], ios::in | ios::binary);
 		fS.read((char *)&lenS, sizeof(lenS));
 		fS.read((char *)outRstS[0], sizeof(outRstS[0])*lenS);
@@ -581,6 +772,26 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_OutResultCheck){
 		fM.read((char *)kScoreM, sizeof(float)*lenM);
 		fM.clear();
 		fM.close();
+#endif
+#ifdef LINUX
+		fS = fopen(recS[i].data(), "rb");
+		fseek(fS, 0, SEEK_SET);
+		fread(&lenS, sizeof(lenS), 1, fS);
+		fread(outRstS, 4*sizeof(int)*lenS, 1, fS);
+		fread(keyPointS, 6*sizeof(int)*lenS, 1, fS);
+		fread(angleS, 3*sizeof(float)*lenS, 1, fS);
+		fread(kScoreS, sizeof(float)*lenS, 1, fS);
+		fclose(fS);
+
+		fM = fopen(recM[i].data(), "rb");
+		fseek(fM, 0, SEEK_SET);
+		fread(&lenM, sizeof(lenM), 1, fM);
+		fread(outRstM, 4*sizeof(int)*lenM, 1, fM);
+		fread(keyPointM, 6*sizeof(int)*lenM, 1, fM);
+		fread(angleM, 3*sizeof(float)*lenM, 1, fM);
+		fread(kScoreM, sizeof(float)*lenM, 1, fM);
+		fclose(fM);
+#endif
 
 		EXPECT_TRUE(lenS==lenM);
 		for(int j=0; j<lenS; j++){

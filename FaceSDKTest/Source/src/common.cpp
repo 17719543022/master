@@ -1,8 +1,13 @@
+#ifdef WIN32
+#include "opencv.hpp"
+#endif
+#ifdef LINUX
+#include "opencv2/opencv.hpp"
+#endif
 #include "common.h"
 #include <iostream>
 #include "sdk_error_code.h"
 #include "log_format.h"
-#include "opencv.hpp"
 #include <gtest/gtest.h>
 
 using namespace std;
@@ -11,6 +16,7 @@ using namespace cv;
 bool viewSwitch = true;
 
 namespace{
+#ifdef WIN32
 	char *getFilename(char *p)
 	{
 		char ch = '\\';
@@ -18,6 +24,17 @@ namespace{
  
 		return q;
 	}
+#endif
+
+#ifdef LINUX
+	char *getFilename(char *p)
+	{
+		char ch = '/';
+		char *q = strrchr(p, ch) + 1;
+ 
+		return q;
+	}
+#endif
 
 	void getFeatureWithFacePosRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int param[][4], int faceNum, char *outFeature)
 	{
@@ -28,6 +45,7 @@ namespace{
 	}
 }
 
+#if 0
 int getGap(SYSTEMTIME tStart, SYSTEMTIME tStop){
 	int gap = 0;
 
@@ -38,7 +56,9 @@ int getGap(SYSTEMTIME tStart, SYSTEMTIME tStop){
 
 	return gap;
 }
+#endif
 
+#ifdef WIN32
 string getFileHeader(const char *p){
 	char slash = '\\';
 	const char *q = strrchr(p, slash) + 1;
@@ -47,6 +67,18 @@ string getFileHeader(const char *p){
 
 	return string(q, t);
 }
+#endif
+
+#ifdef LINUX
+string getFileHeader(const char *p){
+	char slash ='/';
+	const char *q = strrchr(p, slash) + 1;
+	char dot = '.';
+	const char *t = strrchr(p, dot);
+
+	return string(q, t);
+}
+#endif
 
 void switchShow(char *name, Mat image)
 {
@@ -176,11 +208,13 @@ void getFeatureAndPredict(char *imgData
 	vector<char> vec(8192);
 	int defaultFeatureChannel = PREDICT_FEATURE_CHANNEL();
 	EXPECT_TRUE_EX(ISGetFeatureRgb(defaultFeatureChannel, imgData, imgLen, imgWidth, imgHeight, vec.data()));
+#ifdef WIN32
 	EXPECT_TRUE_EX(ISpredictExpression(defaultFeatureChannel, vec.data(), expression));
 	EXPECT_TRUE_EX(ISpredictGlasses(defaultFeatureChannel, vec.data(), glasses));
 	EXPECT_TRUE_EX(ISpredictSmile(defaultFeatureChannel, vec.data(), smile));
 	EXPECT_TRUE_EX(ISpredictAgeGender(defaultFeatureChannel, vec.data(), age, gender));
 	EXPECT_TRUE_EX(ISpredictBeauty(defaultFeatureChannel, vec.data(), beauty));
+#endif
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 }
 

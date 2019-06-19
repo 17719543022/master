@@ -1,10 +1,15 @@
 #ifndef INCL_COMMON_H
 #define INCL_COMMON_H
 
-#include "face_sdk.h"
-#include "opencv.hpp"
-#include <vector>
+#ifdef WIN32
 #include <Windows.h>
+#include "opencv.hpp"
+#endif
+#ifdef LINUX
+#include "opencv2/opencv.hpp"
+#endif
+#include "face_sdk.h"
+#include <vector>
 
 using namespace cv;
 
@@ -19,7 +24,7 @@ using namespace cv;
 #define ALLOC_DOUBLE_STAR(m, n, type, star, tag) \
 	vector<type*> target##tag(m);\
 	vector<type> vec1##tag(n);\
-	vector<vector<type>> vec2##tag;\
+	vector<vector<type> > vec2##tag;\
 	for(int i=0; i<m; i++)\
 	{\
 		vec2##tag.push_back(vec1##tag);\
@@ -30,7 +35,9 @@ using namespace cv;
 	}\
 	star = target##tag.data();
 
+#if 0
 int getGap(SYSTEMTIME tStart, SYSTEMTIME tStop);
+#endif
 string getFileHeader(const char *p);
 
 void imCommonShow(char *name, Mat img, int outRst[][4], int len, int thickness = 2, int delay = 1000);

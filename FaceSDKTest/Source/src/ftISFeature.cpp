@@ -96,6 +96,8 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 #endif
 	string feaPath = GConfig::getInstance().getFeaSPath();
 	string pcaPath = GConfig::getInstance().getPcaSPath();
+	feaPath = slashConvert(feaPath, '/', '\\');
+	pcaPath = slashConvert(pcaPath, '/', '\\');
 
 #ifdef WIN32
 	string command = "rd /s /q " + feaPath;
@@ -172,21 +174,25 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
 	cout << "threads num: " << detectThreadNum << endl;
 	cout << ">>Outputs<<" << endl;
 
+	string feaMPath = GConfig::getInstance().getFeaMPath();
+	string pcaMPath = GConfig::getInstance().getPcaMPath();
 #ifdef WIN32
-	string command = "rd /s /q " + GConfig::getInstance().getFeaMPath();
+	feaMPath = slashConvert(feaMPath, '/', '\\');
+	pcaMPath = slashConvert(pcaMPath, '/', '\\');
+	string command = "rd /s /q " + feaMPath;
 	system(command.c_str());
-	command = "mkdir " + GConfig::getInstance().getFeaMPath();
+	command = "mkdir " + feaMPath;
 	system(command.c_str());
-	command = "rd /s /q " + GConfig::getInstance().getPcaMPath();
+	command = "rd /s /q " + pcaMPath;
 	system(command.c_str());
-	command = "mkdir " + GConfig::getInstance().getPcaMPath();
+	command = "mkdir " + pcaMPath;
 	system(command.c_str());
 #endif
 #ifdef LINUX
-	rmDir(GConfig::getInstance().getFeaMPath());
-	mkdir(GConfig::getInstance().getFeaMPath().data(), 0775);
-	rmDir(GConfig::getInstance().getPcaMPath());
-	mkdir(GConfig::getInstance().getPcaMPath().data(), 0775);
+	rmDir(feaMPath);
+	mkdir(feaMPath.data(), 0775);
+	rmDir(pcaMPath);
+	mkdir(pcaMPath.data(), 0775);
 #endif
 
 	vector<vector<string> > image;

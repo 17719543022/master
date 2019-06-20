@@ -25,12 +25,7 @@ TEST_F(ftAppliance, dumpConfigIni){
 }
 
 TEST_F(ftAppliance, theGivenPictureHas16FacesBeDetected){
-#ifdef WIN32
-	char *imgPath = "..\\..\\Data\\Appliance\\beauty.jpg";
-#endif
-#ifdef LINUX
 	char *imgPath = "../../Data/Appliance/beauty.jpg";
-#endif
 	int len = 0;
 	int outRst[50][4] = {0};
 
@@ -46,12 +41,7 @@ TEST_F(ftAppliance, theGivenPictureHas16FacesBeDetected){
 }
 
 TEST_F(ftAppliance, whatFaceReturnsEarlierInOutResultAndWhatLater){
-#ifdef WIN32
-	char *imgPath = "..\\..\\Data\\Appliance\\beauty.jpg";
-#endif
-#ifdef LINUX
 	char *imgPath = "../../Data/Appliance/beauty.jpg";
-#endif
 	int len = 0;
 	int outRst[50][4] = {0};
 	Mat image = imread(imgPath);
@@ -64,12 +54,7 @@ TEST_F(ftAppliance, whatFaceReturnsEarlierInOutResultAndWhatLater){
 }
 
 TEST_F(ftAppliance, personAndIdCardCompareOfOneDirectory){
-#ifdef WIN32
-	string dir = "..\\..\\Data\\Appliance\\one_to_one";
-#endif
-#ifdef LINUX
 	string dir = "../../Data/Appliance/one_to_one";
-#endif
 	string idcard = "idcard.jpg";
 	string live = "live.jpg";
 	vector<string> listCard;

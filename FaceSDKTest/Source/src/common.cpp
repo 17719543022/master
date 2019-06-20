@@ -16,17 +16,6 @@ using namespace cv;
 bool viewSwitch = true;
 
 namespace{
-#ifdef WIN32
-	char *getFilename(char *p)
-	{
-		char ch = '\\';
-		char *q = strrchr(p, ch) + 1;
- 
-		return q;
-	}
-#endif
-
-#ifdef LINUX
 	char *getFilename(char *p)
 	{
 		char ch = '/';
@@ -34,7 +23,6 @@ namespace{
  
 		return q;
 	}
-#endif
 
 	void getFeatureWithFacePosRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int param[][4], int faceNum, char *outFeature)
 	{
@@ -67,6 +55,17 @@ string getFileHeader(const char *p){
 
 	return string(q, t);
 }
+
+string slashConvert(string& str, char beReplaced, char toReplace){
+	string strTemp = str;
+
+	for(unsigned int i=0; i<strTemp.length(); i++){
+		if (strTemp[i] == beReplaced)
+			strTemp[i] = toReplace;
+	}
+
+	return strTemp;
+}
 #endif
 
 #ifdef LINUX
@@ -77,6 +76,12 @@ string getFileHeader(const char *p){
 	const char *t = strrchr(p, dot);
 
 	return string(q, t);
+}
+
+string slashConvert(string& str, char toReplace, char beReplaced){
+	string strTemp = str;
+
+	return strTemp;
 }
 #endif
 

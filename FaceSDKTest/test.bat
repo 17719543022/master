@@ -145,7 +145,7 @@ goto errorsuits
 
 :othersuits
 echo 1.dumpVersionNo
-echo 2.ISGetFeatureLength_Check
+echo 2.ISGetFeatureLengthCheck
 echo 3.dumpConfigIni
 echo 4.theGivenPictureHasMoreThan15FacesBeDetected
 echo 5.whatFaceReturnsEarlierInOutResultAndWhatLater

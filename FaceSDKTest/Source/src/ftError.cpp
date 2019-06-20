@@ -10,12 +10,7 @@
 TEST_F(ftError, inputImagesWithATooSmallSize){
 	int outRst[50][4];
 	int outLength;
-#ifdef WIN32
-	Mat image = imread("..\\..\\Data\\Error\\501.jpg");
-#endif
-#ifdef LINUX
 	Mat image = imread("../../Data/Error/501.jpg");
-#endif
 
 	int detChannelId = DEFAULT_DET_TRACK_CHANNEL();
 	EXPECT_TRUE(IMG_SIZE_TOO_SMALL == ISFaceDetectRgb(detChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &outLength));
@@ -25,12 +20,7 @@ TEST_F(ftError, inputImagesWithATooSmallSize){
 TEST_F(ftError, inputImagesCanNotBeFound){
 	int outRst[50][4];
 	int outLength;
-#ifdef WIN32
-	Mat image = imread("..\\..\\Data\\Error\\50x.jpg");
-#endif
-#ifdef LINUX
 	Mat image = imread("../../Data/Error/50x.jpg");
-#endif
 
 	int detChannelId = DEFAULT_DET_TRACK_CHANNEL();
 	EXPECT_TRUE(IMG_DATA_ERROR == ISFaceDetectRgb(detChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &outLength));
@@ -40,12 +30,7 @@ TEST_F(ftError, inputImagesCanNotBeFound){
 TEST_F(ftError, detectWithOutCreatingDectectChannel){
 	int outRst[50][4];
 	int outLength;
-#ifdef WIN32
-	Mat image = imread("..\\..\\Data\\Error\\50x.jpg");
-#endif
-#ifdef LINUX
 	Mat image = imread("../../Data/Error/50x.jpg");
-#endif
 
 	EXPECT_TRUE(UNKNOWN_ERROR == ISFaceDetectRgb(0, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, outRst, &outLength));
 }
@@ -54,14 +39,8 @@ TEST_F(ftError, inputImagesDetectedNoFace){
 	int outRst[50][4];
 	int outLength;
 
-#ifdef WIN32
-	Mat image = imread("..\\..\\Data\\Error\\502.jpg");
-	imCommonReadAndShow("..\\..\\Data\\Error\\502.jpg");
-#endif
-#ifdef LINUX
 	Mat image = imread("../../Data/Error/502.jpg");
 	imCommonReadAndShow("../../Data/Error/502.jpg");
-#endif
 
 	int detChannelId = DEFAULT_DET_TRACK_CHANNEL();
 	//ISFaceDetect return SUCC when the picture has no face, however, ISGetFeature returns DETECT_NO_FACE.
@@ -77,12 +56,7 @@ TEST_F(ftError, inputImagesDetectedNoFace){
 }
 
 TEST_F(ftError, inputImagesGetNoFeature){
-#ifdef WIN32
-	Mat image = imread("..\\..\\Data\\Error\\502.jpg");
-#endif
-#ifdef LINUX
 	Mat image = imread("../../Data/Error/502.jpg");
-#endif
 
 	vector<char> vec(8192);
 	int defaultFeatureChannelId = PREDICT_FEATURE_CHANNEL();
@@ -97,14 +71,8 @@ TEST_F(ftError, inputImagesGetNoFeature){
 }
 
 TEST_F(ftError, whatImageLeadsToGetFeatureError){
-#ifdef WIN32
-	Mat img = imread("..\\..\\Data\\Error\\503.jpg");
-	imCommonReadAndShow("..\\..\\Data\\Error\\503.jpg");
-#endif
-#ifdef LINUX
 	Mat img = imread("../../Data/Error/503.jpg");
 	imCommonReadAndShow("../../Data/Error/503.jpg");
-#endif
 
 	vector<char> vec(8192);
 	int defaultFeatureChannelId = PREDICT_FEATURE_CHANNEL();
@@ -114,21 +82,11 @@ TEST_F(ftError, whatImageLeadsToGetFeatureError){
 
 //M*N overflows
 TEST_F(ftError, whatIsCompareMNError){
-#ifdef WIN32
-	string pcaAPath = "..\\..\\Data\\Error\\pcaA";
-#endif
-#ifdef LINUX
 	string pcaAPath = "../../Data/Error/pcaA";
-#endif
 	vector<string> pcaAs;
 	listOutDirectoryFiles(pcaAPath, pcaAs);
 	int pcaAs_size = pcaAs.size();
-#ifdef WIN32
-	string pcaBPath = "..\\..\\Data\\Error\\pcaB";
-#endif
-#ifdef LINUX
 	string pcaBPath = "../../Data/Error/pcaB";
-#endif
 	vector<string> pcaBs;
 	listOutDirectoryFiles(pcaBPath, pcaBs);
 	int pcaBs_size = pcaBs.size();

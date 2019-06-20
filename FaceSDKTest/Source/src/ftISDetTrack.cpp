@@ -163,6 +163,7 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_SingleThread){
 
 	string recDetectS = GConfig::getInstance().getRecDetectSPath();
 #ifdef WIN32
+	recDetectS = slashConvert(recDetectS, '/', '\\');
 	string command = "rd /s /q " + recDetectS;
 	system(command.c_str());
 	command = "mkdir " + recDetectS;
@@ -228,6 +229,7 @@ TEST_F(ftISDetTrack, ISFaceDetectPath_MultiThread){
 
 	string recDetectM = GConfig::getInstance().getRecDetectMPath();
 #ifdef WIN32
+	recDetectM = slashConvert(recDetectM, '/', '\\');
 	string command = "rd /s /q " + recDetectM;
 	system(command.c_str());
 	command = "mkdir " + recDetectM;
@@ -351,6 +353,7 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_SingleThread){
 	cout << ">>Outputs<<" << endl;
 
 	string recTrackS = GConfig::getInstance().getRecTrackSPath();
+	recTrackS = slashConvert(recTrackS, '/', '\\');
 	string command = "rd /s /q " + recTrackS;
 	system(command.c_str());
 	command = "mkdir " + recTrackS;
@@ -398,6 +401,7 @@ TEST_F(ftISDetTrack, ISFaceDetTrackRgb_MultiThread){
 	cout << ">>Outputs<<" << endl;
 
 	string recTrackM = GConfig::getInstance().getRecTrackMPath();
+	recTrackM = slashConvert(recTrackM, '/', '\\');
 	string command = "rd /s /q " + recTrackM;
 	system(command.c_str());
 	command = "mkdir " + recTrackM;
@@ -500,6 +504,7 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread){
 
 	string faceInfoS = GConfig::getInstance().getFaceInfoSPath();
 #ifdef WIN32
+	faceInfoS = slashConvert(faceInfoS, '/', '\\');
 	string command = "rd /s /q " + faceInfoS;
 	system(command.c_str());
 	command = "mkdir " + faceInfoS;
@@ -572,6 +577,7 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_MultiThread){
 
 	string faceInfoM = GConfig::getInstance().getFaceInfoMPath();
 #ifdef WIN32
+	faceInfoM = slashConvert(faceInfoM, '/', '\\');
 	string command = "rd /s /q " + faceInfoM;
 	system(command.c_str());
 	command = "mkdir " + faceInfoM;

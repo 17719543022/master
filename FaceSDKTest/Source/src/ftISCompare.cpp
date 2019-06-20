@@ -442,6 +442,7 @@ TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread){
 
 	for(unsigned int i=0; i<paths.size(); i++){
 #ifdef WIN32
+		paths[i] = slashConvert(paths[i], '/', '\\');
 		string command = "rd /s /q " + paths[i];
 		system(command.c_str());
 		command = "mkdir " + paths[i];

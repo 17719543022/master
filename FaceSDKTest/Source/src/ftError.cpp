@@ -59,15 +59,15 @@ TEST_F(ftError, inputImagesGetNoFeature){
 	Mat image = imread("../../Data/Error/502.jpg");
 
 	vector<char> vec(8192);
-	int defaultFeatureChannelId = PREDICT_FEATURE_CHANNEL();
+	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
 #ifdef WIN32
-	EXPECT_TRUE(DETECT_NO_FACE == ISGetFeatureRgb(defaultFeatureChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, vec.data()));
+	EXPECT_TRUE(DETECT_NO_FACE == ISGetFeatureRgb(defaultFeatureChannel, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, vec.data()));
 #endif
 #ifdef LINUX
 	// ISGetFeatureRgb returns DETECT_NO_FACE in windows, but SUCC in linux.
 	EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, vec.data()));
 #endif
-	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 }
 
 TEST_F(ftError, whatImageLeadsToGetFeatureError){
@@ -75,9 +75,9 @@ TEST_F(ftError, whatImageLeadsToGetFeatureError){
 	imCommonReadAndShow("../../Data/Error/503.jpg");
 
 	vector<char> vec(8192);
-	int defaultFeatureChannelId = PREDICT_FEATURE_CHANNEL();
-	EXPECT_TRUE(GET_FEATURE_ERROR == ISGetFeatureRgb(defaultFeatureChannelId, (char *)img.data, img.rows*img.cols*3, img.cols, img.rows, vec.data()));
-	DESTROY_FEATURE_CHANNEL(defaultFeatureChannelId);
+	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
+	EXPECT_TRUE(GET_FEATURE_ERROR == ISGetFeatureRgb(defaultFeatureChannel, (char *)img.data, img.rows*img.cols*3, img.cols, img.rows, vec.data()));
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 }
 
 //M*N overflows

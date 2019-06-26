@@ -5,13 +5,14 @@
 #include "common.h"
 
 bool logSwitch = false;
+int denominator = 0;
+string serial = "";
+bool isFlow = false;
 
 int switchPrintf(const char* format, ...)
 {
 	return 0;
 }
-
-int denominator = 0;
 
 #ifdef WIN32
 	SYSTEMTIME	tStart, tStop;

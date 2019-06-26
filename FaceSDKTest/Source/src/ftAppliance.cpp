@@ -24,12 +24,14 @@ TEST_F(ftAppliance, dumpConfigIni){
 	GConfig::getInstance().dump();
 }
 
-TEST_F(ftAppliance, theGivenPictureHas16FacesBeDetected){
+TEST_F(ftAppliance, theGivenPictureHasMoreThan15FacesBeDetected){
 	char *imgPath = "../../Data/Appliance/beauty.jpg";
 	int len = 0;
 	int outRst[50][4] = {0};
 
-	faceDetectPath(imgPath, outRst, &len);
+	int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
+	EXPECT_TRUE(SUCC == ISFaceDetectPath(defaultDetTrackChannel, imgPath, outRst, &len));
+	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 
 #ifdef WIN32
 	EXPECT_TRUE(len == 16);
@@ -42,15 +44,8 @@ TEST_F(ftAppliance, theGivenPictureHas16FacesBeDetected){
 
 TEST_F(ftAppliance, whatFaceReturnsEarlierInOutResultAndWhatLater){
 	char *imgPath = "../../Data/Appliance/beauty.jpg";
-	int len = 0;
-	int outRst[50][4] = {0};
-	Mat image = imread(imgPath);
 
-	char outFeature1[50][8192];
-	getFeatureWithFacePosRgb(imgPath, outFeature1[0], outRst, &len);
-
-	imCommonShow("beauty.jpg", image, outRst, len);
-	waitKey(3000);
+	imCommonReadAndShow(imgPath);
 }
 
 TEST_F(ftAppliance, personAndIdCardCompareOfOneDirectory){
@@ -69,22 +64,26 @@ TEST_F(ftAppliance, personAndIdCardCompareOfOneDirectory){
 	char featureLive[5][8192];
 	float score = 0;
 
+	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
+	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
 	for(unsigned int i=0; i<listCard.size(); i++){
-		if(DETECT_NO_FACE == getFeatureWithFacePosRgb(listCard[i].data(), featureCard))
+		if(SUCC != ISGetFeaturePath(defaultFeatureChannel, const_cast<char *>(listCard[i].data()), featureCard))
 		{
-			cout<<listCard[i].data()<<"No Face"<<endl;
+			cout << setw(52) << setiosflags(ios::right) << listCard[i].data() << " Has No Face" << endl;
 			continue;
 		}
-		if(DETECT_NO_FACE == getFeatureWithFacePosRgb(listLive[i].data(), featureLive[0]))
+		if(SUCC != ISGetFeaturePath(defaultFeatureChannel, const_cast<char *>(listLive[i].data()), featureLive[0]))
 		{
-			cout<<listLive[i].data()<<"No Face"<<endl;
+			cout << setw(52) << setiosflags(ios::right) << listLive[i].data() << " Has No Face" << endl;
 			continue;
 		}
 
-		compare(featureCard, featureLive[0], &score);
+		ISCompare(defaultCompareChannel, featureCard, featureLive[0], &score);
 
 		cout << setw(52) << setiosflags(ios::right) << listCard[i].data() << " + " << "live.jpg" << " = Compare Score: " << score << endl;
 	}
+	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 }
 
 TEST_F(ftAppliance, camera){
@@ -92,6 +91,8 @@ TEST_F(ftAppliance, camera){
 	Mat img;
 	char tempStr[64];
 
+	int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
+	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
 	while(!isTimeOut(300))
 	{
 		cap >> img;
@@ -106,15 +107,8 @@ TEST_F(ftAppliance, camera){
 		int keyPoint[50][6];
 		float angle[50][3];
 		float kScore[50];
-		calFaceInfoRgb((char *)img.data
-						, img.rows*img.cols*3
-						, img.cols
-						, img.rows
-						, outRst
-						, &outLen
-						, keyPoint
-						, angle
-						, kScore);
+		int nRet = ISFaceDetectRgb(defaultDetTrackChannel, (char *)img.data, img.rows*img.cols*3, img.cols, img.rows, outRst, &outLen);
+		int ret = ISCalFaceInfoRgb2(defaultDetTrackChannel, (char *)img.data, img.rows*img.cols*3, img.cols, img.rows, outRst, outLen, keyPoint, angle, kScore);
 
 		float beauty;
 		char glasses[20];
@@ -123,7 +117,8 @@ TEST_F(ftAppliance, camera){
 		float age;
 		char gender[10];
 
-		getFeatureAndPredict((char *)img.data
+		getFeatureAndPredict(defaultFeatureChannel
+							, (char *)img.data
 							, img.rows*img.cols*3
 							, img.cols
 							, img.rows
@@ -159,4 +154,6 @@ TEST_F(ftAppliance, camera){
 
 		imCommonShow("Tracking", img, outRst, outLen, 1, 500);
 	}
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
+	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 }

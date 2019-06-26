@@ -16,7 +16,6 @@ using namespace cv;
 #define DEFAULT_DET_TRACK_CHANNEL() ISCreateDetTrackChannel(46, 1000);
 #define DESTROY_DET_TRACK_CHANNEL(x) ISDestroyDetTrackChannel(x);
 #define DEFAULT_FEATURE_CHANNEL() ISCreateFeatureChannel();
-#define PREDICT_FEATURE_CHANNEL() ISCreateFeatureChannel();
 #define DESTROY_FEATURE_CHANNEL(x) ISDestroyFeatureChannel(x);
 #define DEFAULT_COMPARE_CHANNEL() ISCreateCompareChannel();
 #define DESTROY_COMPARE_CHANNEL(x) ISDestroyCompareChannel(x);
@@ -39,21 +38,15 @@ using namespace cv;
 int getGap(SYSTEMTIME tStart, SYSTEMTIME tStop);
 #endif
 string slashConvert(string& str, char beReplaced, char toReplace);
+string upperDirectory(string& str);
 string getFileHeader(const char *p);
 
 void imCommonShow(char *name, Mat img, int outRst[][4], int len, int thickness = 2, int delay = 1000);
 void imReadAndShow(char *imgPath);
 void imCommonReadAndShow(char *imgPath, int thickness = 2, int delay = 1000);
-void switchShow(char *name, Mat image);
 
-void faceDetectPath(char *imgPath, int outRst[][4], int *outLen);
-void faceDetectRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int outRst[][4], int *outLen);
-void calFaceInfoRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, int outRst[][4], int *outLen, int keyPoint[][6], float angle[][3], float kScore[]);
-
-int getFeatureWithFacePosRgb(const char *imgPath, char *outFeature, int outRst[][4] = NULL, int *outLen = NULL);
-void getFeatureRgb(char *imgData, int imgLen, int imgWidth, int imgHeight, char *outFeature, float KPtScore=0.5);
-void getPcaFea(char* fea_Org, char* fea_Pca);
-void getFeatureAndPredict(char *imgData
+void getFeatureAndPredict(int defaultFeatureChannel
+						  , char *imgData
 						  , int imgLen
 						  , int imgWidth
 						  , int imgHeight
@@ -64,9 +57,5 @@ void getFeatureAndPredict(char *imgData
 						  , char *gender
 						  , float *beauty
 						  , float kScore=0.5);
-
-void compare(char *feature1, char *feature2, float *outScore);
-void compareMN(char **featureM, int numM, char **featureN, int numN, float **outScore);
-void compareMNfaster(char **featureM, int numM, char **featureN, int numN, float **outScore);
 
 #endif

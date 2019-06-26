@@ -13,26 +13,18 @@ Config::Config(){
 	recogniseThreadNum = reader.readInt("PARAM", "recogniseThreadNum", 0);
 	recogniseFaceValue = reader.readFloat("PARAM", "recogniseFaceValue", 0);
 	maxImgNum = reader.readInt("PARAM", "maxImgNum", 0);
-	detectImgPath = reader.readString("ISFaceDetectPath", "detectImgPath", "");
-	recDetectSPath = reader.readString("ISFaceDetectPath", "recDetectSPath", "");
-	recDetectMPath = reader.readString("ISFaceDetectPath", "recDetectMPath", "");
-	trackImgPath = reader.readString("ISFaceDetTrackRgb", "trackImgPath", "");
-	recTrackSPath = reader.readString("ISFaceDetTrackRgb", "recTrackSPath", "");
-	recTrackMPath = reader.readString("ISFaceDetTrackRgb", "recTrackMPath", "");
-	faceInfoImgPath = reader.readString("ISCalFaceInfoPath", "faceInfoImgPath", "");
-	faceInfoSPath = reader.readString("ISCalFaceInfoPath", "faceInfoSPath", "");
-	faceInfoMPath = reader.readString("ISCalFaceInfoPath", "faceInfoMPath", "");
-	featureImgPath = reader.readString("ISGetFeaturePath", "featureImgPath", "");
-	feaSPath = reader.readString("ISGetFeaturePath", "feaSPath", "");
-	pcaSPath = reader.readString("ISGetFeaturePath", "pcaSPath", "");
-	feaMPath = reader.readString("ISGetFeaturePath", "feaMPath", "");
-	pcaMPath = reader.readString("ISGetFeaturePath", "pcaMPath", "");
-	compareImgAPath = reader.readString("ISCompare", "compareImgAPath", "");
-	compareImgBPath = reader.readString("ISCompare", "compareImgBPath", "");
-	featureAPath = reader.readString("ISCompare", "featureAPath", "");
-	featureBPath = reader.readString("ISCompare", "featureBPath", "");
-	pcaAPath = reader.readString("ISCompare", "pcaAPath", "");
-	pcaBPath = reader.readString("ISCompare", "pcaBPath", "");
+	detectImgPathA = reader.readString("ISFaceDetectPath", "detectImgPathA", "");
+	detectImgPathB = reader.readString("ISFaceDetectPath", "detectImgPathB", "");
+	trackImgPathA = reader.readString("ISFaceDetTrackRgb", "trackImgPathA", "");
+	trackImgPathB = reader.readString("ISFaceDetTrackRgb", "trackImgPathB", "");
+	faceInfoImgPathA = reader.readString("ISCalFaceInfoPath", "faceInfoImgPathA", "");
+	faceInfoImgPathB = reader.readString("ISCalFaceInfoPath", "faceInfoImgPathB", "");
+	featureImgPathA = reader.readString("ISGetFeaturePath", "featureImgPathA", "");
+	featureImgPathB = reader.readString("ISGetFeaturePath", "featureImgPathB", "");
+	compareImgPathA = reader.readString("ISCompare", "compareImgPathA", "");
+	compareImgPathB = reader.readString("ISCompare", "compareImgPathB", "");
+	appliancePathA = reader.readString("Appliance", "appliancePathA", "");
+	appliancePathB = reader.readString("Appliance", "appliancePathB", "");
 	report = reader.readString("RESULT", "report", "");
 	log = reader.readString("RESULT", "log", "");
 }
@@ -82,84 +74,52 @@ int GConfig::getMaxImgNum(){
 	return config.maxImgNum;
 }
 
-string GConfig::getDetectImgPath(){
-	return config.detectImgPath;
+string GConfig::getDetectImgPathA(){
+	return config.detectImgPathA;
 }
 
-string GConfig::getRecDetectSPath(){
-	return config.recDetectSPath;
+string GConfig::getDetectImgPathB(){
+	return config.detectImgPathB;
 }
 
-string GConfig::getRecDetectMPath(){
-	return config.recDetectMPath;
+string GConfig::getTrackImgPathA(){
+	return config.trackImgPathA;
 }
 
-string GConfig::getTrackImgPath(){
-	return config.trackImgPath;
+string GConfig::getTrackImgPathB(){
+	return config.trackImgPathB;
 }
 
-string GConfig::getRecTrackSPath(){
-	return config.recTrackSPath;
+string GConfig::getFaceInfoImgPathA(){
+	return config.faceInfoImgPathA;
 }
 
-string GConfig::getRecTrackMPath(){
-	return config.recTrackMPath;
+string GConfig::getFaceInfoImgPathB(){
+	return config.faceInfoImgPathB;
 }
 
-string GConfig::getFaceInfoImgPath(){
-	return config.faceInfoImgPath;
+string GConfig::getFeatureImgPathA(){
+	return config.featureImgPathA;
 }
 
-string GConfig::getFaceInfoSPath(){
-	return config.faceInfoSPath;
+string GConfig::getFeatureImgPathB(){
+	return config.featureImgPathB;
 }
 
-string GConfig::getFaceInfoMPath(){
-	return config.faceInfoMPath;
+string GConfig::getCompareImgPathA(){
+	return config.compareImgPathA;
 }
 
-string GConfig::getFeatureImgPath(){
-	return config.featureImgPath;
+string GConfig::getCompareImgPathB(){
+	return config.compareImgPathB;
 }
 
-string GConfig::getFeaSPath(){
-	return config.feaSPath;
+string GConfig::getAppliancePathA(){
+	return config.appliancePathA;
 }
 
-string GConfig::getPcaSPath(){
-	return config.pcaSPath;
-}
-
-string GConfig::getFeaMPath(){
-	return config.feaMPath;
-}
-
-string GConfig::getPcaMPath(){
-	return config.pcaMPath;
-}
-
-string GConfig::getCompareImgAPath(){
-	return config.compareImgAPath;
-}
-
-string GConfig::getCompareImgBPath(){
-	return config.compareImgBPath;
-}
-
-string GConfig::getFeatureAPath(){
-	return config.featureAPath;
-}
-
-string GConfig::getFeatureBPath(){
-	return config.featureBPath;
-}
-
-string GConfig::getPcaAPath(){
-	return config.pcaAPath;
-}
-
-string GConfig::getPcaBPath(){
-	return config.pcaBPath;
+string GConfig::getAppliancePathB(){
+	return config.appliancePathB;
 }
 
 string GConfig::getReport(){
@@ -178,26 +138,18 @@ void GConfig::dump(){
 	cout << "recogniseThreadNum = " << getRecogniseThreadNum() << endl;
 	cout << "recogniseFaceValue = " << getRecogniseFaceValue() << endl;
 	cout << "maxImgNum = " << getMaxImgNum() << endl;
-	cout << "detectImgPath = " << getDetectImgPath() << endl;
-	cout << "recDetectSPath = " << getRecDetectSPath() << endl;
-	cout << "recDetectMPath = " << getRecDetectMPath() << endl;
-	cout << "trackImgPath = " << getTrackImgPath() << endl;
-	cout << "recTrackSPath = " << getRecTrackSPath() << endl;
-	cout << "recTrackMPath = " << getRecTrackMPath() << endl;
-	cout << "faceInfoImgPath = " << getFaceInfoImgPath() << endl;
-	cout << "faceInfoSPath = " << getFaceInfoSPath() << endl;
-	cout << "faceInfoMPath = " << getFaceInfoMPath() << endl;
-	cout << "featureImgPath = " << getFeatureImgPath() << endl;
-	cout << "feaSPath = " << getFeaSPath() << endl;
-	cout << "pcaSPath = " << getPcaSPath() << endl;
-	cout << "feaMPath = " << getFeaMPath() << endl;
-	cout << "pcaMPath = " << getPcaMPath() << endl;
-	cout << "compareImgAPath = " << getCompareImgAPath() << endl;
-	cout << "compareImgBPath = " << getCompareImgBPath() << endl;
-	cout << "featureAPath = " << getFeatureAPath() << endl;
-	cout << "featureBPath = " << getFeatureBPath() << endl;
-	cout << "pcaAPath = " << getPcaAPath() << endl;
-	cout << "pcaBPath = " << getPcaBPath() << endl;
+	cout << "detectImgPathA = " << getDetectImgPathA() << endl;
+	cout << "detectImgPathB = " << getDetectImgPathB() << endl;
+	cout << "trackImgPathA = " << getTrackImgPathA() << endl;
+	cout << "trackImgPathB = " << getTrackImgPathB() << endl;
+	cout << "faceInfoImgPathA = " << getFaceInfoImgPathA() << endl;
+	cout << "faceInfoImgPathB = " << getFaceInfoImgPathB() << endl;
+	cout << "featureImgPathA = " << getFeatureImgPathA() << endl;
+	cout << "featureImgPathB = " << getFeatureImgPathB() << endl;
+	cout << "compareImgPathA = " << getCompareImgPathA() << endl;
+	cout << "compareImgPathB = " << getCompareImgPathB() << endl;
+	cout << "appliancePathA = " << getAppliancePathA() << endl;
+	cout << "appliancePathB = " << getAppliancePathB() << endl;
 	cout << "report = " << getReport() << endl;
 	cout << "log = " << getLog() << endl;
 }

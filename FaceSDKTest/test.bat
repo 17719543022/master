@@ -93,9 +93,9 @@ if %multi_suits% equ 1 (
 ) else if %multi_suits% equ q (
 	exit
 ) else (
-	goto multisuits
+	goto multiflow
 )
-goto multisuits
+goto multiflow
 
 :detectsuits
 echo 1.ISFaceDetectPath

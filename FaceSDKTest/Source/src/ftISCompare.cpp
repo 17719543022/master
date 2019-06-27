@@ -61,13 +61,13 @@ namespace{
 #ifdef WIN32
 				if(serial[serial.size() - 1] == 'A')
 				{
-					saveFeaPath = upperDirectory(serial) + "\\" + "featureA" + "\\" + getFileHeader(images[i].data()) + ".fea";
-					savePcaPath = upperDirectory(serial) + "\\" + "pcaA" + "\\" + getFileHeader(images[i].data()) + ".pca";
+					saveFeaPath = upperDirectory(serial) + "\\" + "feaMA" + "\\" + getFileHeader(images[i].data()) + ".fea";
+					savePcaPath = upperDirectory(serial) + "\\" + "pcaMA" + "\\" + getFileHeader(images[i].data()) + ".pca";
 				}
 				if(serial[serial.size() - 1] == 'B')
 				{
-					saveFeaPath = upperDirectory(serial) + "\\" + "featureB" + "\\" + getFileHeader(images[i].data()) + ".fea";
-					savePcaPath = upperDirectory(serial) + "\\" + "pcaB" + "\\" + getFileHeader(images[i].data()) + ".pca";
+					saveFeaPath = upperDirectory(serial) + "\\" + "feaMB" + "\\" + getFileHeader(images[i].data()) + ".fea";
+					savePcaPath = upperDirectory(serial) + "\\" + "pcaMB" + "\\" + getFileHeader(images[i].data()) + ".pca";
 				}
 				fileF.open(saveFeaPath, ios::out | ios::binary);
 				fileF.write(feature[0], sizeof(feature[0]));
@@ -82,13 +82,13 @@ namespace{
 #ifdef LINUX
 				if(serial[serial.size() - 1] == 'A')
 				{
-					saveFeaPath = upperDirectory(serial) + "/" + "featureA" + "/" + getFileHeader(images[i].data()) + ".fea";
-					savePcaPath = upperDirectory(serial) + "/" + "pcaA" + "/" + getFileHeader(images[i].data()) + ".pca";
+					saveFeaPath = upperDirectory(serial) + "/" + "feaMA" + "/" + getFileHeader(images[i].data()) + ".fea";
+					savePcaPath = upperDirectory(serial) + "/" + "pcaMA" + "/" + getFileHeader(images[i].data()) + ".pca";
 				}
 				if(serial[serial.size() - 1] == 'B')
 				{
-					saveFeaPath = upperDirectory(serial) + "/" + "featureB" + "/" + getFileHeader(images[i].data()) + ".fea";
-					savePcaPath = upperDirectory(serial) + "/" + "pcaB" + "/" + getFileHeader(images[i].data()) + ".pca";
+					saveFeaPath = upperDirectory(serial) + "/" + "feaMB" + "/" + getFileHeader(images[i].data()) + ".fea";
+					savePcaPath = upperDirectory(serial) + "/" + "pcaMB" + "/" + getFileHeader(images[i].data()) + ".pca";
 				}
 				fileF = fopen(saveFeaPath.data(), "wb");
 				fwrite(feature, 8192, 1, fileF);
@@ -118,9 +118,9 @@ namespace{
 
 		string feaPathA;
 		if(isFlow){
-			feaPathA = upperDirectory(GConfig::getInstance().getAppliancePathA()) + "/" + "featureA";
+			feaPathA = upperDirectory(GConfig::getInstance().getAppliancePathA()) + "/" + "feaMA";
 		}else{
-			feaPathA = upperDirectory(GConfig::getInstance().getCompareImgPathA()) + "/" + "featureA";
+			feaPathA = upperDirectory(GConfig::getInstance().getCompareImgPathA()) + "/" + "feaMA";
 		}
 		vector<string> featureAs;
 		listOutDirectoryFiles(feaPathA, featureAs);
@@ -135,9 +135,9 @@ namespace{
 
 		string feaPathB;
 		if(isFlow){
-			feaPathB = upperDirectory(GConfig::getInstance().getAppliancePathB()) + "/" + "featureB";
+			feaPathB = upperDirectory(GConfig::getInstance().getAppliancePathB()) + "/" + "feaMB";
 		}else{
-			feaPathB = upperDirectory(GConfig::getInstance().getCompareImgPathB()) + "/" + "featureB";
+			feaPathB = upperDirectory(GConfig::getInstance().getCompareImgPathB()) + "/" + "feaMB";
 		}
 		vector<string> featureBs;
 		listOutDirectoryFiles(feaPathB, featureBs);
@@ -220,9 +220,9 @@ namespace{
 
 		string pcaPathA;
 		if(isFlow){
-			pcaPathA = upperDirectory(GConfig::getInstance().getAppliancePathA()) + "/" + "pcaA";
+			pcaPathA = upperDirectory(GConfig::getInstance().getAppliancePathA()) + "/" + "pcaMA";
 		}else{
-			pcaPathA = upperDirectory(GConfig::getInstance().getCompareImgPathA()) + "/" + "pcaA";
+			pcaPathA = upperDirectory(GConfig::getInstance().getCompareImgPathA()) + "/" + "pcaMA";
 		}
 		vector<string> pcaAs;
 		listOutDirectoryFiles(pcaPathA, pcaAs);
@@ -238,9 +238,9 @@ namespace{
 
 		string pcaPathB;
 		if(isFlow){
-			pcaPathB = upperDirectory(GConfig::getInstance().getAppliancePathB()) + "/" + "pcaB";
+			pcaPathB = upperDirectory(GConfig::getInstance().getAppliancePathB()) + "/" + "pcaMB";
 		}else{
-			pcaPathB = upperDirectory(GConfig::getInstance().getCompareImgPathB()) + "/" + "pcaB";
+			pcaPathB = upperDirectory(GConfig::getInstance().getCompareImgPathB()) + "/" + "pcaMB";
 		}
 		vector<string> pcaBs;
 		listOutDirectoryFiles(pcaPathB, pcaBs);
@@ -332,9 +332,9 @@ namespace{
 
 		string pcaPathA;
 		if(isFlow){
-			pcaPathA = upperDirectory(GConfig::getInstance().getAppliancePathA()) + "/" + "pcaA";
+			pcaPathA = upperDirectory(GConfig::getInstance().getAppliancePathA()) + "/" + "pcaMA";
 		}else{
-			pcaPathA = upperDirectory(GConfig::getInstance().getCompareImgPathA()) + "/" + "pcaA";
+			pcaPathA = upperDirectory(GConfig::getInstance().getCompareImgPathA()) + "/" + "pcaMA";
 		}
 		vector<string> pcaAs;
 		listOutDirectoryFiles(pcaPathA, pcaAs);
@@ -351,9 +351,9 @@ namespace{
 		//ISCompareMNfasterprep
 		string pcaPathB;
 		if(isFlow){
-			pcaPathB = upperDirectory(GConfig::getInstance().getAppliancePathB()) + "/" + "pcaB";
+			pcaPathB = upperDirectory(GConfig::getInstance().getAppliancePathB()) + "/" + "pcaMB";
 		}else{
-			pcaPathB = upperDirectory(GConfig::getInstance().getCompareImgPathB()) + "/" + "pcaB";
+			pcaPathB = upperDirectory(GConfig::getInstance().getCompareImgPathB()) + "/" + "pcaMB";
 		}
 		vector<string> pcaBs;
 		listOutDirectoryFiles(pcaPathB, pcaBs);
@@ -447,23 +447,24 @@ TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread){
 	listOutDirectoryFiles(imgPathB, imageBs);
 	int imageBs_size = imageBs.size();
 
-	vector<string>paths(4);
-	paths[0] = upperDirectory(imgPathA) + "/" + "featureA";
-	paths[1] = upperDirectory(imgPathA) + "/" + "featureB";
-	paths[2] = upperDirectory(imgPathB) + "/" + "pcaA";
-	paths[3] = upperDirectory(imgPathB) + "/" + "pcaB";
+	vector<string> pathm(4);
+	pathm[0] = upperDirectory(imgPathA) + "/" + "feaMA";
+	pathm[1] = upperDirectory(imgPathA) + "/" + "feaMB";
+	pathm[2] = upperDirectory(imgPathB) + "/" + "pcaMA";
+	pathm[3] = upperDirectory(imgPathB) + "/" + "pcaMB";
 
-	for(unsigned int i=0; i<paths.size(); i++){
+	string command;
+	for(unsigned int i=0; i<pathm.size(); i++){
 #ifdef WIN32
-		paths[i] = slashConvert(paths[i], '/', '\\');
-		string command = "rd /s /q " + paths[i];
+		pathm[i] = slashConvert(pathm[i], '/', '\\');
+		command = "rd /s /q " + pathm[i];
 		system(command.c_str());
-		command = "mkdir " + paths[i];
+		command = "mkdir " + pathm[i];
 		system(command.c_str());
 #endif
 #ifdef LINUX
-		rmDir(paths[i]);
-		mkdir(paths[i].data(), 0775);
+		rmDir(pathm[i]);
+		mkdir(pathm[i].data(), 0775);
 #endif
 	}
 
@@ -524,11 +525,29 @@ TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread){
 	cout << "picture num got feature succ of image directory B: " << featureNumB << endl;
 	percent = float(featureNumB)/imageBs_size*100;
 	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "output feature of image directory A to: " << paths[0] << endl;
-	cout << "output feature of image directory B to: " << paths[1] << endl;
-	cout << "output pca of image directory A to: " << paths[2] << endl;
-	cout << "output pca of image directory B to: " << paths[3] << endl;
+	cout << "output feature of image directory A to: " << pathm[0] << endl;
+	cout << "output feature of image directory B to: " << pathm[1] << endl;
+	cout << "output pca of image directory A to: " << pathm[2] << endl;
+	cout << "output pca of image directory B to: " << pathm[3] << endl;
 	denominator = imageAs_size + imageBs_size;
+
+	//not prepare feature and pca using single thread, copy from multi thread instead.
+	vector<string> paths(4);
+	paths[0] = upperDirectory(imgPathA) + "/" + "feaSA";
+	paths[1] = upperDirectory(imgPathA) + "/" + "feaSB";
+	paths[2] = upperDirectory(imgPathB) + "/" + "pcaSA";
+	paths[3] = upperDirectory(imgPathB) + "/" + "pcaSB";
+	for(unsigned int i=0; i<paths.size(); i++){
+#ifdef WIN32
+		paths[i] = slashConvert(paths[i], '/', '\\');
+		command = "xcopy " + pathm[i] + " " + paths[i] + "\\ /e /y /q";
+		system(command.c_str());
+#endif
+#ifdef LINUX
+		rmDir(paths[i]);
+		mkdir(paths[i].data(), 0775);
+#endif
+	}
 }
 
 //ISCompare only supports feature with length of 8192
@@ -551,11 +570,11 @@ TEST_F(ftISCompare, ISCompare_SingleThread){
 	char featureB[8192];
 	char featureA[8192];
 
-	string featurePathA = upperDirectory(imgPathA) + "/" + "featureA";
+	string featurePathA = upperDirectory(imgPathA) + "/" + "feaSA";
 	vector<string> feaAFiles;
 	listOutDirectoryFiles(featurePathA, feaAFiles);
 	int feaAFiles_size = feaAFiles.size();
-	string featurePathB = upperDirectory(imgPathA) + "/" + "featureB";
+	string featurePathB = upperDirectory(imgPathA) + "/" + "feaSB";
 	vector<string> feaBFiles;
 	listOutDirectoryFiles(featurePathB, feaBFiles);
 	int feaBFiles_size = feaBFiles.size();
@@ -637,11 +656,11 @@ TEST_F(ftISCompare, ISCompare_MultiThread){
 		imgPathB = GConfig::getInstance().getCompareImgPathB();
 	}
 
-	string featurePathA = upperDirectory(imgPathA) + "/" + "featureA";
+	string featurePathA = upperDirectory(imgPathA) + "/" + "feaMA";
 	vector<string> feaAs;
 	listOutDirectoryFiles(featurePathA, feaAs);
 	int feaAs_size = feaAs.size();
-	string featurePathB = upperDirectory(imgPathA) + "/" + "featureB";
+	string featurePathB = upperDirectory(imgPathA) + "/" + "feaMB";
 	vector<string> feaBs;
 	listOutDirectoryFiles(featurePathB, feaBs);
 	int feaBs_size = feaBs.size();
@@ -688,11 +707,11 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread){
 		imgPathA = GConfig::getInstance().getCompareImgPathA();
 		imgPathB = GConfig::getInstance().getCompareImgPathB();
 	}
-	string pcaPathA = upperDirectory(imgPathA) + "/" + "pcaA";
+	string pcaPathA = upperDirectory(imgPathA) + "/" + "pcaSA";
 	vector<string> pcaAs;
 	listOutDirectoryFiles(pcaPathA, pcaAs);
 	int pcaAs_size = pcaAs.size();
-	string pcaPathB = upperDirectory(imgPathB) + "/" + "pcaB";
+	string pcaPathB = upperDirectory(imgPathB) + "/" + "pcaSB";
 	vector<string> pcaBs;
 	listOutDirectoryFiles(pcaPathB, pcaBs);
 	int pcaBs_size = pcaBs.size();
@@ -795,11 +814,11 @@ TEST_F(ftISCompare, ISCompareMN_MultiThread){
 		imgPathA = GConfig::getInstance().getCompareImgPathA();
 		imgPathB = GConfig::getInstance().getCompareImgPathB();
 	}
-	string pcaPathA = upperDirectory(imgPathA) + "/" + "pcaA";
+	string pcaPathA = upperDirectory(imgPathA) + "/" + "pcaMA";
 	vector<string> pcaAs;
 	listOutDirectoryFiles(pcaPathA, pcaAs);
 	int pcaAs_size = pcaAs.size();
-	string pcaPathB = upperDirectory(imgPathB) + "/" + "pcaB";
+	string pcaPathB = upperDirectory(imgPathB) + "/" + "pcaMB";
 	vector<string> pcaBs;
 	listOutDirectoryFiles(pcaPathB, pcaBs);
 	int pcaBs_size = pcaBs.size();
@@ -854,11 +873,11 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 #endif
 
 	// ISCompareMNfasterprep
-	string pcaPathA = upperDirectory(imgPathA) + "/" + "pcaA";
+	string pcaPathA = upperDirectory(imgPathA) + "/" + "pcaSA";
 	vector<string> pcaAs;
 	listOutDirectoryFiles(pcaPathA, pcaAs);
 	int pcaAs_size = pcaAs.size();
-	string pcaPathB = upperDirectory(imgPathB) + "/" + "pcaB";
+	string pcaPathB = upperDirectory(imgPathB) + "/" + "pcaSB";
 	vector<string> pcaBs;
 	listOutDirectoryFiles(pcaPathB, pcaBs);
 	int pcaBs_size = pcaBs.size();
@@ -957,12 +976,12 @@ TEST_F(ftISCompare, ISCompareMNfaster_MultiThread){
 		imgPathB = GConfig::getInstance().getCompareImgPathB();
 	}
 
-	string pcaPathA = upperDirectory(imgPathA) + "/" + "pcaA";
+	string pcaPathA = upperDirectory(imgPathA) + "/" + "pcaMA";
 	vector<string> pcaAs;
 	listOutDirectoryFiles(pcaPathA, pcaAs);
 	int pcaAs_size = pcaAs.size();
 
-	string pcaPathB = upperDirectory(imgPathB) + "/" + "pcaB";
+	string pcaPathB = upperDirectory(imgPathB) + "/" + "pcaMB";
 	vector<string> pcaBs;
 	listOutDirectoryFiles(pcaPathB, pcaBs);
 	int pcaBs_size = pcaBs.size();
@@ -998,4 +1017,3 @@ TEST_F(ftISCompare, ISCompareMNfaster_MultiThread){
 	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
 	denominator = pcaAs_size*pcaBs_size;
 }
-

@@ -5,6 +5,8 @@
  *      Author: liuyong
  */
 
+#ifdef LINUX
+
 #ifndef INCLUDE_BASE_RMDIR_H_
 #define INCLUDE_BASE_RMDIR_H_
 
@@ -14,3 +16,5 @@ using namespace std;
 int rmDir(string path);
 
 #endif /* INCLUDE_BASE_RMDIR_H_ */
+
+#endif

@@ -65,7 +65,7 @@ TEST_F(ftError, inputImagesGetNoFeature){
 #endif
 #ifdef LINUX
 	// ISGetFeatureRgb returns DETECT_NO_FACE in windows, but SUCC in linux.
-	EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannelId, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, vec.data()));
+	EXPECT_TRUE(SUCC == ISGetFeatureRgb(defaultFeatureChannel, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, vec.data()));
 #endif
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 }

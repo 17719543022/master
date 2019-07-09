@@ -1,7 +1,7 @@
 @echo off
-set current_dir=.\build\FaceSDKTest
+set current_dir=.\Export\build\FaceSDKTest
 pushd %current_dir%
-path = %path%.\..;.\..\..\Export\face\build_32\bin;.\..\..\Export\opencv\build\x86\vc11\bin;.\..\..\Export\Pre-built.2\dll\x86;
+path = %path%;.\..\..\face\build_32\bin;.\..\..\opencv\build\x86\vc11\bin;.\..\..\Pre-built.2\dll\x86;
 echo prepare pics first, and then update configuration to config.ini!
 
 :testsuits
@@ -40,23 +40,23 @@ if %test_suits% equ 1 (
 goto testsuits
 
 :singleflow
-echo 1.ISFaceDetectPath+ISGetFeatureWithFacePosPath+ISCompare
-echo 2.ISFaceDetectPath+ISGetFeatureWithFacePosPath+ISCompareMN
-echo 3.ISFaceDetectPath+ISGetFeatureWithFacePosPath+ISCompareMNfaster
+echo 1.ISFaceDetectRgb+ISGetFeatureWithFacePosPath+ISCompare
+echo 2.ISFaceDetectRgb+ISGetFeatureWithFacePosPath+ISCompareMN
+echo 3.ISFaceDetectRgb+ISGetFeatureWithFacePosPath+ISCompareMNfaster
 echo 4.Back Home
 echo q.Quit
 for /f "delims=" %%i in ('echo please enter your choice: ') do set /p=%%i<nul
 set /p single_flow=
 if %single_flow% equ 1 (
-	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISDetTrack.ISFaceDetectPath_SingleThread
+	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISDetTrack.ISFaceDetectRgb_SingleThread
 	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISFeature.ISGetFeatureWithFacePosPath_SingleThread
 	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISCompare.ISCompare_SingleThread
 ) else if %single_flow% equ 2 (
-	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISDetTrack.ISFaceDetectPath_SingleThread
+	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISDetTrack.ISFaceDetectRgb_SingleThread
 	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISFeature.ISGetFeatureWithFacePosPath_SingleThread
 	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISCompare.ISCompareMN_SingleThread
 ) else if %single_flow% equ 3 (
-	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISDetTrack.ISFaceDetectPath_SingleThread
+	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISDetTrack.ISFaceDetectRgb_SingleThread
 	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISFeature.ISGetFeatureWithFacePosPath_SingleThread
 	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISCompare.ISCompareMNfaster_SingleThread
 ) else if %single_flow% equ 4 (
@@ -69,23 +69,23 @@ if %single_flow% equ 1 (
 goto singleflow
 
 :multiflow
-echo 1.ISFaceDetectPath+ISGetFeatureWithFacePosPath+ISCompare
-echo 2.ISFaceDetectPath+ISGetFeatureWithFacePosPath+ISCompareMN
-echo 3.ISFaceDetectPath+ISGetFeatureWithFacePosPath+ISCompareMNfaster
+echo 1.ISFaceDetectRgb+ISGetFeatureWithFacePosPath+ISCompare
+echo 2.ISFaceDetectRgb+ISGetFeatureWithFacePosPath+ISCompareMN
+echo 3.ISFaceDetectRgb+ISGetFeatureWithFacePosPath+ISCompareMNfaster
 echo 4.Back Home
 echo q.Quit
 for /f "delims=" %%i in ('echo please enter your choice: ') do set /p=%%i<nul
 set /p multi_suits=
 if %multi_suits% equ 1 (
-	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISDetTrack.ISFaceDetectPath_MultiThread
+	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISDetTrack.ISFaceDetectRgb_MultiThread
 	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISFeature.ISGetFeatureWithFacePosPath_MultiThread
 	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISCompare.ISCompare_MultiThread
 ) else if %multi_suits% equ 2 (
-	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISDetTrack.ISFaceDetectPath_MultiThread
+	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISDetTrack.ISFaceDetectRgb_MultiThread
 	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISFeature.ISGetFeatureWithFacePosPath_MultiThread
 	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISCompare.ISCompareMN_MultiThread
 ) else if %multi_suits% equ 3 (
-	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISDetTrack.ISFaceDetectPath_MultiThread
+	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISDetTrack.ISFaceDetectRgb_MultiThread
 	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISFeature.ISGetFeatureWithFacePosPath_MultiThread
 	.\Debug\FaceSDKTest.exe smartirsec2018 --gtest_filter=ftISCompare.ISCompareMNfaster_MultiThread
 ) else if %multi_suits% equ 4 (
@@ -99,22 +99,25 @@ goto multiflow
 
 :detectsuits
 echo 1.ISFaceDetectPath
-echo 2.ISFaceDetTrackRgb
-echo 3.ISCalFaceInfoPath
-echo 4.All Above
-echo 5.Back Home
+echo 2.ISFaceDetectRgb
+echo 3.ISFaceDetTrackRgb
+echo 4.ISCalFaceInfoPath
+echo 5.All Above
+echo 6.Back Home
 echo q.Quit
 for /f "delims=" %%i in ('echo please enter your choice: ') do set /p=%%i<nul
 set /p detect_suits=
 if %detect_suits% equ 1 (
 	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack.ISFaceDetectPath*
 ) else if %detect_suits% equ 2 (
-	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack.ISFaceDetTrackRgb*
+	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack.ISFaceDetectRgb*
 ) else if %detect_suits% equ 3 (
-	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack.ISCalFaceInfoPath*
+	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack.ISFaceDetTrackRgb*
 ) else if %detect_suits% equ 4 (
-	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack.*
+	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack.ISCalFaceInfoPath*
 ) else if %detect_suits% equ 5 (
+	.\Debug\FaceSDKTest.exe --gtest_filter=ftISDetTrack.*
+) else if %detect_suits% equ 6 (
 	goto testsuits
 ) else if %detect_suits% equ q (
 	exit
@@ -125,7 +128,7 @@ goto detectsuits
 
 :featuresuits
 echo 1.ISGetFeaturePath
-echo 2.ISGetFeatureWithFacePosPath
+echo 2.ISGetFeatureWithFacePosPath(Run ISFaceDetectPath Earlier)
 echo 3.Back Home
 echo q.Quit
 for /f "delims=" %%i in ('echo please enter your choice: ') do set /p=%%i<nul
@@ -212,14 +215,15 @@ goto errorsuits
 
 :othersuits
 echo 1.dumpVersionNo
-echo 2.ISGetFeatureLengthCheck
+echo 2.ISGetFeatureLength_Check
 echo 3.dumpConfigIni
 echo 4.theGivenPictureHasMoreThan15FacesBeDetected
 echo 5.whatFaceReturnsEarlierInOutResultAndWhatLater
 echo 6.personAndIdCardCompareOfOneDirectory
-echo 7.camera
-echo 8.All Above
-echo 9.Back Home
+echo 7.personAndIdCardCompareOfOneDirectorySteply
+echo 8.camera
+echo 9.All Above
+echo 10.Back Home
 echo q.Quit
 for /f "delims=" %%i in ('echo please enter your choice: ') do set /p=%%i<nul
 set /p other_suits=
@@ -236,10 +240,12 @@ if %other_suits% equ 1 (
 ) else if %other_suits% equ 6 (
 	.\Debug\FaceSDKTest.exe --gtest_filter=ftAppliance.personAndIdCardCompareOfOneDirectory
 ) else if %other_suits% equ 7 (
-	.\Debug\FaceSDKTest.exe --gtest_filter=ftAppliance.camera
+	.\Debug\FaceSDKTest.exe --gtest_filter=ftAppliance.personAndIdCardCompareOfOneDirectorySteply
 ) else if %other_suits% equ 8 (
-	.\Debug\FaceSDKTest.exe --gtest_filter=ftAppliance.*
+	.\Debug\FaceSDKTest.exe --gtest_filter=ftAppliance.camera
 ) else if %other_suits% equ 9 (
+	.\Debug\FaceSDKTest.exe --gtest_filter=ftAppliance.*
+) else if %other_suits% equ 10 (
 	goto testsuits
 ) else if %other_suits% equ q (
 	exit

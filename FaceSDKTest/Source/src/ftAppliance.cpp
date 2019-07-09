@@ -10,13 +10,37 @@
 
 using namespace std;
 
+namespace{
+	int getFeatureWithFacePosRgb(int defaultDetTrackChannel, int defaultFeatureChannel, const char *imgPath, char *outFeature)
+	{
+		int rst[50][4];
+		int len = 0;
+		Mat image = imread(imgPath);
+
+		EXPECT_TRUE(SUCC == ISFaceDetectRgb(defaultDetTrackChannel, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, rst, &len));
+
+		if(len < 1){
+			return DETECT_NO_FACE;
+		}
+		if(len != 1)
+		{
+			DBG_LOG("%s detect %d face!\n", imgPath, len);
+		}
+
+		//when more than one face is detected, outFeature will overflow
+		EXPECT_TRUE(SUCC == ISGetFeatureWithFacePosRgb(defaultFeatureChannel, (char*)image.data, image.rows*image.cols*3, image.cols, image.rows, rst, len, outFeature));
+
+		return SUCC;
+	}
+}
+
 TEST_F(ftAppliance, dumpVersionNo){
 	cout<<"ISGetDetTrackVersionInfo(): "<<ISGetDetTrackVersionInfo()<<endl;
 	cout<<"ISGetFeatureVersionInfo(): "<<ISGetFeatureVersionInfo()<<endl;
 	cout<<"ISGetCompareVersionInfo(): "<<ISGetCompareVersionInfo()<<endl;
 }
 
-TEST_F(ftAppliance, ISGetFeatureLengthCheck){
+TEST_F(ftAppliance, ISGetFeatureLength_Check){
 	EXPECT_TRUE(8192 == ISGetFeatureLength());
 }
 
@@ -86,14 +110,57 @@ TEST_F(ftAppliance, personAndIdCardCompareOfOneDirectory){
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 }
 
+TEST_F(ftAppliance, personAndIdCardCompareOfOneDirectorySteply){
+	string dir = "../../Data/Appliance/one_to_one";
+	string idcard = "idcard.jpg";
+	string live = "live.jpg";
+	vector<string> listCard;
+	vector<string> listLive;
+
+	listOutSubdirectoryFiles(dir, idcard, listCard);
+	listOutSubdirectoryFiles(dir, live, listLive);
+
+	//the idcard has one face at most
+	char featureCard[8192];
+	//the live can has more than one face
+	char featureLive[5][8192];
+	float score = 0;
+
+	int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
+	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
+	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
+	for(unsigned int i=0; i<listCard.size(); i++){
+		if(DETECT_NO_FACE == getFeatureWithFacePosRgb(defaultDetTrackChannel, defaultFeatureChannel, listCard[i].data(), featureCard))
+		{
+			cout<<listCard[i].data()<<"No Face"<<endl;
+			continue;
+		}
+		if(DETECT_NO_FACE == getFeatureWithFacePosRgb(defaultDetTrackChannel, defaultFeatureChannel, listLive[i].data(), featureLive[0]))
+		{
+			cout<<listLive[i].data()<<"No Face"<<endl;
+			continue;
+		}
+
+		ISCompare(defaultCompareChannel, featureCard, featureLive[0], &score);
+
+		cout << setw(52) << setiosflags(ios::right) << listCard[i].data() << " + " << "live.jpg" << " = Compare Score: " << score << endl;
+	}
+	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
+	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
+	DESTROY_COMPARE_CHANNEL(defaultCompareChannel);
+}
+
 TEST_F(ftAppliance, camera){
 	VideoCapture cap = VideoCapture(0);
 	Mat img;
 	char tempStr[64];
+	Timer timer;
+	double cost = 0;
 
 	int defaultDetTrackChannel = DEFAULT_DET_TRACK_CHANNEL();
 	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
-	while(!isTimeOut(300))
+	timer.start();
+	while(cost < 30000) //30 seconds.
 	{
 		cap >> img;
 		if(!img.data)
@@ -153,6 +220,9 @@ TEST_F(ftAppliance, camera){
 #endif
 
 		imCommonShow("Tracking", img, outRst, outLen, 1, 500);
+
+		cost += timer.stop();
+		timer.start();
 	}
 	DESTROY_FEATURE_CHANNEL(defaultFeatureChannel);
 	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);

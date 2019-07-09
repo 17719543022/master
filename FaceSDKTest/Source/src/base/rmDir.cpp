@@ -5,6 +5,8 @@
  *      Author: liuyong
  */
 
+#ifdef LINUX
+
 #include "rmDir.h"
 #include <dirent.h>
 #include <iostream>
@@ -63,5 +65,4 @@ int rmDir(string path)
 	return 0;
 }
 
-
-
+#endif

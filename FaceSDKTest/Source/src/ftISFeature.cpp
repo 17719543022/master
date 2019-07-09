@@ -13,16 +13,17 @@
 #include <pthread.h>
 #include <fstream>
 #include "log_format.h"
+#include "timer.h"
 
 using namespace std;
 using namespace cv;
 
 extern pthread_mutex_t mutex;
-extern int denominator;
 extern bool isFlow;
+extern string serial;
+extern double cost;
 int featureNumA;
 int featureNumB;
-extern string serial;
 
 namespace{
 	void *faceFeature(void *ptr){
@@ -30,8 +31,9 @@ namespace{
 		string saveFeaPath, savePcaPath;
 
 		int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
-		char feature[5][8192];
+		char feature[10][8192];
 		char pca[2048];
+		Timer timer;
 #ifdef WIN32
 		fstream f;
 #endif
@@ -39,7 +41,12 @@ namespace{
 		FILE *f;
 #endif
 		for(unsigned int i=0; i<images.size(); i++){
-			if(SUCC != ISGetFeaturePath(defaultFeatureChannel, const_cast<char *>(images[i].data()), feature[0])){
+			timer.start();
+			int ret = ISGetFeaturePath(defaultFeatureChannel, const_cast<char *>(images[i].data()), feature[0]);
+			pthread_mutex_lock(&mutex);
+			cost += timer.stop();
+			pthread_mutex_unlock(&mutex);
+			if(SUCC != ret){
 				continue;
 			}
 			else{
@@ -80,10 +87,10 @@ namespace{
 				fclose(f);
 
 				if(serial[serial.size() - 1] == 'A'){
-					savePcaPath = upperDirectory(serial) + "/" + "pcaMA" + getFileHeader(images[i].data()) + ".pca";
+					savePcaPath = upperDirectory(serial) + "/" + "pcaMA" + "/" + getFileHeader(images[i].data()) + ".pca";
 				}
 				if(serial[serial.size() - 1] == 'B'){
-					savePcaPath = upperDirectory(serial) + "/" + "pcaMB" + getFileHeader(images[i].data()) + ".pca";
+					savePcaPath = upperDirectory(serial) + "/" + "pcaMB" + "/" + getFileHeader(images[i].data()) + ".pca";
 				}
 				f = fopen(savePcaPath.data(), "wb");
 				fwrite(pca, 2048, 1, f);
@@ -101,10 +108,11 @@ namespace{
 		string imgPath, saveFeaPath, savePcaPath;
 
 		int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
-		char feature[5][8192];
+		char feature[10][8192];
 		char pca[2048];
 		int len = 0;
 		int outRst[50][4];
+		Timer timer;
 #ifdef WIN32
 		fstream f;
 #endif
@@ -132,7 +140,12 @@ namespace{
 			if(serial[serial.size() - 1] == 'B'){
 				imgPath = upperDirectory(serial) + "/" + "detectImgB" + "/" + getFileHeader(facePos[i].data()) + ".jpg";
 			}
-			if(SUCC == ISGetFeatureWithFacePosPath(defaultFeatureChannel, const_cast<char *>(imgPath.data()), outRst, len, feature[0])){
+			timer.start();
+			int ret = ISGetFeatureWithFacePosPath(defaultFeatureChannel, const_cast<char *>(imgPath.data()), outRst, len, feature[0]);
+			pthread_mutex_lock(&mutex);
+			cost += timer.stop();
+			pthread_mutex_unlock(&mutex);
+			if(SUCC == ret){
 				pthread_mutex_lock(&mutex);
 				if(serial[serial.size() - 1] == 'A')
 				{
@@ -170,20 +183,20 @@ namespace{
 #endif
 #ifdef LINUX
 				if(serial[serial.size() - 1] == 'A'){
-					saveFeaPath = upperDirectory(serial) + "/" + "feaMA" + getFileHeader(facePos[i].data()) + ".fea";
+					saveFeaPath = upperDirectory(serial) + "/" + "feaMA" + "/" + getFileHeader(facePos[i].data()) + ".fea";
 				}
 				if(serial[serial.size() - 1] == 'B'){
-					saveFeaPath = upperDirectory(serial) + "/" + "feaMB" + getFileHeader(facePos[i].data()) + ".fea";
+					saveFeaPath = upperDirectory(serial) + "/" + "feaMB" + "/" + getFileHeader(facePos[i].data()) + ".fea";
 				}
 				f = fopen(saveFeaPath.data(), "wb");
 				fwrite(feature, 8192, 1, f);
 				fclose(f);
 
 				if(serial[serial.size() - 1] == 'A'){
-					savePcaPath = upperDirectory(serial) + "/" + "pcaMA" + getFileHeader(facePos[i].data()) + ".pca";
+					savePcaPath = upperDirectory(serial) + "/" + "pcaMA" + "/" + getFileHeader(facePos[i].data()) + ".pca";
 				}
 				if(serial[serial.size() - 1] == 'B'){
-					savePcaPath = upperDirectory(serial) + "/" + "pcaMB" + getFileHeader(facePos[i].data()) + ".pca";
+					savePcaPath = upperDirectory(serial) + "/" + "pcaMB" + "/" + getFileHeader(facePos[i].data()) + ".pca";
 				}
 				f = fopen(savePcaPath.data(), "wb");
 				fwrite(pca, 2048, 1, f);
@@ -206,6 +219,8 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 	listOutDirectoryFiles(imgPathB, imageBs);
 	featureNumA = 0;
 	featureNumB = 0;
+	Timer timer;
+	cost = 0;
 
 	cout << ">>Inputs <<" << endl;
 	cout << "image directory A: " << imgPathA << endl;
@@ -213,7 +228,7 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 	cout << "threads num: " << "1" << endl;
 	cout << ">>Outputs<<" << endl;
 
-	char feature[5][8192];
+	char feature[10][8192];
 	char pca[2048];
 #ifdef WIN32
 	fstream fileF, fileP;
@@ -261,7 +276,10 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 
 	int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
 	for(unsigned int i=0; i<imageAs.size(); i++){
-		if(SUCC != ISGetFeaturePath(defaultFeatureChannel, const_cast<char *>(imageAs[i].data()), feature[0])){
+		timer.start();
+		int ret = ISGetFeaturePath(defaultFeatureChannel, const_cast<char *>(imageAs[i].data()), feature[0]);
+		cost += timer.stop();
+		if(SUCC != ret){
 			continue;
 		}
 
@@ -293,7 +311,10 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 #endif
 	}
 	for(unsigned int i=0; i<imageBs.size(); i++){
-		if(SUCC != ISGetFeaturePath(defaultFeatureChannel, const_cast<char *>(imageBs[i].data()), feature[0])){
+		timer.start();
+		int ret = ISGetFeaturePath(defaultFeatureChannel, const_cast<char *>(imageBs[i].data()), feature[0]);
+		cost += timer.stop();
+		if(SUCC != ret){
 			continue;
 		}
 
@@ -330,15 +351,17 @@ TEST_F(ftISFeature, ISGetFeaturePath_SingleThread){
 	cout << "picture num of image directory B: " << imageBs.size() << endl;
 	cout << "picture num got feature succ of image directory A: " << featureNumA << endl;
 	cout << "picture num got feature succ of image directory B: " << featureNumB << endl;
-	double percentA = double(featureNumA)/(imageAs.size() + 0.01)*100;
+	double percentA = double(featureNumA)/imageAs.size()*100;
 	cout << "success rate A: " << setiosflags(ios::fixed) << setprecision(2) << percentA << "%" << endl;
-	double percentB = double(featureNumB)/(imageBs.size() + 0.01)*100;
+	double percentB = double(featureNumB)/imageBs.size()*100;
 	cout << "success rate B: " << setiosflags(ios::fixed) << setprecision(2) << percentB << "%" << endl;
 	cout << "output feature of image directory to A: " << feaPathA << endl;
 	cout << "output feature of image directory to B: " << feaPathB << endl;
 	cout << "output pca of image directory to A: " << pcaPathA << endl;
 	cout << "output pca of image directory to B: " << pcaPathB << endl;
-	denominator = imageAs.size() + imageBs.size();
+	float timePerPic = float(cost)/(imageAs.size() + imageBs.size());
+	cout << "whole cost: " << cost << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
@@ -350,15 +373,16 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
 	listOutDirectoryFiles(imgPathB, imageBs);
 	featureNumA = 0;
 	featureNumB = 0;
+	cost = 0;
 
-	unsigned int detectThreadNum = GConfig::getInstance().getGetFeaThreadNum();
-	int imgNumPerThreadA = int(imageAs.size()/detectThreadNum);
-	int imgNumPerThreadB = int(imageBs.size()/detectThreadNum);
+	unsigned int getFeaThreadNum = GConfig::getInstance().getGetFeaThreadNum();
+	int imgNumPerThreadA = int(imageAs.size()/getFeaThreadNum);
+	int imgNumPerThreadB = int(imageBs.size()/getFeaThreadNum);
 
 	cout << ">>Inputs <<" << endl;
 	cout << "image directory A: " << imgPathA << endl;
 	cout << "image directory B: " << imgPathB << endl;
-	cout << "threads num: " << detectThreadNum << endl;
+	cout << "threads num: " << getFeaThreadNum << endl;
 	cout << ">>Outputs<<" << endl;
 
 	string feaPathA = upperDirectory(imgPathA) + "/" + "feaMA";
@@ -400,9 +424,9 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
 #endif
 
 	vector<vector<string> > imageA;
-	for(unsigned int i=0; i<detectThreadNum; i++){
+	for(unsigned int i=0; i<getFeaThreadNum; i++){
 		imageA.push_back(vector<string>());
-		if(i == detectThreadNum-1){
+		if(i == getFeaThreadNum-1){
 			imageA[i].assign(imageAs.begin()+i*imgNumPerThreadA, imageAs.end());
 		}
 		else{
@@ -411,9 +435,9 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
 	}
 
 	vector<vector<string> > imageB;
-	for(unsigned int i=0; i<detectThreadNum; i++){
+	for(unsigned int i=0; i<getFeaThreadNum; i++){
 		imageB.push_back(vector<string>());
-		if(i == detectThreadNum-1){
+		if(i == getFeaThreadNum-1){
 			imageB[i].assign(imageBs.begin()+i*imgNumPerThreadB, imageBs.end());
 		}
 		else{
@@ -421,23 +445,23 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
 		}
 	}
 
-	vector<pthread_t> pThread(detectThreadNum);
+	vector<pthread_t> pThread(getFeaThreadNum);
 	serial = upperDirectory(imgPathA) + "/" + "feaMA";
-	for(unsigned int i=0; i<detectThreadNum; i++){
+	for(unsigned int i=0; i<getFeaThreadNum; i++){
 		EXPECT_TRUE(SUCC == pthread_create(&pThread[i], NULL, faceFeature, (void *)&imageA[i]));
 	}
 
 	void *retVal;
-	for(unsigned int i=0; i<detectThreadNum; i++){
+	for(unsigned int i=0; i<getFeaThreadNum; i++){
 		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
 	}
 
 	serial = upperDirectory(imgPathB) + "/" + "feaMB";
-	for(unsigned int i=0; i<detectThreadNum; i++){
+	for(unsigned int i=0; i<getFeaThreadNum; i++){
 		EXPECT_TRUE(SUCC == pthread_create(&pThread[i], NULL, faceFeature, (void *)&imageB[i]));
 	}
 
-	for(unsigned int i=0; i<detectThreadNum; i++){
+	for(unsigned int i=0; i<getFeaThreadNum; i++){
 		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
 	}
 
@@ -445,15 +469,18 @@ TEST_F(ftISFeature, ISGetFeaturePath_MultiThread){
 	cout << "picture num of image directory B: " << imageBs.size() << endl;
 	cout << "picture num got feature succ of image directory A: " << featureNumA << endl;
 	cout << "picture num got feature succ of image directory B: " << featureNumB << endl;
-	double percentA = double(featureNumA)/(imageAs.size() + 0.01)*100;
+	double percentA = double(featureNumA)/imageAs.size()*100;
 	cout << "success rate A: " << setiosflags(ios::fixed) << setprecision(2) << percentA << "%" << endl;
-	double percentB = double(featureNumB)/(imageBs.size() + 0.01)*100;
+	double percentB = double(featureNumB)/imageBs.size()*100;
 	cout << "success rate B: " << setiosflags(ios::fixed) << setprecision(2) << percentB << "%" << endl;
 	cout << "output feature of image directory to A: " << feaPathA << endl;
 	cout << "output feature of image directory to B: " << feaPathB << endl;
 	cout << "output pca of image directory to A: " << pcaPathA << endl;
 	cout << "output pca of image directory to B: " << pcaPathB << endl;
-	denominator = imageAs.size() + imageBs.size();
+	cost = cost/getFeaThreadNum;
+	float timePerPic = float(cost)/(imageAs.size() + imageBs.size());
+	cout << "whole cost: " << cost << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISFeature, ISGetFeaturePath_OutResultCheck){
@@ -636,7 +663,6 @@ TEST_F(ftISFeature, ISGetFeaturePath_OutResultCheck){
 	}
 
 	cout << "imgPathB: " << "whether single thread or multi thread, the got result(pca/feature) by ISGetFeaturePath are the same" << endl;
-	denominator = recFeaSA.size() + recPcaSA.size() + recFeaSB.size() + recPcaSB.size();
 }
 
 TEST_F(ftISFeature, ISGetFeatureWithFacePosPath_SingleThread){
@@ -659,6 +685,8 @@ TEST_F(ftISFeature, ISGetFeatureWithFacePosPath_SingleThread){
 	listOutDirectoryFiles(facePosPathA, facePosAs);
 	vector<string> facePosBs;
 	listOutDirectoryFiles(facePosPathB, facePosBs);
+	Timer timer;
+	cost = 0;
 
 	cout << ">>Inputs <<" << endl;
 	cout << "facePos directory A: " << facePosPathA << endl;
@@ -666,7 +694,7 @@ TEST_F(ftISFeature, ISGetFeatureWithFacePosPath_SingleThread){
 	cout << "threads num: " << "1" << endl;
 	cout << ">>Outputs<<" << endl;
 
-	char feature[5][8192];
+	char feature[10][8192];
 	char pca[2048];
 	int len = 0;
 	int outRst[50][4];
@@ -723,7 +751,10 @@ TEST_F(ftISFeature, ISGetFeatureWithFacePosPath_SingleThread){
 		fclose(f);
 #endif
 		string imgPath = imgPathA + "/" + getFileHeader(facePosAs[i].data()) + ".jpg";
-		if(SUCC == ISGetFeatureWithFacePosPath(defaultFeatureChannel, const_cast<char *>(imgPath.data()), outRst, len, feature[0])){
+		timer.start();
+		int ret = ISGetFeatureWithFacePosPath(defaultFeatureChannel, const_cast<char *>(imgPath.data()), outRst, len, feature[0]);
+		cost += timer.stop();
+		if(SUCC == ret){
 			ISGetPcaFea(defaultFeatureChannel, feature[0], pca);
 			featureNumA++;
 #ifdef WIN32
@@ -768,7 +799,10 @@ TEST_F(ftISFeature, ISGetFeatureWithFacePosPath_SingleThread){
 		fclose(f);
 #endif
 		string imgPath = imgPathB + "/" + getFileHeader(facePosBs[i].data()) + ".jpg";
-		if(SUCC == ISGetFeatureWithFacePosPath(defaultFeatureChannel, const_cast<char *>(imgPath.data()), outRst, len, feature[0])){
+		timer.start();
+		int ret = ISGetFeatureWithFacePosPath(defaultFeatureChannel, const_cast<char *>(imgPath.data()), outRst, len, feature[0]);
+		cost += timer.stop();
+		if(SUCC == ret){
 			ISGetPcaFea(defaultFeatureChannel, feature[0], pca);
 			featureNumB++;
 #ifdef WIN32
@@ -801,15 +835,17 @@ TEST_F(ftISFeature, ISGetFeatureWithFacePosPath_SingleThread){
 
 	cout << "picture num got feature succ of image directory A: " << featureNumA << endl;
 	cout << "picture num got feature succ of image directory B: " << featureNumB << endl;
-	double percentA = double(featureNumA)/(facePosAs.size() + 0.01)*100;
+	double percentA = double(featureNumA)/facePosAs.size()*100;
 	cout << "success rate A: " << setiosflags(ios::fixed) << setprecision(2) << percentA << "%" << endl;
-	double percentB = double(featureNumB)/(facePosBs.size() + 0.01)*100;
+	double percentB = double(featureNumB)/facePosBs.size()*100;
 	cout << "success rate B: " << setiosflags(ios::fixed) << setprecision(2) << percentB << "%" << endl;
 	cout << "output feature of image directory to A: " << saveFeaPathA << endl;
 	cout << "output feature of image directory to B: " << saveFeaPathB << endl;
 	cout << "output pca of image directory to A: " << savePcaPathA << endl;
 	cout << "output pca of image directory to B: " << savePcaPathB << endl;
-	denominator = facePosAs.size() + facePosBs.size();
+	float timePerPic = float(cost)/(facePosAs.size() + facePosBs.size());
+	cout << "whole cost: " << cost << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISFeature, ISGetFeatureWithFacePosPath_MultiThread){
@@ -831,15 +867,16 @@ TEST_F(ftISFeature, ISGetFeatureWithFacePosPath_MultiThread){
 
 	featureNumA = 0;
 	featureNumB = 0;
+	cost = 0;
 
-	unsigned int detectThreadNum = GConfig::getInstance().getGetFeaThreadNum();
-	int facePosNumPerThreadA = int(facePosAs.size()/detectThreadNum);
-	int facePosNumPerThreadB = int(facePosBs.size()/detectThreadNum);
+	unsigned int getFeaThreadNum = GConfig::getInstance().getGetFeaThreadNum();
+	int facePosNumPerThreadA = int(facePosAs.size()/getFeaThreadNum);
+	int facePosNumPerThreadB = int(facePosBs.size()/getFeaThreadNum);
 
 	cout << ">>Inputs <<" << endl;
 	cout << "facePos directory A: " << facePosPathA << endl;
 	cout << "facePos directory B: " << facePosPathB << endl;
-	cout << "threads num: " << detectThreadNum << endl;
+	cout << "threads num: " << getFeaThreadNum << endl;
 	cout << ">>Outputs<<" << endl;
 
 	string saveFeaPathA = upperDirectory(imgPathA) + "/" + "feaMA";
@@ -881,9 +918,9 @@ TEST_F(ftISFeature, ISGetFeatureWithFacePosPath_MultiThread){
 #endif
 
 	vector<vector<string> > facePosA;
-	for(unsigned int i=0; i<detectThreadNum; i++){
+	for(unsigned int i=0; i<getFeaThreadNum; i++){
 		facePosA.push_back(vector<string>());
-		if(i == detectThreadNum-1){
+		if(i == getFeaThreadNum-1){
 			facePosA[i].assign(facePosAs.begin()+i*facePosNumPerThreadA, facePosAs.end());
 		}
 		else{
@@ -892,9 +929,9 @@ TEST_F(ftISFeature, ISGetFeatureWithFacePosPath_MultiThread){
 	}
 
 	vector<vector<string> > facePosB;
-	for(unsigned int i=0; i<detectThreadNum; i++){
+	for(unsigned int i=0; i<getFeaThreadNum; i++){
 		facePosB.push_back(vector<string>());
-		if(i == detectThreadNum-1){
+		if(i == getFeaThreadNum-1){
 			facePosB[i].assign(facePosBs.begin()+i*facePosNumPerThreadB, facePosBs.end());
 		}
 		else{
@@ -902,37 +939,40 @@ TEST_F(ftISFeature, ISGetFeatureWithFacePosPath_MultiThread){
 		}
 	}
 
-	vector<pthread_t> pThread(detectThreadNum);
+	vector<pthread_t> pThread(getFeaThreadNum);
 	serial = facePosPathA;
-	for(unsigned int i=0; i<detectThreadNum; i++){
+	for(unsigned int i=0; i<getFeaThreadNum; i++){
 		EXPECT_TRUE(SUCC == pthread_create(&pThread[i], NULL, faceFeatureWithPos, (void *)&facePosA[i]));
 	}
 
 	void *retVal;
-	for(unsigned int i=0; i<detectThreadNum; i++){
+	for(unsigned int i=0; i<getFeaThreadNum; i++){
 		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
 	}
 
 	serial = facePosPathB;
-	for(unsigned int i=0; i<detectThreadNum; i++){
+	for(unsigned int i=0; i<getFeaThreadNum; i++){
 		EXPECT_TRUE(SUCC == pthread_create(&pThread[i], NULL, faceFeatureWithPos, (void *)&facePosB[i]));
 	}
 
-	for(unsigned int i=0; i<detectThreadNum; i++){
+	for(unsigned int i=0; i<getFeaThreadNum; i++){
 		EXPECT_TRUE(SUCC == pthread_join(pThread[i], &retVal));
 	}
 
 	cout << "picture num got feature succ of image directory A: " << featureNumA << endl;
 	cout << "picture num got feature succ of image directory B: " << featureNumB << endl;
-	double percentA = double(featureNumA)/(facePosAs.size() + 0.01)*100;
+	double percentA = double(featureNumA)/facePosAs.size()*100;
 	cout << "success rate A: " << setiosflags(ios::fixed) << setprecision(2) << percentA << "%" << endl;
-	double percentB = double(featureNumB)/(facePosBs.size() + 0.01)*100;
+	double percentB = double(featureNumB)/facePosBs.size()*100;
 	cout << "success rate B: " << setiosflags(ios::fixed) << setprecision(2) << percentB << "%" << endl;
 	cout << "output feature of image directory to A: " << saveFeaPathA << endl;
 	cout << "output feature of image directory to B: " << saveFeaPathB << endl;
 	cout << "output pca of image directory to A: " << savePcaPathA << endl;
 	cout << "output pca of image directory to B: " << savePcaPathB << endl;
-	denominator = facePosAs.size() + facePosBs.size();
+	cost = cost/getFeaThreadNum;
+	float timePerPic = float(cost)/(facePosAs.size() + facePosBs.size());
+	cout << "whole cost: " << cost << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISFeature, ISGetFeatureWithFacePosPath_OutResultCheck){
@@ -1121,5 +1161,4 @@ TEST_F(ftISFeature, ISGetFeatureWithFacePosPath_OutResultCheck){
 	}
 
 	cout << "imgPathB: " << "whether single thread or multi thread, the got result(pca/feature) by ISGetFeatureWithFacePosPath are the same" << endl;
-	denominator = recFeaSA.size() + recPcaSA.size() + recFeaSB.size() + recPcaSB.size();
 }

@@ -34,19 +34,6 @@ namespace{
 }
 
 #ifdef WIN32
-int getGap(SYSTEMTIME tStart, SYSTEMTIME tStop){
-	int gap = 0;
-
-	gap += (tStop.wHour - tStart.wHour)*60*60*1000;
-	gap += (tStop.wMinute - tStart.wMinute)*60*1000;
-	gap += (tStop.wSecond - tStart.wSecond)*1000;
-	gap += tStop.wMilliseconds - tStart.wMilliseconds;
-
-	return gap;
-}
-#endif
-
-#ifdef WIN32
 string getFileHeader(const char *p){
 	char slash = '\\';
 	const char *q = strrchr(p, slash) + 1;
@@ -68,7 +55,7 @@ string slashConvert(string& str, char beReplaced, char toReplace){
 }
 #endif
 
-string upperDirectory(string& str){
+string upperDirectory(string str){
 	char slash = '/';
 	const char *q = strrchr(str.data(), slash);
 

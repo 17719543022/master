@@ -14,16 +14,17 @@
 #include <fstream>
 #include "log_format.h"
 #include <iostream>
+#include "timer.h"
 
 using namespace cv;
 using namespace std;
 
 extern pthread_mutex_t mutex;
-extern int denominator;
 extern int featureNumA;
 extern int featureNumB;
 extern string serial;
 extern bool isFlow;
+extern double cost;
 pthread_mutex_t mutex2;
 int valueCountsSmall;
 int valueCountsBig;
@@ -34,12 +35,13 @@ namespace{
 		int defaultFeatureChannel = DEFAULT_FEATURE_CHANNEL();
 		char feature[5][8192];
 		char pca[2048];
-		string saveFeaPath, savePcaPath;
+		string saveFeaPath_m, savePcaPath_m;
+		string saveFeaPath_s, savePcaPath_s;
 #ifdef WIN32
-		fstream fileF, fileP;
+		fstream f_m, f_s;
 #endif
 #ifdef LINUX
-		FILE *fileF, *fileP;
+		FILE *f_m, *f_s;
 #endif
 		for(unsigned int i=0; i<images.size(); i++){
 			if(SUCC != ISGetFeaturePath(defaultFeatureChannel, const_cast<char *>(images[i].data()), feature[0])){
@@ -61,42 +63,68 @@ namespace{
 #ifdef WIN32
 				if(serial[serial.size() - 1] == 'A')
 				{
-					saveFeaPath = upperDirectory(serial) + "\\" + "feaMA" + "\\" + getFileHeader(images[i].data()) + ".fea";
-					savePcaPath = upperDirectory(serial) + "\\" + "pcaMA" + "\\" + getFileHeader(images[i].data()) + ".pca";
+					saveFeaPath_m = upperDirectory(serial) + "\\" + "feaMA" + "\\" + getFileHeader(images[i].data()) + ".fea";
+					savePcaPath_m = upperDirectory(serial) + "\\" + "pcaMA" + "\\" + getFileHeader(images[i].data()) + ".pca";
+					saveFeaPath_s = upperDirectory(serial) + "\\" + "feaSA" + "\\" + getFileHeader(images[i].data()) + ".fea";
+					savePcaPath_s = upperDirectory(serial) + "\\" + "pcaSA" + "\\" + getFileHeader(images[i].data()) + ".pca";
 				}
 				if(serial[serial.size() - 1] == 'B')
 				{
-					saveFeaPath = upperDirectory(serial) + "\\" + "feaMB" + "\\" + getFileHeader(images[i].data()) + ".fea";
-					savePcaPath = upperDirectory(serial) + "\\" + "pcaMB" + "\\" + getFileHeader(images[i].data()) + ".pca";
+					saveFeaPath_m = upperDirectory(serial) + "\\" + "feaMB" + "\\" + getFileHeader(images[i].data()) + ".fea";
+					savePcaPath_m = upperDirectory(serial) + "\\" + "pcaMB" + "\\" + getFileHeader(images[i].data()) + ".pca";
+					saveFeaPath_s = upperDirectory(serial) + "\\" + "feaSB" + "\\" + getFileHeader(images[i].data()) + ".fea";
+					savePcaPath_s = upperDirectory(serial) + "\\" + "pcaSB" + "\\" + getFileHeader(images[i].data()) + ".pca";
 				}
-				fileF.open(saveFeaPath, ios::out | ios::binary);
-				fileF.write(feature[0], sizeof(feature[0]));
-				fileF.close();
-				fileF.clear();
+				f_m.open(saveFeaPath_m, ios::out | ios::binary);
+				f_m.write(feature[0], sizeof(feature[0]));
+				f_m.close();
+				f_m.clear();
 
-				fileP.open(savePcaPath, ios::out | ios::binary);
-				fileP.write(pca, sizeof(pca));
-				fileP.close();
-				fileP.clear();
+				f_m.open(savePcaPath_m, ios::out | ios::binary);
+				f_m.write(pca, sizeof(pca));
+				f_m.close();
+				f_m.clear();
+
+				f_s.open(saveFeaPath_s, ios::out | ios::binary);
+				f_s.write(feature[0], sizeof(feature[0]));
+				f_s.close();
+				f_s.clear();
+
+				f_s.open(savePcaPath_s, ios::out | ios::binary);
+				f_s.write(pca, sizeof(pca));
+				f_s.close();
+				f_s.clear();
 #endif
 #ifdef LINUX
 				if(serial[serial.size() - 1] == 'A')
 				{
-					saveFeaPath = upperDirectory(serial) + "/" + "feaMA" + "/" + getFileHeader(images[i].data()) + ".fea";
-					savePcaPath = upperDirectory(serial) + "/" + "pcaMA" + "/" + getFileHeader(images[i].data()) + ".pca";
+					saveFeaPath_m = upperDirectory(serial) + "/" + "feaMA" + "/" + getFileHeader(images[i].data()) + ".fea";
+					savePcaPath_m = upperDirectory(serial) + "/" + "pcaMA" + "/" + getFileHeader(images[i].data()) + ".pca";
+					saveFeaPath_s = upperDirectory(serial) + "/" + "feaSA" + "/" + getFileHeader(images[i].data()) + ".fea";
+					savePcaPath_s = upperDirectory(serial) + "/" + "pcaSA" + "/" + getFileHeader(images[i].data()) + ".pca";
 				}
 				if(serial[serial.size() - 1] == 'B')
 				{
-					saveFeaPath = upperDirectory(serial) + "/" + "feaMB" + "/" + getFileHeader(images[i].data()) + ".fea";
-					savePcaPath = upperDirectory(serial) + "/" + "pcaMB" + "/" + getFileHeader(images[i].data()) + ".pca";
+					saveFeaPath_m = upperDirectory(serial) + "/" + "feaMB" + "/" + getFileHeader(images[i].data()) + ".fea";
+					savePcaPath_m = upperDirectory(serial) + "/" + "pcaMB" + "/" + getFileHeader(images[i].data()) + ".pca";
+					saveFeaPath_s = upperDirectory(serial) + "/" + "feaSB" + "/" + getFileHeader(images[i].data()) + ".fea";
+					savePcaPath_s = upperDirectory(serial) + "/" + "pcaSB" + "/" + getFileHeader(images[i].data()) + ".pca";
 				}
-				fileF = fopen(saveFeaPath.data(), "wb");
-				fwrite(feature, 8192, 1, fileF);
-				fclose(fileF);
+				f_m = fopen(saveFeaPath_m.data(), "wb");
+				fwrite(feature, 8192, 1, f_m);
+				fclose(f_m);
 
-				fileP = fopen(savePcaPath.data(), "wb");
-				fwrite(pca, 2048, 1, fileP);
-				fclose(fileP);
+				f_m = fopen(savePcaPath_m.data(), "wb");
+				fwrite(pca, 2048, 1, f_m);
+				fclose(f_m);
+
+				f_s = fopen(saveFeaPath_s.data(), "wb");
+				fwrite(feature, 8192, 1, f_s);
+				fclose(f_s);
+
+				f_s = fopen(savePcaPath_s.data(), "wb");
+				fwrite(pca, 2048, 1, f_s);
+				fclose(f_s);
 #endif
 			}
 		}
@@ -144,6 +172,7 @@ namespace{
 		float score;
 		char featureA[8192];
 		char featureB[8192];
+		Timer timer;
 #ifdef WIN32
 		fstream fileA, fileB;
 #endif
@@ -182,10 +211,14 @@ namespace{
 				fclose(fileB);
 #endif
 
+				timer.start();
 				EXPECT_TRUE(SUCC == ISCompare( defaultCompareChannel
 											 , featureA
 											 , featureB
 											 , &score));
+				pthread_mutex_lock(&mutex);
+				cost += timer.stop();
+				pthread_mutex_unlock(&mutex);
 				if(score < recongiseFaceValue
 					&& 0 == strcmp(getFileHeader(featureAsOfCurrentThread[i].data()).data(), getFileHeader(featureBs[j].data()).data()))
 				{
@@ -246,6 +279,7 @@ namespace{
 		listOutDirectoryFiles(pcaPathB, pcaBs);
 		int pcaBs_size = pcaBs.size();
 		char pcaTemp[2048];
+		Timer timer;
 #ifdef WIN32
 		fstream fileA, fileB;
 #endif
@@ -298,7 +332,11 @@ namespace{
 #endif
 			pcaA[0] = pcaTemp;
 
+			timer.start();
 			EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, pcaA, 1, pcaB, pcaBs_size, score));
+			pthread_mutex_lock(&mutex);
+			cost += timer.stop();
+			pthread_mutex_unlock(&mutex);
 			for(int t=0; t<pcaBs_size; t++){
 				if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())==getFileHeader(pcaBs[t].data()))
 				{
@@ -359,6 +397,7 @@ namespace{
 		listOutDirectoryFiles(pcaPathB, pcaBs);
 		int pcaBs_size = pcaBs.size();
 		char pcaTemp[2048];
+		Timer timer;
 #ifdef WIN32
 		fstream fileA, fileB;
 #endif
@@ -414,7 +453,11 @@ namespace{
 #endif
 			pcaA[0] = pcaTemp;
 
+			timer.start();
 			EXPECT_TRUE(SUCC == ISCompareMNfaster(defaultCompareChannel, pcaA, 1, score));
+			pthread_mutex_lock(&mutex);
+			cost += timer.stop();
+			pthread_mutex_unlock(&mutex);
 			for(int t=0; t<pcaBs_size; t++){
 				if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())==getFileHeader(pcaBs[t].data()))
 				{
@@ -447,11 +490,15 @@ TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread){
 	listOutDirectoryFiles(imgPathB, imageBs);
 	int imageBs_size = imageBs.size();
 
-	vector<string> pathm(4);
+	vector<string> pathm(4), paths(4);
 	pathm[0] = upperDirectory(imgPathA) + "/" + "feaMA";
 	pathm[1] = upperDirectory(imgPathA) + "/" + "feaMB";
 	pathm[2] = upperDirectory(imgPathB) + "/" + "pcaMA";
 	pathm[3] = upperDirectory(imgPathB) + "/" + "pcaMB";
+	paths[0] = upperDirectory(imgPathA) + "/" + "feaSA";
+	paths[1] = upperDirectory(imgPathA) + "/" + "feaSB";
+	paths[2] = upperDirectory(imgPathB) + "/" + "pcaSA";
+	paths[3] = upperDirectory(imgPathB) + "/" + "pcaSB";
 
 	string command;
 	for(unsigned int i=0; i<pathm.size(); i++){
@@ -461,10 +508,17 @@ TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread){
 		system(command.c_str());
 		command = "mkdir " + pathm[i];
 		system(command.c_str());
+		paths[i] = slashConvert(paths[i], '/', '\\');
+		command = "rd /s /q " + paths[i];
+		system(command.c_str());
+		command = "mkdir " + paths[i];
+		system(command.c_str());
 #endif
 #ifdef LINUX
 		rmDir(pathm[i]);
 		mkdir(pathm[i].data(), 0775);
+		rmDir(paths[i]);
+		mkdir(paths[i].data(), 0775);
 #endif
 	}
 
@@ -529,25 +583,6 @@ TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread){
 	cout << "output feature of image directory B to: " << pathm[1] << endl;
 	cout << "output pca of image directory A to: " << pathm[2] << endl;
 	cout << "output pca of image directory B to: " << pathm[3] << endl;
-	denominator = imageAs_size + imageBs_size;
-
-	//not prepare feature and pca using single thread, copy from multi thread instead.
-	vector<string> paths(4);
-	paths[0] = upperDirectory(imgPathA) + "/" + "feaSA";
-	paths[1] = upperDirectory(imgPathA) + "/" + "feaSB";
-	paths[2] = upperDirectory(imgPathB) + "/" + "pcaSA";
-	paths[3] = upperDirectory(imgPathB) + "/" + "pcaSB";
-	for(unsigned int i=0; i<paths.size(); i++){
-#ifdef WIN32
-		paths[i] = slashConvert(paths[i], '/', '\\');
-		command = "xcopy " + pathm[i] + " " + paths[i] + "\\ /e /y /q";
-		system(command.c_str());
-#endif
-#ifdef LINUX
-		rmDir(paths[i]);
-		mkdir(paths[i].data(), 0775);
-#endif
-	}
 }
 
 //ISCompare only supports feature with length of 8192
@@ -581,6 +616,8 @@ TEST_F(ftISCompare, ISCompare_SingleThread){
 
 	valueCountsSmall = 0;
 	valueCountsBig = 0;
+	Timer timer;
+	cost = 0;
 
 	cout << ">>Inputs <<" << endl;
 	cout << "Feature directory A: " << featurePathA << endl;
@@ -619,7 +656,9 @@ TEST_F(ftISCompare, ISCompare_SingleThread){
 			fread(featureB, 8192, 1, f);
 			fclose(f);
 #endif
+			timer.start();
 			EXPECT_TRUE(SUCC == ISCompare(defaultCompareChannel, featureA, featureB, &score));
+			cost += timer.stop();
 			if(score < recongiseFaceValue
 				&& 0 == strcmp(getFileHeader(feaAFiles[i].data()).data(), getFileHeader(feaBFiles[j].data()).data()))
 			{
@@ -640,10 +679,12 @@ TEST_F(ftISCompare, ISCompare_SingleThread){
 	float percent = float(valueCountsBig)/feaAFiles_size*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
-	percent = float(valueCountsSmall)/feaAFiles_size*100;
+	percent = float(valueCountsSmall)/(feaAFiles_size*feaBFiles_size)*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "compare times: " << feaAFiles_size*feaBFiles_size << endl;
-	denominator = feaAFiles_size*feaBFiles_size;
+	float timePerPic = float(cost)/(feaAFiles_size*feaBFiles_size);
+	cout << "whole cost: " << cost << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISCompare, ISCompare_MultiThread){
@@ -667,6 +708,7 @@ TEST_F(ftISCompare, ISCompare_MultiThread){
 
 	valueCountsSmall = 0;
 	valueCountsBig = 0;
+	cost = 0;
 
 	cout << ">>Inputs <<" << endl;
 	cout << "Feature directory A: " << featurePathA << endl;
@@ -691,10 +733,13 @@ TEST_F(ftISCompare, ISCompare_MultiThread){
 	float percent = float(valueCountsBig)/feaAs_size*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
-	percent = float(valueCountsSmall)/feaAs_size*100;
+	percent = float(valueCountsSmall)/(feaAs_size*feaBs_size)*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "compare times: " << feaAs_size*feaBs_size << endl;
-	denominator = feaAs_size*feaBs_size;
+	cost = cost/compareThreadNum;
+	float timePerPic = float(cost)/(feaAs_size*feaBs_size);
+	cout << "whole cost: " << cost << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
 //ISCompareMN/ISCompareMNfaster only support pca with length of 2048
@@ -723,6 +768,8 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread){
 	FILE *fileA, *fileB;
 #endif
 	char pcaTemp[2048];
+	Timer timer;
+	cost = 0;
 
 	char **pcaB;
 	ALLOC_DOUBLE_STAR(pcaBs_size, 2048, char, pcaB, N)
@@ -778,7 +825,9 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread){
 #endif
 
 		pcaA[0] = pcaTemp;
+		timer.start();
 		EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, pcaA, 1, pcaB, pcaBs_size, score));
+		cost += timer.stop();
 		for(int t=0; t<pcaBs_size; t++){
 			if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAs[s].data())==getFileHeader(pcaBs[t].data()))
 			{
@@ -799,10 +848,12 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread){
 	float percent = float(valueCountsBig)/pcaAs_size*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
-	percent = float(valueCountsSmall)/pcaAs_size*100;
+	percent = float(valueCountsSmall)/(pcaAs_size*pcaBs_size)*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
-	denominator = pcaAs_size*pcaBs_size;
+	float timePerPic = float(cost)/(pcaAs_size*pcaBs_size);
+	cout << "whole cost: " << cost << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISCompare, ISCompareMN_MultiThread){
@@ -825,6 +876,7 @@ TEST_F(ftISCompare, ISCompareMN_MultiThread){
 
 	valueCountsSmall = 0;
 	valueCountsBig = 0;
+	cost = 0;
 
 	cout << ">>Inputs <<" << endl;
 	cout << "Pca directory A: " << pcaPathA << endl;
@@ -849,10 +901,13 @@ TEST_F(ftISCompare, ISCompareMN_MultiThread){
 	float percent = float(valueCountsBig)/pcaAs_size*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
-	percent = float(valueCountsSmall)/pcaAs_size*100;
+	percent = float(valueCountsSmall)/(pcaAs_size*pcaBs_size)*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
-	denominator = pcaAs_size*pcaBs_size;
+	cost = cost/recogniseThreadNum;
+	float timePerPic = float(cost)/(pcaAs_size*pcaBs_size);
+	cout << "whole cost: " << cost << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
@@ -882,6 +937,8 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 	listOutDirectoryFiles(pcaPathB, pcaBs);
 	int pcaBs_size = pcaBs.size();
 	char pcaTemp[2048];
+	Timer timer;
+	cost = 0;
 
 	char **pcaB;
 	ALLOC_DOUBLE_STAR(pcaBs_size, 2048, char, pcaB, N)
@@ -939,7 +996,9 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 #endif
 
 		pcaA[0] = pcaTemp;
+		timer.start();
 		EXPECT_TRUE(SUCC == ISCompareMNfaster(defaultCompareChannel, pcaA, 1, score));
+		cost += timer.stop();
 		for(int t=0; t<pcaBs_size; t++){
 			if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAs[s].data())==getFileHeader(pcaBs[t].data()))
 			{
@@ -960,10 +1019,12 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 	float percent = float(valueCountsBig)/pcaAs_size*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
-	percent = float(valueCountsSmall)/pcaAs_size*100;
+	percent = float(valueCountsSmall)/(pcaAs_size*pcaBs_size)*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
-	denominator = pcaAs_size*pcaBs_size;
+	float timePerPic = float(cost)/(pcaAs_size*pcaBs_size);
+	cout << "whole cost: " << cost << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISCompare, ISCompareMNfaster_MultiThread){
@@ -988,6 +1049,7 @@ TEST_F(ftISCompare, ISCompareMNfaster_MultiThread){
 
 	valueCountsSmall = 0;
 	valueCountsBig = 0;
+	cost = 0;
 
 	cout << ">>Inputs <<" << endl;
 	cout << "Pca directory A: " << pcaPathA << endl;
@@ -1012,8 +1074,11 @@ TEST_F(ftISCompare, ISCompareMNfaster_MultiThread){
 	float percent = float(valueCountsBig)/pcaAs_size*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
-	percent = float(valueCountsSmall)/pcaAs_size*100;
+	percent = float(valueCountsSmall)/(pcaAs_size*pcaBs_size)*100;
 	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
 	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
-	denominator = pcaAs_size*pcaBs_size;
+	float timePerPic = float(cost)/(pcaAs_size*pcaBs_size);
+	cost = cost/recogniseThreadNum;
+	cout << "whole cost: " << cost << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
 }

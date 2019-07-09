@@ -34,11 +34,8 @@ using namespace cv;
 	}\
 	star = target##tag.data();
 
-#ifdef WIN32
-int getGap(SYSTEMTIME tStart, SYSTEMTIME tStop);
-#endif
 string slashConvert(string& str, char beReplaced, char toReplace);
-string upperDirectory(string& str);
+string upperDirectory(string str);
 string getFileHeader(const char *p);
 
 void imCommonShow(char *name, Mat img, int outRst[][4], int len, int thickness = 2, int delay = 1000);

@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
 #include <string.h>
+#include <iostream>
+
+using namespace std;
 
 extern bool isFlow;
 

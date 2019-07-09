@@ -15,6 +15,8 @@ struct Config{
 	int maxImgNum;
 	string detectImgPathA;
 	string detectImgPathB;
+	string detectRgbImgPathA;
+	string detectRgbImgPathB;
 	string trackImgPathA;
 	string trackImgPathB;
 	string faceInfoImgPathA;
@@ -41,6 +43,8 @@ public:
 	int getMaxImgNum();
 	string getDetectImgPathA();
 	string getDetectImgPathB();
+	string getDetectRgbImgPathA();
+	string getDetectRgbImgPathB();
 	string getTrackImgPathA();
 	string getTrackImgPathB();
 	string getFaceInfoImgPathA();

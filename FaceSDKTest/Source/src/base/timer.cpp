@@ -1,45 +1,60 @@
-#ifdef WIN32
-#include <Windows.h>
-#endif
 #include "timer.h"
+#include <stddef.h> 
+#ifdef  WIN32
+	#include <Windows.h>
+#elif  linux
+	#include <sys/time.h>
+#endif
 #include <iostream>
 using namespace std;
-
+ 
 #ifdef WIN32
-bool isTimeOut(int secondsSet)
+Timer::Timer()
 {
-	SYSTEMTIME stop;
-    GetSystemTime(&stop);
-
-	static SYSTEMTIME start = stop;
-
-	if(stop.wMonth != start.wMonth)
+	LARGE_INTEGER sysFreq;
+	flag = QueryPerformanceFrequency( &sysFreq );
+	if ( flag )
 	{
-		return true;
+		dSystemFreq = (double)sysFreq.QuadPart;
 	}
-
-	if((stop.wDay - start.wDay)*24*60*60 \
-	  +(stop.wHour - start.wHour)*60*60 \
-	  +(stop.wMinute - start.wMinute)*60 \
-	  +(stop.wSecond - start.wSecond)*1 > secondsSet)
-	{
-		return true;
-	}
-
-	return false;
 }
+ 
+void Timer::start()
+{
+	LARGE_INTEGER t;
+	flag &= QueryPerformanceCounter( &t );
+	if ( !flag )
+		return;
+	dStartTime = (double)t.QuadPart;
+}
+ 
+double Timer::stop()
+{
+	LARGE_INTEGER t;
+	flag &= QueryPerformanceCounter( &t );
+ 
+	if ( !flag )
+		return -1.0;
+	
+	dStopTime = (double)t.QuadPart;
+	return 1000.0 * ( dStopTime - dStartTime ) / dSystemFreq;
+}
+ 
+#elif  linux
+ 
+Timer::Timer(){}
+ 
+void Timer::start()
+{
+	gettimeofday( &tvStart, NULL );
+}
+ 
+double Timer::stop()
+{
+	gettimeofday( &tvStop, NULL );
+	return 1000.0 * (double)(tvStop.tv_sec - tvStart.tv_sec)
+		+ (double)(tvStop.tv_usec - tvStart.tv_usec)/1000.0;
+}
+ 
 #endif
 
-#ifdef LINUX
-bool isTimeOut(int secondsSet)
-{
-	static time_t tStart = time((time_t *)NULL);
-
-	if(time((time_t *)NULL) - tStart > secondsSet)
-	{
-		return true;
-	}
-
-	return false;
-}
-#endif

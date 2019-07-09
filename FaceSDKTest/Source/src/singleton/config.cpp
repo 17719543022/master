@@ -4,7 +4,7 @@ using namespace std;
 
 Config::Config(){
 	iniReader reader;
-	reader.readConfig("../../config.ini");
+	reader.readConfig("../../../config.ini");
 
 	detectThreadNum = reader.readInt("PARAM", "detectThreadNum", 0);
 	getFeaThreadNum = reader.readInt("PARAM", "getFeaThreadNum", 0);
@@ -15,6 +15,8 @@ Config::Config(){
 	maxImgNum = reader.readInt("PARAM", "maxImgNum", 0);
 	detectImgPathA = reader.readString("ISFaceDetectPath", "detectImgPathA", "");
 	detectImgPathB = reader.readString("ISFaceDetectPath", "detectImgPathB", "");
+	detectRgbImgPathA = reader.readString("ISFaceDetectRgb", "detectRgbImgPathA", "");
+	detectRgbImgPathB = reader.readString("ISFaceDetectRgb", "detectRgbImgPathB", "");
 	trackImgPathA = reader.readString("ISFaceDetTrackRgb", "trackImgPathA", "");
 	trackImgPathB = reader.readString("ISFaceDetTrackRgb", "trackImgPathB", "");
 	faceInfoImgPathA = reader.readString("ISCalFaceInfoPath", "faceInfoImgPathA", "");
@@ -82,6 +84,14 @@ string GConfig::getDetectImgPathB(){
 	return config.detectImgPathB;
 }
 
+string GConfig::getDetectRgbImgPathA(){
+	return config.detectRgbImgPathA;
+}
+
+string GConfig::getDetectRgbImgPathB(){
+	return config.detectRgbImgPathB;
+}
+
 string GConfig::getTrackImgPathA(){
 	return config.trackImgPathA;
 }
@@ -140,6 +150,8 @@ void GConfig::dump(){
 	cout << "maxImgNum = " << getMaxImgNum() << endl;
 	cout << "detectImgPathA = " << getDetectImgPathA() << endl;
 	cout << "detectImgPathB = " << getDetectImgPathB() << endl;
+	cout << "detectRgbImgPathA = " << getDetectRgbImgPathA() << endl;
+	cout << "detectRgbImgPathB = " << getDetectRgbImgPathB() << endl;
 	cout << "trackImgPathA = " << getTrackImgPathA() << endl;
 	cout << "trackImgPathB = " << getTrackImgPathB() << endl;
 	cout << "faceInfoImgPathA = " << getFaceInfoImgPathA() << endl;

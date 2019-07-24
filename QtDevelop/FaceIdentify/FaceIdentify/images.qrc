@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Images/logo.png</file>
+        <file>Images/setting.png</file>
+        <file>Images/shutdown_btn.png</file>
+        <file>Images/currImage.png</file>
+        <file>Images/default.png</file>
+        <file>Images/success.png</file>
+        <file>Images/failed.png</file>
+        <file>Images/invalid.png</file>
+        <file>Images/noface.png</file>
+        <file>Images/idImage.png</file>
+        <file>Images/rollImg.png</file>
+        <file>Images/photographIDtest.bmp</file>
+    </qresource>
+</RCC>

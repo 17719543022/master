@@ -13,6 +13,7 @@ struct Config{
 	int recogniseThreadNum;
 	float recogniseFaceValue;
 	int maxImgNum;
+	int compareSamples;
 	string detectImgPathA;
 	string detectImgPathB;
 	string detectRgbImgPathA;
@@ -41,6 +42,7 @@ public:
 	int getRecogniseThreadNum();
 	float getRecogniseFaceValue();
 	int getMaxImgNum();
+	int getCompareSamples();
 	string getDetectImgPathA();
 	string getDetectImgPathB();
 	string getDetectRgbImgPathA();

@@ -13,6 +13,7 @@ Config::Config(){
 	recogniseThreadNum = reader.readInt("PARAM", "recogniseThreadNum", 0);
 	recogniseFaceValue = reader.readFloat("PARAM", "recogniseFaceValue", 0);
 	maxImgNum = reader.readInt("PARAM", "maxImgNum", 0);
+	compareSamples = reader.readInt("PARAM", "compareSamples", 0);
 	detectImgPathA = reader.readString("ISFaceDetectPath", "detectImgPathA", "");
 	detectImgPathB = reader.readString("ISFaceDetectPath", "detectImgPathB", "");
 	detectRgbImgPathA = reader.readString("ISFaceDetectRgb", "detectRgbImgPathA", "");
@@ -74,6 +75,10 @@ float GConfig::getRecogniseFaceValue(){
 
 int GConfig::getMaxImgNum(){
 	return config.maxImgNum;
+}
+
+int GConfig::getCompareSamples(){
+	return config.compareSamples;
 }
 
 string GConfig::getDetectImgPathA(){
@@ -148,6 +153,7 @@ void GConfig::dump(){
 	cout << "recogniseThreadNum = " << getRecogniseThreadNum() << endl;
 	cout << "recogniseFaceValue = " << getRecogniseFaceValue() << endl;
 	cout << "maxImgNum = " << getMaxImgNum() << endl;
+	cout << "compareSamples = " << getCompareSamples() << endl;
 	cout << "detectImgPathA = " << getDetectImgPathA() << endl;
 	cout << "detectImgPathB = " << getDetectImgPathB() << endl;
 	cout << "detectRgbImgPathA = " << getDetectRgbImgPathA() << endl;

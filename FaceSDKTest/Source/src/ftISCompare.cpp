@@ -196,16 +196,26 @@ namespace{
 			fread(featureA, 8192, 1, fileA);
 			fclose(fileA);
 #endif
-			for(unsigned int j=0; j<featureBs.size(); j++){
+			unsigned int start = i + currentThreadIndex*featureNumPerThread;
+			unsigned int compareSamples = GConfig::getInstance().getCompareSamples();
+			compareSamples = (compareSamples < featureBs.size()) ? compareSamples : featureBs.size();
+			for(unsigned int k=0; k<featureBs.size(); k++){
+				if(getFileHeader(featureAsOfCurrentThread[i].data()) == getFileHeader(featureBs[k].data())){
+					start = k;
+					break;
+				}
+			}
+
+			for(unsigned int j=start; j<start+compareSamples; j++){
 #ifdef WIN32
-				fileB.open(featureBs[j], ios::in | ios::binary);
+				fileB.open(featureBs[j%featureBs.size()], ios::in | ios::binary);
 				fileB.seekg(0, ios::beg);
 				fileB.read(featureB, 8192);
 				fileB.clear();
 				fileB.close();
 #endif
 #ifdef LINUX
-				fileB = fopen(featureBs[j].data(), "rb");
+				fileB = fopen(featureBs[j%featureBs.size()].data(), "rb");
 				fseek(fileB, 0, SEEK_SET);
 				fread(featureB, 8192, 1, fileB);
 				fclose(fileB);
@@ -220,14 +230,14 @@ namespace{
 				cost += timer.stop();
 				pthread_mutex_unlock(&mutex);
 				if(score < recongiseFaceValue
-					&& 0 == strcmp(getFileHeader(featureAsOfCurrentThread[i].data()).data(), getFileHeader(featureBs[j].data()).data()))
+					&& 0 == strcmp(getFileHeader(featureAsOfCurrentThread[i].data()).data(), getFileHeader(featureBs[j%featureBs.size()].data()).data()))
 				{
 					pthread_mutex_lock(&mutex);
 					valueCountsBig++;
 					pthread_mutex_unlock(&mutex);
 				}
 				if(score >= recongiseFaceValue
-					&& 0 != strcmp(getFileHeader(featureAsOfCurrentThread[i].data()).data(), getFileHeader(featureBs[j].data()).data()))
+					&& 0 != strcmp(getFileHeader(featureAsOfCurrentThread[i].data()).data(), getFileHeader(featureBs[j%featureBs.size()].data()).data()))
 				{
 					pthread_mutex_lock(&mutex);
 					valueCountsSmall++;
@@ -290,29 +300,11 @@ namespace{
 		int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
 		float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
 
-		char **pcaB;
-		ALLOC_DOUBLE_STAR(pcaBs_size, 2048, char, pcaB, N)
-		for(int i=0; i<pcaBs_size; i++)
-		{
-#ifdef WIN32
-			fileB.open(pcaBs[i], ios::in | ios::binary);
-			fileB.seekg(0, ios::beg);
-			fileB.read(pcaTemp, 2048);
-			fileB.clear();
-			fileB.close();
-#endif
-#ifdef LINUX
-			fileB = fopen(pcaBs[i].data(), "rb");
-			fseek(fileB, 0, SEEK_SET);
-			fread(pcaTemp, 2048, 1, fileB);
-			fclose(fileB);
-#endif
-
-			memcpy(pcaB[i], pcaTemp, 2048);
-		}
+		int compareSamples = GConfig::getInstance().getCompareSamples();
+		compareSamples = (compareSamples < pcaBs_size) ? compareSamples : pcaBs_size;
 
 		float **score;
-		ALLOC_DOUBLE_STAR(1, pcaBs_size, float, score, S)
+		ALLOC_DOUBLE_STAR(1, compareSamples, float, score, S)
 
 		char **pcaA;
 		ALLOC_DOUBLE_STAR(1, 2048, char, pcaA, M)
@@ -330,21 +322,48 @@ namespace{
 			fread(pcaTemp, 2048, 1, fileA);
 			fclose(fileA);
 #endif
-			pcaA[0] = pcaTemp;
+			memcpy(pcaA[0], pcaTemp, 2048);
+
+			int start = s;
+			for(int k=0; k<pcaBs_size; k++){
+					if(getFileHeader(pcaAsOfCurrentThread[s].data()) == getFileHeader(pcaBs[k].data())){
+							start = k;
+							break;
+					}
+			}
+			char **pcaB;
+			ALLOC_DOUBLE_STAR(compareSamples, 2048, char, pcaB, N)
+			for(int i=start; i<start+compareSamples; i++)
+			{
+#ifdef WIN32
+				fileB.open(pcaBs[i%pcaBs_size], ios::in | ios::binary);
+				fileB.seekg(0, ios::beg);
+				fileB.read(pcaTemp, 2048);
+				fileB.clear();
+				fileB.close();
+#endif
+#ifdef LINUX
+				fileB = fopen(pcaBs[i%pcaBs_size].data(), "rb");
+				fseek(fileB, 0, SEEK_SET);
+				fread(pcaTemp, 2048, 1, fileB);
+				fclose(fileB);
+#endif
+				memcpy(pcaB[i-start], pcaTemp, 2048);
+			}
 
 			timer.start();
-			EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, pcaA, 1, pcaB, pcaBs_size, score));
+			EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, pcaA, 1, pcaB, compareSamples, score));
 			pthread_mutex_lock(&mutex);
 			cost += timer.stop();
 			pthread_mutex_unlock(&mutex);
-			for(int t=0; t<pcaBs_size; t++){
-				if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())==getFileHeader(pcaBs[t].data()))
+			for(int t=0; t<compareSamples; t++){
+				if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())==getFileHeader(pcaBs[(start + t)%pcaBs_size].data()))
 				{
 					pthread_mutex_lock(&mutex);
 					valueCountsBig++;
 					pthread_mutex_unlock(&mutex);
 				}
-				if(score[0][t]>=recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())!=getFileHeader(pcaBs[t].data()))
+				if(score[0][t]>=recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())!=getFileHeader(pcaBs[(start + t)%pcaBs_size].data()))
 				{
 					pthread_mutex_lock(&mutex);
 					valueCountsSmall++;
@@ -386,7 +405,6 @@ namespace{
 		}
 		int pcaAsOfCurrentThread_size = pcaAsOfCurrentThread.size();
 
-		//ISCompareMNfasterprep
 		string pcaPathB;
 		if(isFlow){
 			pcaPathB = upperDirectory(GConfig::getInstance().getAppliancePathB()) + "/" + "pcaMB";
@@ -407,33 +425,12 @@ namespace{
 
 		int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
 		float recongiseFaceValue = GConfig::getInstance().getRecogniseFaceValue();
+		
+		int compareSamples = GConfig::getInstance().getCompareSamples();
+		compareSamples = (compareSamples < pcaBs_size) ? compareSamples : pcaBs_size;
 
-		char **pcaB;
-		ALLOC_DOUBLE_STAR(pcaBs_size, 2048, char, pcaB, N)
-		for(int i=0; i<pcaBs_size; i++)
-		{
-#ifdef WIN32
-			fileB.open(pcaBs[i], ios::in | ios::binary);
-			fileB.seekg(0, ios::beg);
-			fileB.read(pcaTemp, 2048);
-			fileB.clear();
-			fileB.close();
-#endif
-#ifdef LINUX
-			fileB = fopen(pcaBs[i].data(), "rb");
-			fseek(fileB, 0, SEEK_SET);
-			fread(pcaTemp, 2048, 1, fileB);
-			fclose(fileB);
-#endif
-
-			memcpy(pcaB[i], pcaTemp, 2048);
-		}
-
-		EXPECT_TRUE(SUCC == ISCompareMNfasterprep(defaultCompareChannel, pcaB, pcaBs_size));
-
-		//ISCompareMNfaster
 		float **score;
-		ALLOC_DOUBLE_STAR(1, pcaBs_size, float, score, S)
+		ALLOC_DOUBLE_STAR(1, compareSamples, float, score, S)
 
 		char **pcaA;
 		ALLOC_DOUBLE_STAR(1, 2048, char, pcaA, M)
@@ -451,21 +448,50 @@ namespace{
 			fread(pcaTemp, 2048, 1, fileA);
 			fclose(fileA);
 #endif
-			pcaA[0] = pcaTemp;
+			memcpy(pcaA[0], pcaTemp, 2048);
 
+			int start = s;
+			for(int k=0; k<pcaBs_size; k++){
+					if(getFileHeader(pcaAsOfCurrentThread[s].data()) == getFileHeader(pcaBs[k].data())){
+							start = k;
+							break;
+					}
+			}
+
+			char **pcaB;
+			ALLOC_DOUBLE_STAR(compareSamples, 2048, char, pcaB, N)
+			for(int i=start; i<start+compareSamples; i++)
+			{
+#ifdef WIN32
+				fileB.open(pcaBs[i%pcaBs_size], ios::in | ios::binary);
+				fileB.seekg(0, ios::beg);
+				fileB.read(pcaTemp, 2048);
+				fileB.clear();
+				fileB.close();
+#endif
+#ifdef LINUX
+				fileB = fopen(pcaBs[i%pcaBs_size].data(), "rb");
+				fseek(fileB, 0, SEEK_SET);
+				fread(pcaTemp, 2048, 1, fileB);
+				fclose(fileB);
+#endif
+				memcpy(pcaB[i-start], pcaTemp, 2048);
+			}
+
+			EXPECT_TRUE(SUCC == ISCompareMNfasterprep(defaultCompareChannel, pcaB, compareSamples));
 			timer.start();
 			EXPECT_TRUE(SUCC == ISCompareMNfaster(defaultCompareChannel, pcaA, 1, score));
 			pthread_mutex_lock(&mutex);
 			cost += timer.stop();
 			pthread_mutex_unlock(&mutex);
-			for(int t=0; t<pcaBs_size; t++){
-				if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())==getFileHeader(pcaBs[t].data()))
+			for(int t=0; t<compareSamples; t++){
+				if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())==getFileHeader(pcaBs[(t+start)%pcaBs_size].data()))
 				{
 					pthread_mutex_lock(&mutex);
 					valueCountsBig++;
 					pthread_mutex_unlock(&mutex);
 				}
-				if(score[0][t]>=recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())!=getFileHeader(pcaBs[t].data()))
+				if(score[0][t]>=recongiseFaceValue && getFileHeader(pcaAsOfCurrentThread[s].data())!=getFileHeader(pcaBs[(t+start)%pcaBs_size].data()))
 				{
 					pthread_mutex_lock(&mutex);
 					valueCountsSmall++;
@@ -574,11 +600,11 @@ TEST_F(ftISCompare, prepareFeatureAndPcaRapidlyUsingMultiThread){
 	cout << "picture num of image directory A: " << imageAs_size << endl;
 	cout << "picture num got feature succ of image directory A: " << featureNumA << endl;
 	float percent = float(featureNumA)/imageAs_size*100;
-	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
 	cout << "picture num of image directory B: " << imageBs_size << endl;
 	cout << "picture num got feature succ of image directory B: " << featureNumB << endl;
 	percent = float(featureNumB)/imageBs_size*100;
-	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	cout << "success rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
 	cout << "output feature of image directory A to: " << pathm[0] << endl;
 	cout << "output feature of image directory B to: " << pathm[1] << endl;
 	cout << "output pca of image directory A to: " << pathm[2] << endl;
@@ -613,6 +639,8 @@ TEST_F(ftISCompare, ISCompare_SingleThread){
 	vector<string> feaBFiles;
 	listOutDirectoryFiles(featurePathB, feaBFiles);
 	int feaBFiles_size = feaBFiles.size();
+	int compareSamples = GConfig::getInstance().getCompareSamples();
+	compareSamples = (compareSamples < feaBFiles_size) ? compareSamples : feaBFiles_size;
 
 	valueCountsSmall = 0;
 	valueCountsBig = 0;
@@ -642,16 +670,23 @@ TEST_F(ftISCompare, ISCompare_SingleThread){
 		fread(featureA, 8192, 1, f);
 		fclose(f);
 #endif
-		for(int j=0; j<feaBFiles_size; j++){
+		int start = i;
+		for(int k=0; k<feaBFiles_size; k++){
+			if(getFileHeader(feaAFiles[i].data()) == getFileHeader(feaBFiles[k].data())){
+				start = k;
+				break;
+			}
+		}
+		for(int j=start; j<start+compareSamples; j++){
 #ifdef WIN32
-			f.open(feaBFiles[j], ios::in | ios::binary);
+			f.open(feaBFiles[j%feaBFiles_size], ios::in | ios::binary);
 			f.seekg(0, ios::beg);
 			f.read(featureB, 8192);
 			f.clear();
 			f.close();
 #endif
 #ifdef LINUX
-			f = fopen(feaBFiles[j].data(), "rb");
+			f = fopen(feaBFiles[j%feaBFiles_size].data(), "rb");
 			fseek(f, 0, SEEK_SET);
 			fread(featureB, 8192, 1, f);
 			fclose(f);
@@ -660,12 +695,12 @@ TEST_F(ftISCompare, ISCompare_SingleThread){
 			EXPECT_TRUE(SUCC == ISCompare(defaultCompareChannel, featureA, featureB, &score));
 			cost += timer.stop();
 			if(score < recongiseFaceValue
-				&& 0 == strcmp(getFileHeader(feaAFiles[i].data()).data(), getFileHeader(feaBFiles[j].data()).data()))
+				&& 0 == strcmp(getFileHeader(feaAFiles[i].data()).data(), getFileHeader(feaBFiles[j%feaBFiles_size].data()).data()))
 			{
 				valueCountsBig++;
 			}
 			if(score >= recongiseFaceValue
-				&& 0 != strcmp(getFileHeader(feaAFiles[i].data()).data(), getFileHeader(feaBFiles[j].data()).data()))
+				&& 0 != strcmp(getFileHeader(feaAFiles[i].data()).data(), getFileHeader(feaBFiles[j%feaBFiles_size].data()).data()))
 			{
 				valueCountsSmall++;
 			}
@@ -675,16 +710,17 @@ TEST_F(ftISCompare, ISCompare_SingleThread){
 
 	cout << "feature num of feature directory A: " << feaAFiles_size << endl;
 	cout << "feature num of feature directory B: " << feaBFiles_size << endl;
+	cout << "samples: " << compareSamples << endl;
 	cout << "for an identical person, but score less than compareFaceValue: " << valueCountsBig << endl;
-	float percent = float(valueCountsBig)/feaAFiles_size*100;
-	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	float percent = float(valueCountsBig)/(feaAFiles_size*compareSamples)*100;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
 	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
-	percent = float(valueCountsSmall)/(feaAFiles_size*feaBFiles_size)*100;
-	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "compare times: " << feaAFiles_size*feaBFiles_size << endl;
-	float timePerPic = float(cost)/(feaAFiles_size*feaBFiles_size);
+	percent = float(valueCountsSmall)/(feaAFiles_size*compareSamples)*100;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
+	cout << "compare times: " << feaAFiles_size*compareSamples << endl;
+	float timePerPic = float(cost)/(feaAFiles_size*compareSamples);
 	cout << "whole cost: " << cost << "ms" << endl;
-	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(4) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISCompare, ISCompare_MultiThread){
@@ -727,19 +763,22 @@ TEST_F(ftISCompare, ISCompare_MultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThreads[n], &retVal));
 	}
 
+	int compareSamples = GConfig::getInstance().getCompareSamples();
+	compareSamples = (compareSamples < feaBs_size) ? compareSamples : feaBs_size;
 	cout << "feature num of feature directory A: " << feaAs_size << endl;
 	cout << "feature num of feature directory B: " << feaBs_size << endl;
+	cout << "samples: " << compareSamples << endl;
 	cout << "for an identical person, but score less than compareFaceValue: " << valueCountsBig << endl;
-	float percent = float(valueCountsBig)/feaAs_size*100;
-	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	float percent = float(valueCountsBig)/(feaAs_size*compareSamples)*100;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
 	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
-	percent = float(valueCountsSmall)/(feaAs_size*feaBs_size)*100;
-	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "compare times: " << feaAs_size*feaBs_size << endl;
+	percent = float(valueCountsSmall)/(feaAs_size*compareSamples)*100;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
+	cout << "compare times: " << feaAs_size*compareSamples << endl;
 	cost = cost/compareThreadNum;
-	float timePerPic = float(cost)/(feaAs_size*feaBs_size);
+	float timePerPic = float(cost)/(feaAs_size*compareSamples);
 	cout << "whole cost: " << cost << "ms" << endl;
-	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(4) << timePerPic << "ms" << endl;
 }
 
 //ISCompareMN/ISCompareMNfaster only support pca with length of 2048
@@ -771,29 +810,11 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread){
 	Timer timer;
 	cost = 0;
 
-	char **pcaB;
-	ALLOC_DOUBLE_STAR(pcaBs_size, 2048, char, pcaB, N)
-	for(int i=0; i<pcaBs_size; i++)
-	{
-#ifdef WIN32
-		fileB.open(pcaBs[i], ios::in | ios::binary);
-		fileB.seekg(0, ios::beg);
-		fileB.read(pcaTemp, 2048);
-		fileB.clear();
-		fileB.close();
-#endif
-#ifdef LINUX
-		fileB = fopen(pcaBs[i].data(), "rb");
-		fseek(fileB, 0, SEEK_SET);
-		fread(pcaTemp, 2048, 1, fileB);
-		fclose(fileB);
-#endif
-
-		memcpy(pcaB[i], pcaTemp, 2048);
-	}
+	int compareSamples = GConfig::getInstance().getCompareSamples();
+	compareSamples = (compareSamples < pcaBs_size) ? compareSamples : pcaBs_size;
 
 	float **score;
-	ALLOC_DOUBLE_STAR(1, pcaBs_size, float, score, S)
+	ALLOC_DOUBLE_STAR(1, compareSamples, float, score, S)
 
 	cout << ">>Inputs <<" << endl;
 	cout << "Pca directory A: " << pcaPathA << endl;
@@ -823,17 +844,44 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread){
 		fread(pcaTemp, 2048, 1, fileA);
 		fclose(fileA);
 #endif
+		memcpy(pcaA[0], pcaTemp, 2048);
 
-		pcaA[0] = pcaTemp;
+		int start = s;
+		for(int k=0; k<pcaBs_size; k++){
+			if(getFileHeader(pcaAs[s].data()) == getFileHeader(pcaBs[k].data())){
+				start = k;
+				break;
+			}
+		}
+		char **pcaB;
+		ALLOC_DOUBLE_STAR(compareSamples, 2048, char, pcaB, N)
+		for(int i=start; i<start+compareSamples; i++)
+		{
+#ifdef WIN32
+			fileB.open(pcaBs[i%pcaBs_size], ios::in | ios::binary);
+			fileB.seekg(0, ios::beg);
+			fileB.read(pcaTemp, 2048);
+			fileB.clear();
+			fileB.close();
+#endif
+#ifdef LINUX
+			fileB = fopen(pcaBs[i%pcaBs_size].data(), "rb");
+			fseek(fileB, 0, SEEK_SET);
+			fread(pcaTemp, 2048, 1, fileB);
+			fclose(fileB);
+#endif
+			memcpy(pcaB[i-start], pcaTemp, 2048);
+		}
+
 		timer.start();
-		EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, pcaA, 1, pcaB, pcaBs_size, score));
+		EXPECT_TRUE(SUCC == ISCompareMN(defaultCompareChannel, pcaA, 1, pcaB, compareSamples, score));
 		cost += timer.stop();
-		for(int t=0; t<pcaBs_size; t++){
-			if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAs[s].data())==getFileHeader(pcaBs[t].data()))
+		for(int t=0; t<compareSamples; t++){
+			if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAs[s].data())==getFileHeader(pcaBs[(start + t)%pcaBs_size].data()))
 			{
 				valueCountsBig++;
 			}
-			if(score[0][t]>=recongiseFaceValue && getFileHeader(pcaAs[s].data())!=getFileHeader(pcaBs[t].data()))
+			if(score[0][t]>=recongiseFaceValue && getFileHeader(pcaAs[s].data())!=getFileHeader(pcaBs[(start + t)%pcaBs_size].data()))
 			{
 				valueCountsSmall++;
 			}
@@ -844,16 +892,17 @@ TEST_F(ftISCompare, ISCompareMN_SingleThread){
 
 	cout << "pca num of pca directory A: " << pcaAs_size << endl;
 	cout << "pca num of pca directory B: " << pcaBs_size << endl;
+	cout << "samples: " << compareSamples << endl;
 	cout << "for an identical person, but score less than recongiseFaceValue: " << valueCountsBig << endl;
-	float percent = float(valueCountsBig)/pcaAs_size*100;
-	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	float percent = float(valueCountsBig)/(pcaAs_size*compareSamples)*100;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
 	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
-	percent = float(valueCountsSmall)/(pcaAs_size*pcaBs_size)*100;
-	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
-	float timePerPic = float(cost)/(pcaAs_size*pcaBs_size);
+	percent = float(valueCountsSmall)/(pcaAs_size*compareSamples)*100;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
+	cout << "compare times: " << pcaAs_size*compareSamples << endl;
+	float timePerPic = float(cost)/(pcaAs_size*compareSamples);
 	cout << "whole cost: " << cost << "ms" << endl;
-	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(4) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISCompare, ISCompareMN_MultiThread){
@@ -895,19 +944,23 @@ TEST_F(ftISCompare, ISCompareMN_MultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThreads[n], &retVal));
 	}
 
+	int compareSamples = GConfig::getInstance().getCompareSamples();
+	compareSamples = (compareSamples < pcaBs_size) ? compareSamples : pcaBs_size;
+
 	cout << "pca num of pca directory A: " << pcaAs_size << endl;
 	cout << "pca num of pca directory B: " << pcaBs_size << endl;
+	cout << "compareSamples: " << compareSamples << endl;
 	cout << "for an identical person, but score less than recongiseFaceValue: " << valueCountsBig << endl;
-	float percent = float(valueCountsBig)/pcaAs_size*100;
-	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	float percent = float(valueCountsBig)/(pcaAs_size*compareSamples)*100;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
 	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
-	percent = float(valueCountsSmall)/(pcaAs_size*pcaBs_size)*100;
-	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
+	percent = float(valueCountsSmall)/(pcaAs_size*compareSamples)*100;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
+	cout << "compare times: " << pcaAs_size*compareSamples << endl;
 	cost = cost/recogniseThreadNum;
-	float timePerPic = float(cost)/(pcaAs_size*pcaBs_size);
+	float timePerPic = float(cost)/(pcaAs_size*compareSamples);
 	cout << "whole cost: " << cost << "ms" << endl;
-	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(4) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
@@ -927,7 +980,6 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 	FILE *fileA, *fileB;
 #endif
 
-	// ISCompareMNfasterprep
 	string pcaPathA = upperDirectory(imgPathA) + "/" + "pcaSA";
 	vector<string> pcaAs;
 	listOutDirectoryFiles(pcaPathA, pcaAs);
@@ -940,33 +992,12 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 	Timer timer;
 	cost = 0;
 
-	char **pcaB;
-	ALLOC_DOUBLE_STAR(pcaBs_size, 2048, char, pcaB, N)
-	for(int i=0; i<pcaBs_size; i++)
-	{
-#ifdef WIN32
-		fileB.open(pcaBs[i], ios::in | ios::binary);
-		fileB.seekg(0, ios::beg);
-		fileB.read(pcaTemp, 2048);
-		fileB.clear();
-		fileB.close();
-#endif
-#ifdef LINUX
-		fileB = fopen(pcaBs[i].data(), "rb");
-		fseek(fileB, 0, SEEK_SET);
-		fread(pcaTemp, 2048, 1, fileB);
-		fclose(fileB);
-#endif
-
-		memcpy(pcaB[i], pcaTemp, 2048);
-	}
-
+    int compareSamples = GConfig::getInstance().getCompareSamples();
+    compareSamples = (compareSamples < pcaBs_size) ? compareSamples : pcaBs_size;
 	int defaultCompareChannel = DEFAULT_COMPARE_CHANNEL();
-	EXPECT_TRUE(SUCC == ISCompareMNfasterprep(defaultCompareChannel, pcaB, pcaBs_size));
 
-	// ISCompareMNfaster
 	float **score;
-	ALLOC_DOUBLE_STAR(1, pcaBs_size, float, score, S)
+	ALLOC_DOUBLE_STAR(1, compareSamples, float, score, S)
 
 	cout << ">>Inputs <<" << endl;
 	cout << "Pca directory A: " << pcaPathA << endl;
@@ -994,17 +1025,46 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 		fread(pcaTemp, 2048, 1, fileA);
 		fclose(fileA);
 #endif
+		memcpy(pcaA[0], pcaTemp, 2048);
 
-		pcaA[0] = pcaTemp;
+        int start = s;
+        for(int k=0; k<pcaBs_size; k++){
+                if(getFileHeader(pcaAs[s].data()) == getFileHeader(pcaBs[k].data())){
+                        start = k;
+                        break;
+                }
+        }
+
+		char **pcaB;
+		ALLOC_DOUBLE_STAR(compareSamples, 2048, char, pcaB, N)
+		for(int i=start; i<start+compareSamples; i++)
+		{
+#ifdef WIN32
+			fileB.open(pcaBs[i%pcaBs_size], ios::in | ios::binary);
+			fileB.seekg(0, ios::beg);
+			fileB.read(pcaTemp, 2048);
+			fileB.clear();
+			fileB.close();
+#endif
+#ifdef LINUX
+			fileB = fopen(pcaBs[i%pcaBs_size].data(), "rb");
+			fseek(fileB, 0, SEEK_SET);
+			fread(pcaTemp, 2048, 1, fileB);
+			fclose(fileB);
+#endif
+			memcpy(pcaB[i-start], pcaTemp, 2048);
+		}
+		EXPECT_TRUE(SUCC == ISCompareMNfasterprep(defaultCompareChannel, pcaB, compareSamples));
+
 		timer.start();
 		EXPECT_TRUE(SUCC == ISCompareMNfaster(defaultCompareChannel, pcaA, 1, score));
 		cost += timer.stop();
-		for(int t=0; t<pcaBs_size; t++){
-			if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAs[s].data())==getFileHeader(pcaBs[t].data()))
+		for(int t=0; t<compareSamples; t++){
+			if(score[0][t]<recongiseFaceValue && getFileHeader(pcaAs[s].data())==getFileHeader(pcaBs[(t+start)%pcaBs_size].data()))
 			{
 				valueCountsBig++;
 			}
-			if(score[0][t]>=recongiseFaceValue && getFileHeader(pcaAs[s].data())!=getFileHeader(pcaBs[t].data()))
+			if(score[0][t]>=recongiseFaceValue && getFileHeader(pcaAs[s].data())!=getFileHeader(pcaBs[(t+start)%pcaBs_size].data()))
 			{
 				valueCountsSmall++;
 			}
@@ -1015,16 +1075,17 @@ TEST_F(ftISCompare, ISCompareMNfaster_SingleThread){
 
 	cout << "pca num of pca directory A: " << pcaAs_size << endl;
 	cout << "pca num of pca directory B: " << pcaBs_size << endl;
+	cout << "samples: " << compareSamples << endl;
 	cout << "for an identical person, but score less than recongiseFaceValue: " << valueCountsBig << endl;
-	float percent = float(valueCountsBig)/pcaAs_size*100;
-	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	float percent = float(valueCountsBig)/(pcaAs_size*compareSamples)*100;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
 	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
-	percent = float(valueCountsSmall)/(pcaAs_size*pcaBs_size)*100;
-	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
-	float timePerPic = float(cost)/(pcaAs_size*pcaBs_size);
+	percent = float(valueCountsSmall)/(pcaAs_size*compareSamples)*100;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
+	cout << "compare times: " << pcaAs_size*compareSamples << endl;
+	float timePerPic = float(cost)/(pcaAs_size*compareSamples);
 	cout << "whole cost: " << cost << "ms" << endl;
-	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(4) << timePerPic << "ms" << endl;
 }
 
 TEST_F(ftISCompare, ISCompareMNfaster_MultiThread){
@@ -1068,17 +1129,21 @@ TEST_F(ftISCompare, ISCompareMNfaster_MultiThread){
 		EXPECT_TRUE(SUCC == pthread_join(pThreads[n], &retVal));
 	}
 
+    int compareSamples = GConfig::getInstance().getCompareSamples();
+    compareSamples = (compareSamples < pcaBs_size) ? compareSamples : pcaBs_size;
+
 	cout << "pca num of pca directory A: " << pcaAs_size << endl;
 	cout << "pca num of pca directory B: " << pcaBs_size << endl;
+	cout << "samples: " << compareSamples << endl;
 	cout << "for an identical person, but score less than recongiseFaceValue: " << valueCountsBig << endl;
-	float percent = float(valueCountsBig)/pcaAs_size*100;
-	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
+	float percent = float(valueCountsBig)/(pcaAs_size*compareSamples)*100;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
 	cout << "for two different persons, but score more than compareFaceValue: " << valueCountsSmall << endl;
-	percent = float(valueCountsSmall)/(pcaAs_size*pcaBs_size)*100;
-	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(2) << percent << "%" << endl;
-	cout << "compare times: " << pcaAs_size*pcaBs_size << endl;
-	float timePerPic = float(cost)/(pcaAs_size*pcaBs_size);
+	percent = float(valueCountsSmall)/(pcaAs_size*compareSamples)*100;
+	cout << "error rate: " << setiosflags(ios::fixed) << setprecision(4) << percent << "%" << endl;
+	cout << "compare times: " << pcaAs_size*compareSamples << endl;
+	float timePerPic = float(cost)/(pcaAs_size*compareSamples);
 	cost = cost/recogniseThreadNum;
 	cout << "whole cost: " << cost << "ms" << endl;
-	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(2) << timePerPic << "ms" << endl;
+	cout << "average time cost: " << setiosflags(ios::fixed) << setprecision(4) << timePerPic << "ms" << endl;
 }

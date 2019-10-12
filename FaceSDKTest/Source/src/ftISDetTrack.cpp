@@ -1329,7 +1329,7 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_SingleThread){
 	DESTROY_DET_TRACK_CHANNEL(defaultDetTrackChannel);
 
 	cout << "picture num of image directory A: " << imageAs.size() << endl;
-	cout << "picture num of image directory A: " << imageAs.size() << endl;
+	cout << "picture num of image directory B: " << imageBs.size() << endl;
 	cout << "picture num detected face succ of image directory A: " << detectedNumA << endl;
 	cout << "picture num detected face succ of image directory B: " << detectedNumB << endl;
 	double percentA = double(detectedNumA)/imageAs.size()*100;
@@ -1544,11 +1544,11 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_OutResultCheck){
 		}
 		for(int s=0; s<lenS; s++){
 			for(int t=0; t<3; t++){
-				EXPECT_TRUE(angleS[s][t]==angleM[s][t]);
+				EXPECT_TRUE(abs(angleS[s][t]-angleM[s][t])<0.0001);
 			}
 		}
 		for(int x=0; x<lenS; x++){
-			EXPECT_TRUE(kScoreS[x]==kScoreM[x]);
+			EXPECT_TRUE(abs(kScoreS[x]-kScoreM[x])<0.0001);
 		}
 	}
 
@@ -1607,11 +1607,11 @@ TEST_F(ftISDetTrack, ISCalFaceInfoPath_OutResultCheck){
 		}
 		for(int s=0; s<lenS; s++){
 			for(int t=0; t<3; t++){
-				EXPECT_TRUE(angleS[s][t]==angleM[s][t]);
+				EXPECT_TRUE(abs(angleS[s][t]-angleM[s][t])<0.0001);
 			}
 		}
 		for(int x=0; x<lenS; x++){
-			EXPECT_TRUE(kScoreS[x]==kScoreM[x]);
+			EXPECT_TRUE(abs(kScoreS[x]-kScoreM[x])<0.0001);
 		}
 	}
 

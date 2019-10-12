@@ -4,7 +4,7 @@ using namespace std;
 
 Config::Config(){
 	iniReader reader;
-	reader.readConfig("../../../config.ini");
+	reader.readConfig("../../../Export/config.ini");
 
 	detectThreadNum = reader.readInt("PARAM", "detectThreadNum", 0);
 	getFeaThreadNum = reader.readInt("PARAM", "getFeaThreadNum", 0);

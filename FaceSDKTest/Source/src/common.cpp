@@ -137,7 +137,7 @@ void getFeatureAndPredict(int defaultFeatureChannel
 #ifdef WIN32
 	EXPECT_TRUE_EX(ISpredictExpression(defaultFeatureChannel, vec.data(), expression));
 	EXPECT_TRUE_EX(ISpredictGlasses(defaultFeatureChannel, vec.data(), glasses));
-	EXPECT_TRUE_EX(ISpredictSmile(defaultFeatureChannel, vec.data(), smile));
+	//EXPECT_TRUE_EX(ISpredictSmile(defaultFeatureChannel, vec.data(), smile));
 	EXPECT_TRUE_EX(ISpredictAgeGender(defaultFeatureChannel, vec.data(), age, gender));
 	EXPECT_TRUE_EX(ISpredictBeauty(defaultFeatureChannel, vec.data(), beauty));
 #endif

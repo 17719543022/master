@@ -47,6 +47,17 @@ protected:
 	}
 };
 
+class ftISCompareMN : public testing::Test{
+protected:
+	virtual void SetUp(){
+		cout << "ProcessMemory::getProcessMemory(): " << ProcessMemory::getProcessMemory() << endl;
+	}
+	virtual void TearDown(){
+		destroyAllWindows();
+		cout << "ProcessMemory::getProcessMemory(): " << ProcessMemory::getProcessMemory() << endl;
+	}
+};
+
 class ftError : public testing::Test{
 protected:
 	virtual void SetUp(){

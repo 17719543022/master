@@ -26,6 +26,8 @@ Config::Config(){
 	featureImgPathB = reader.readString("ISGetFeaturePath", "featureImgPathB", "");
 	compareImgPathA = reader.readString("ISCompare", "compareImgPathA", "");
 	compareImgPathB = reader.readString("ISCompare", "compareImgPathB", "");
+	compareMNImgPathA = reader.readString("ISCompareMN", "compareMNImgPathA", "");
+	compareMNImgPathB = reader.readString("ISCompareMN", "compareMNImgPathB", "");
 	appliancePathA = reader.readString("Appliance", "appliancePathA", "");
 	appliancePathB = reader.readString("Appliance", "appliancePathB", "");
 	report = reader.readString("RESULT", "report", "");
@@ -129,6 +131,14 @@ string GConfig::getCompareImgPathB(){
 	return config.compareImgPathB;
 }
 
+string GConfig::getCompareMNImgPathA(){
+	return config.compareMNImgPathA;
+}
+
+string GConfig::getCompareMNImgPathB(){
+	return config.compareMNImgPathB;
+}
+
 string GConfig::getAppliancePathA(){
 	return config.appliancePathA;
 }
@@ -166,6 +176,8 @@ void GConfig::dump(){
 	cout << "featureImgPathB = " << getFeatureImgPathB() << endl;
 	cout << "compareImgPathA = " << getCompareImgPathA() << endl;
 	cout << "compareImgPathB = " << getCompareImgPathB() << endl;
+	cout << "compareMNImgPathA = " << getCompareMNImgPathA() << endl;
+	cout << "compareMNImgPathB = " << getCompareMNImgPathB() << endl;
 	cout << "appliancePathA = " << getAppliancePathA() << endl;
 	cout << "appliancePathB = " << getAppliancePathB() << endl;
 	cout << "report = " << getReport() << endl;

@@ -26,6 +26,8 @@ struct Config{
 	string featureImgPathB;
 	string compareImgPathA;
 	string compareImgPathB;
+	string compareMNImgPathA;
+	string compareMNImgPathB;
 	string appliancePathA;
 	string appliancePathB;
 	string report;
@@ -55,6 +57,8 @@ public:
 	string getFeatureImgPathB();
 	string getCompareImgPathA();
 	string getCompareImgPathB();
+	string getCompareMNImgPathA();
+	string getCompareMNImgPathB();
 	string getAppliancePathA();
 	string getAppliancePathB();
 	string getReport();
